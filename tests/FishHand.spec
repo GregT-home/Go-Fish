@@ -31,8 +31,8 @@ describe FishHand, "Hand Creation and management object." do
   describe FishHand, "Hand can be queried for existence of cards." do
     context "Creating a stacked deck with 'AC 2C 3C 4C 2H 2C 2S'" do
       before (:each) do
-        @deck = CardDeck.new(PlayingCard.cards_from_string("AC 3C 4C 2H 2C 2S 2D"))
-        @hand=FishHand.new
+        @deck = CardDeck.new(PlayingCard.new_cards_from_string("AC 3C 4C 2H 2C 2S 2D"))
+        @hand = FishHand.new
         @reference_deck_length = @deck.length
         @reference_deck_length.should == 7
       end

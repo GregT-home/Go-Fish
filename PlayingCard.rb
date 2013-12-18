@@ -30,14 +30,14 @@ end
   # elements: Whole String, Rank and Suit.
 
   # Returns an array of Playing Cards, based on a space separated string.
-  def self.cards_from_string(string)
+  def self.new_cards_from_string(string)
     string.split(" ").map { |card_string| 
-      self.card_from_string(card_string)
+      self.new_card_from_string(card_string)
     }
   end    
 
   private
-  def self.card_from_string(string)
+  def self.new_card_from_string(string)
     if rank_suit=/\s*(10|[2-9]|[JQKA])\W*[of]*\W*([CHSD])\w*/i.match(string)
       PlayingCard.new(rank_suit[1], rank_suit[2])
     end
