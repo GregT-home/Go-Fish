@@ -1,21 +1,23 @@
 class PlayingCard
+  attr_reader :rank, :suit
+
   # define constants so we can use the same literal string everywhere
   RANKS = %w(2 3 4 5 6 7 8 9 10 J Q K A)
   SUITS = %w(C D H S)
 
   def initialize(myrank, mysuit)
-    @rank = myrank.upcase
-    @suit = mysuit.upcase
+    @rank = myrank
+    @suit = mysuit
     raise "Invalid rank (#{myrank}) or suit (#{mysuit}) for Card" unless rank && suit
 end
 
-  def rank
+  def value
     RANKS.index(@rank)
   end
 
-  def suit
-    SUITS.index(@suit)
-  end
+  # def suit_value
+  #   SUITS.index(@suit)
+  # end
 
   def to_s
     "#{@rank}-#{@suit}"
@@ -33,7 +35,7 @@ end
   def self.new_cards_from_string(string)
     string.split(" ").map { |card_string| 
       self.new_card_from_string(card_string)
-    }
+    }.reverse
   end    
 
   private

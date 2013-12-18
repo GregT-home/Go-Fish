@@ -12,18 +12,19 @@ describe PlayingCard, "Playing cards can be created with rank and suit." do
   end
 end # Pcards can be created
 
-describe PlayingCard, "Playing cards created with invalid ranks and suits are flagged as exceptions." do
-  it "Create a card with an invalid rank." do
-    expect { PlayingCard.new('REALLY WRONG','C') }.to raise_error(RuntimeError)
-  end
+# suits and ranks are currently arbitrary
+# describe PlayingCard, "Playing cards created with invalid ranks and suits are flagged as exceptions." do
+#   it "Create a card with an invalid rank." do
+#     expect { PlayingCard.new('REALLY WRONG','C') }.to raise_error(RuntimeError)
+#   end
 
-  it "Create a card with an invalid rank." do
-    expect { PlayingCard.new('5', 'REALLY WRONG') }.to raise_error(RuntimeError)
-  end
-end # Bad suit or rank raises exception
+#   it "Create a card with an invalid rank." do
+#     expect { PlayingCard.new('5', 'REALLY WRONG') }.to raise_error(RuntimeError)
+#   end
+# end # Bad suit or rank raises exception
 
-describe PlayingCard, "Playing cards can be compared by rank, suit or value." do
-  it "holds a card rank and suit, can be compared exactly, and can compare rank or suit" do
+describe PlayingCard, "Playing cards can be compared by value." do
+  it "holds a card rank and suit, can be compared exactly, and can compare value" do
     card1 = PlayingCard.new('10','C')
     card1same = PlayingCard.new('10','C')
     card2eq_rank = PlayingCard.new('10','H')
@@ -32,13 +33,13 @@ describe PlayingCard, "Playing cards can be compared by rank, suit or value." do
     
     card1.should == card1same
     card1.should_not == card2eq_rank
-    card1.rank.should == card2eq_rank.rank
+    card1.value.should == card2eq_rank.value
 
-    card1.rank.should eql card2eq_rank.rank
+    card1.value.should eql card2eq_rank.value
     
     card1.suit.should_not eql card2eq_rank.suit
-    card3higher.rank.should be > card1.rank
-    card4lower.rank.should  be < card1.rank
+    card3higher.value.should be > card1.value
+    card4lower.value.should  be < card1.value
   end
 end # Pcard can be compared
 
@@ -48,7 +49,7 @@ describe PlayingCard, "Playing cards can be generated from a specification strin
                     PlayingCard.new('2','C'),
                     PlayingCard.new('3','C') ]
 
-    cards = PlayingCard.cards_from_string("A-C 3C 4c")
+    cards = PlayingCard.new_cards_from_string("A-C 3C 4c")
 
     cards.each { |card|
       card.is_a?(PlayingCard).should == true
@@ -56,7 +57,7 @@ describe PlayingCard, "Playing cards can be generated from a specification strin
   end
 
   it "can be done for a single card" do
-    card = PlayingCard.cards_from_string("2-H")[0]
+    card = PlayingCard.new_cards_from_string("2-H")[0]
     card.is_a?(PlayingCard).should == true
   end
 end # Can be created from strings

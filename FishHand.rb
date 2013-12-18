@@ -21,29 +21,26 @@ class FishHand
     @cards.select { |card| card.rank == target_rank } != []
   end
 
-  def give_matching_ranked_cards(rank)
-    @cards.select!{ |card| card.rank == rank }
+  def give_matching_cards(rank)
+    cards = @cards.select { |card| card.rank == rank }
+    remove_cards(cards)
   end
 
   def got_book?(rank)
-        # search for a book
-    # if found, delete & return book rank (i.e. if a book of 6s, then 6)
-    # else return nil
-    false
-  end
-
-  def remove_cards(these_cards)
-    @cards - these_cards
-  end
-
-  def give_matching_cards(rank)
-    return nil if get_cards_of_rank(rank) != []
+    cards = @cards.select { |card| card.rank == rank }
+    cards.length == 4
   end
 
   private 
   def get_cards_of_rank(rank)
             cards.select { |card| card.rank == rank}
           end
+
+  def remove_cards(these_cards)
+    @cards -= these_cards
+    these_cards
+  end
+
  
 end # FishHand
 
