@@ -1,0 +1,17 @@
+\D(\d+).*(|10|[2-9]|[JQKA])
+\S*(\d+).*(10|[2-9]|[JQKA])  works
+
+ask 5 for 2
+ask 11 for 10
+3 for K
+3 10
+
+
+\s*(10|[2-9]|[JQKA])\W*[of]*\W*([CHSD])\w*
+10C
+AS
+As
+3-of-Diamonds
+3 of Diamonds
+3d
+3 of diamonds
