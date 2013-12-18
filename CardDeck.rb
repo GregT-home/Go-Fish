@@ -16,7 +16,7 @@ class CardDeck
     end
   end
 
-  def  length
+  def length
     @cards.length
   end
 

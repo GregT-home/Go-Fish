@@ -1,28 +1,28 @@
 class FishHand
-  attr_reader :interactive,  :active_cards, :war_chest,  :name
+  attr_reader :cards
 
-  def initialize(active_cards=[])
-    @active_cards = active_cards
+  def initialize(cards=[])
+    @cards = cards
   end
 
   def give_card
-    card = @active_cards.pop
+    card = @cards.pop
   end
 
   def length
-    @active_cards.length
+    @cards.length
   end
 
   def receive_card(newcard)
-    @active_cards.unshift(newcard)  
+    @cards.unshift(newcard)  
   end
 
-  def got_rank?(rank)
-    @cards.select { |card| card.rank = rank } != []
+  def got_rank?(target_rank)
+    @cards.select { |card| card.rank == target_rank } != []
   end
 
   def give_matching_ranked_cards(rank)
-    @cards.select!{ |card| card.rank = rank }
+    @cards.select!{ |card| card.rank == rank }
   end
 
   def got_book?(rank)
@@ -32,8 +32,8 @@ class FishHand
     false
   end
 
-  def remove_cards(cards)
-    @active_cards - cards
+  def remove_cards(these_cards)
+    @cards - these_cards
   end
 
   def give_matching_cards(rank)
@@ -42,7 +42,7 @@ class FishHand
 
   private 
   def get_cards_of_rank(rank)
-            active_cards.select { |card| card.rank == rank}
+            cards.select { |card| card.rank == rank}
           end
  
 end # FishHand
