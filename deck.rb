@@ -1,4 +1,4 @@
-class CardDeck
+class Deck
   attr_reader :cards
 
   def initialize(test_deck=[])
@@ -8,9 +8,9 @@ class CardDeck
     if test_deck != []
       @cards = test_deck
     else
-      @cards = PlayingCard::SUITS.map { |suit| 
-        PlayingCard::RANKS.map { |rank|
-          PlayingCard.new(rank,suit)
+      @cards = Card::SUITS.map { |suit| 
+        Card::RANKS.map { |rank|
+          Card.new(rank,suit)
         }
       }.flatten
     end
@@ -36,7 +36,7 @@ class CardDeck
     @cards.unshift(newcard)
   end
 
-  # does this belong here? It creates a dependency on FishHand.
+  # does this belong here? It creates a dependency on Fish_hand.
   def deal(number, hands)
     number = @cards.length if number == 0
     number.times {
@@ -46,4 +46,4 @@ class CardDeck
     }
   end
   
-end # CardDeck
+end # Deck

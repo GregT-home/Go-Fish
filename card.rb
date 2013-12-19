@@ -1,4 +1,4 @@
-class PlayingCard
+class Card
   attr_reader :rank, :suit
 
   # define constants so we can use the same literal string everywhere
@@ -41,7 +41,7 @@ end
   private
   def self.new_card_from_string(string)
     if rank_suit=/\s*(10|[2-9]|[JQKA])\W*[of]*\W*([CHSD])\w*/i.match(string)
-      PlayingCard.new(rank_suit[1], rank_suit[2])
+      Card.new(rank_suit[1], rank_suit[2])
     end
   end
-end # PlayingCard
+end # Card

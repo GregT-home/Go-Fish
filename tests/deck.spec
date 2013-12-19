@@ -1,10 +1,10 @@
-require_relative "../PlayingCard.rb"
-require_relative "../CardDeck.rb"
+require_relative "../card.rb"
+require_relative "../deck.rb"
 
-describe CardDeck, "Creation and basic function" do #Deck can be created, measured, shuffled, and customized." do
+describe Deck, "Creation and basic function" do #Deck can be created, measured, shuffled, and customized." do
   context ".new by default creates a card deck" do
-    deck = CardDeck.new
-    shuffled=CardDeck.new
+    deck = Deck.new
+    shuffled=Deck.new
 
     it ".length is 52 cards." do
       deck.length.should eq 52
@@ -21,15 +21,15 @@ describe CardDeck, "Creation and basic function" do #Deck can be created, measur
   end
 end
 
-describe CardDeck, "Cards can be given to, and received by pseudo-players." do
+describe Deck, "Cards can be given to, and received by pseudo-players." do
   context ".new creates a default card deck" do
     before (:each) do
       # create a new card deck
-      @deck = CardDeck.new
+      @deck = Deck.new
 
       # pseudo-players are decks with no cards.  We can't create an empty deck
       # so we create a deck with 1 card and remove it.
-      @player = CardDeck.new([PlayingCard.new("A","H")])
+      @player = Deck.new([Card.new("A","H")])
       @player.give_card
     end
     

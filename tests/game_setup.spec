@@ -1,7 +1,7 @@
 #Dir['./*.rb'].each { |file| require_relative "#{file}" }
-require_relative "./PlayingCard.rb"
-require_relative "./CardDeck.rb"
-require_relative "./FishPlayer.rb"
+require_relative "./card.rb"
+require_relative "./deck.rb"
+require_relative "./fish_player.rb"
 
 Test for "Happy Path"
 
@@ -9,9 +9,9 @@ Test for "Happy Path"
 
 
 
-describe CardDeck, "card deck" do
+describe Deck, "card deck" do
   it "deals all 52 cards to one player" do
-    test_deck = CardDeck.new
+    test_deck = Deck.new
     player=FishPlayer.new
     test_deck.deal([player])
     player.length.should eq 52

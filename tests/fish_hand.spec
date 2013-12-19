@@ -1,12 +1,11 @@
-require_relative "../PlayingCard.rb"
-require_relative "../CardDeck.rb"
-require_relative "../CardUtils.rb"
-require_relative "../FishHand.rb"
+require_relative "../card.rb"
+require_relative "../deck.rb"
+require_relative "../fish_hand.rb"
 
 describe FishHand, "Hand Creation and management object." do
   context "A hand can accept cards from a deck.deal." do
     before (:each) do
-      @deck = CardDeck.new
+      @deck = Deck.new
       @hand=FishHand.new
     end
 
@@ -24,14 +23,24 @@ describe FishHand, "Hand Creation and management object." do
 
       card = @hand.give_card
       card.should_not be nil
-      card.is_a?(PlayingCard).should be true
+      card.is_a?(Card).should be true
     end
   end
 
-  describe FishHand, "Hand can be queried for existence of cards." do
+  describe FishHand, "Hand can be created and queried for existence of cards." do
+    it "Can create a hand with specific cards" do
+      # reversing so hands will be in "human-expected" order
+      @hand = FishHand.new(Card.new_cards_from_string("AC 3C 4C 2H").reverse)
+      all_cards_present = ( @hand.cards[0].rank == "A" &&
+                            @hand.cards[1].rank == "3" &&
+                            @hand.cards[2].rank == "4" &&
+                            @hand.cards[3].rank == "2")
+      all_cards_present.should == true
+    end
+
     context "Creating a stacked deck with 'AC 2C 3C 4C 2H 2C 2S' and 5-card hand" do
       before (:each) do
-        @deck = CardDeck.new(PlayingCard.new_cards_from_string("AC 3C 4C 2H 2C 2S 2D"))
+        @deck = Deck.new(Card.new_cards_from_string("AC 3C 4C 2H 2C 2S 2D"))
         @hand = FishHand.new
         @reference_deck_length = @deck.length
         @reference_deck_length.should == 7
@@ -49,7 +58,7 @@ describe FishHand, "Hand Creation and management object." do
       it "can delete a card with a given rank." do
         cards = @hand.give_matching_cards('3')
         cards.should_not be_nil
-        cards[0].is_a?(PlayingCard).should be true
+        cards[0].is_a?(Card).should be true
         cards[0].rank.should == '3'
       end
 

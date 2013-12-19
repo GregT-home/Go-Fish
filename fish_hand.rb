@@ -42,5 +42,4 @@ class FishHand
   end
 
  
-end # FishHand
-
+end # Fish_hand
