@@ -48,7 +48,7 @@ describe Card, "Playing cards can be generated from a specification string." do
                     Card.new('2','C'),
                     Card.new('3','C') ]
 
-    cards = Card.new_cards_from_string("A-C 3C 4c")
+    cards = Card.new_cards_from_s("A-C 3C 4c")
 
     cards.each { |card|
       card.is_a?(Card).should == true
@@ -56,7 +56,7 @@ describe Card, "Playing cards can be generated from a specification string." do
   end
 
   it "can be done for a single card" do
-    card = Card.new_cards_from_string("2-H")[0]
+    card = Card.new_cards_from_s("2-H")[0]
     card.is_a?(Card).should == true
   end
 end # Can be created from strings

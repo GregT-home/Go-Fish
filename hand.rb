@@ -1,4 +1,4 @@
-class FishHand
+class Hand
   attr_reader :cards
 
   def initialize(cards=[])
@@ -13,8 +13,9 @@ class FishHand
     @cards.length
   end
 
-  def receive_card(newcard)
-    @cards.unshift(newcard)  
+  def receive_cards(newcards)
+    @cards.unshift(newcards)
+    @cards.flatten!
   end
 
   def got_rank?(target_rank)
@@ -42,4 +43,4 @@ class FishHand
   end
 
  
-end # Fish_hand
+end # Hand
