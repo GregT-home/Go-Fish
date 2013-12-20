@@ -1,28 +1,17 @@
 #Dir['../tests/*.rb'].each { |file| require_relative "#{file}" }
 require_relative "../card.rb"
 
-describe Card, "Playing cards can be created with rank and suit." do
-  it "Create cards and verify we can see rank and suit." do
+describe Card, "#new: cards can be created." do
+  it "They have rank and suit." do
     card1 = Card.new('A','C')
     card2 = Card.new('A','H')
     
     card1.rank.should eql card2.rank
     card1.suit.should_not eql card2.suit
   end
-end # Pcards can be created
+end # cards can be created
 
-# suits and ranks are currently arbitrary
-# describe Card, "Playing cards created with invalid ranks and suits are flagged as exceptions." do
-#   it "Create a card with an invalid rank." do
-#     expect { Card.new('REALLY WRONG','C') }.to raise_error(RuntimeError)
-#   end
-
-#   it "Create a card with an invalid rank." do
-#     expect { Card.new('5', 'REALLY WRONG') }.to raise_error(RuntimeError)
-#   end
-# end # Bad suit or rank raises exception
-
-describe Card, "Playing cards can be compared by value." do
+describe Card, "#new cards have a value as well as a rank and suit.." do
   it "holds a card rank and suit, can be compared exactly, and can compare value" do
     card1 = Card.new('10','C')
     card1same = Card.new('10','C')

@@ -9,13 +9,17 @@ describe Hand, "Hand Creation and management object." do
       @hand = Hand.new
     end
 
-    it "A hand can receive one card." do
+    it "#length: an empty hand has a 0 length" do
+      @hand.length.should == 0
+    end
+
+    it "#receive_cards: A hand can receive a card." do
       card = @deck.give_card
       @hand.receive_cards(card)
       @hand.cards[0] == card
     end
 
-    it "A hand can receive multiple cards." do
+    it "@receive_cards: A hand can receive multiple cards." do
       starting_hand_length = @hand.length
 
       cards = []
@@ -77,11 +81,19 @@ describe Hand, "Hand Creation and management object." do
         @hand.got_rank?('12').should be false
       end
 
-      it "can delete a card with a given rank." do
+      it "#give_matching_cards returns [] when none match" do
+        cards = @hand.give_matching_cards('5')
+        cards.should_not be_nil
+        cards[0].is_a?(Card).should be false
+        cards.should == []
+      end
+
+      it "#give_matching_cards returns array of matched cards that are removed from hand." do
         cards = @hand.give_matching_cards('3')
         cards.should_not be_nil
         cards[0].is_a?(Card).should be true
         cards[0].rank.should == '3'
+        @hand.got_rank?('3').should be false
       end
 
       it "can detect books" do

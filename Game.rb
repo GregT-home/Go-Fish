@@ -11,7 +11,7 @@ class Game
 
     @current_hand = 0
 
-    deal(num_hands, @hands)
+    deal(6, @hands)
   end
 
   def advance_to_next_hand
@@ -28,19 +28,37 @@ class Game
     }
   end
 
-  def play_round(requesting_hand, target_hand, target_rank)
+  def ask_hand_for_card(requesting_hand, target_hand, target_rank)
+    number_received = target_hand.give_matching_cards(target_rank).length
+
     result = Result.new(requesting_hand, target_hand, target_rank)
 
-    if target_hand.got_rank?(target_rank)
-      cards = target_hand.give_matching_cards(target_rank)
-      
-      result.number_of_cards_received += cards.length
-    else
-      cards = @deck.give_card
-      result.number_of_cards_received += 1
+    if number_received > 0
+      result.number_of_cards_received += number_received
+      result.cards_received_from = target_hand
+    # else
+    #   result.cards_received_from = nil
     end
+    result
+  end
+
+  # Hand X asks Hand Y for card Z
+  # if he gets it: done; player gets another turn
+  # if he does not get it, then "go fish" from the deck
+  #   if he gets his choice from the deck: done; player gets another turn
+  #   if he does not, then player's turn is complete
+  # Result will reflect:
+  #  cards received
+  #  source of cards (player or deck)
+  def play_round(requesting_hand, target_hand, target_rank)
+    result = ask_hand_for_card(requesting_hand, target_hand, target_rank)
+
+    nil
+#    if result.cards_received_from
       
 
+    
   end
+
 
 end # Game

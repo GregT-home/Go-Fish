@@ -1,0 +1,61 @@
+-*- mode: compilation; default-directory: "~/src/RoleModel/gofish/tests/" -*-
+Compilation started at Fri Dec 20 13:28:52
+
+rake spec
+(in /Users/tarsa/src/RoleModel/gofish)
+rspec tests/card.spec tests/deck.spec tests/game.spec tests/hand.spec tests/result.spec
+.............FFFF.............
+
+Failures:
+
+  1) Game Play typical rounds. Create a game with 6 known hands. #ask_hand_for_card: does not get it; resulting # of cards is 0.
+     Failure/Error: result.cards_received_from.should == :no_one
+       expected: :no_one
+            got: #<Hand:0x007f8a490c3c28 @cards=[#<Card:0x007f8a490c3f98 @rank="4", @suit="D">, #<Card:0x007f8a490b83c8 @rank="5", @suit="S">, #<Card:0x007f8a490b8788 @rank="3", @suit="D">, #<Card:0x007f8a490b8b48 @rank="3", @suit="S">, #<Card:0x007f8a490b8f08 @rank="2", @suit="D">, #<Card:0x007f8a490b92c8 @rank="2", @suit="S">]> (using ==)
+       Diff:
+       @@ -1,2 +1,9 @@
+       -:no_one
+       +#<Hand:0x007f8a490c3c28
+       + @cards=
+       +  [#<Card:0x007f8a490c3f98 @rank="4", @suit="D">,
+       +   #<Card:0x007f8a490b83c8 @rank="5", @suit="S">,
+       +   #<Card:0x007f8a490b8788 @rank="3", @suit="D">,
+       +   #<Card:0x007f8a490b8b48 @rank="3", @suit="S">,
+       +   #<Card:0x007f8a490b8f08 @rank="2", @suit="D">,
+       +   #<Card:0x007f8a490b92c8 @rank="2", @suit="S">]>
+     # ./tests/game.spec:69:in `block (3 levels) in <top (required)>'
+
+  2) Game Play typical rounds. Create a game with 6 known hands. #ask_hand_for_card: gets it; resulting # of cards is 1.
+     Failure/Error: result.cards_received_from.should == 1
+       expected: 1
+            got: #<Hand:0x007f8a4a9394b0 @cards=[#<Card:0x007f8a4a939820 @rank="4", @suit="D">, #<Card:0x007f8a4a939fa0 @rank="3", @suit="D">, #<Card:0x007f8a4a93a360 @rank="3", @suit="S">, #<Card:0x007f8a4a93a720 @rank="2", @suit="D">, #<Card:0x007f8a4a93aae0 @rank="2", @suit="S">]> (using ==)
+     # ./tests/game.spec:76:in `block (3 levels) in <top (required)>'
+
+  3) Game Play typical rounds. Create a game with 6 known hands. #ask_hand_for_card: gets > 1; resulting # of cards reflects # received.
+     Failure/Error: result.cards_received_from.should == 1
+       expected: 1
+            got: #<Hand:0x007f8a49951098 @cards=[#<Card:0x007f8a49951408 @rank="4", @suit="D">, #<Card:0x007f8a499517c8 @rank="5", @suit="S">, #<Card:0x007f8a49951b88 @rank="3", @suit="D">, #<Card:0x007f8a49951f48 @rank="3", @suit="S">]> (using ==)
+     # ./tests/game.spec:82:in `block (3 levels) in <top (required)>'
+
+  4) Game Play typical rounds. Create a game with 6 known hands. play_round: Hand X asks Hand Y for rank Z and gets none.
+     Failure/Error: result = @game.play_round(0, 1, "6")
+     NoMethodError:
+       undefined method `play_round' for #<Game:0x007f8a499598b0>
+     # ./tests/game.spec:86:in `block (3 levels) in <top (required)>'
+
+Finished in 0.02396 seconds
+30 examples, 4 failures
+
+Failed examples:
+
+rspec ./tests/game.spec:66 # Game Play typical rounds. Create a game with 6 known hands. #ask_hand_for_card: does not get it; resulting # of cards is 0.
+rspec ./tests/game.spec:72 # Game Play typical rounds. Create a game with 6 known hands. #ask_hand_for_card: gets it; resulting # of cards is 1.
+rspec ./tests/game.spec:79 # Game Play typical rounds. Create a game with 6 known hands. #ask_hand_for_card: gets > 1; resulting # of cards reflects # received.
+rspec ./tests/game.spec:85 # Game Play typical rounds. Create a game with 6 known hands. play_round: Hand X asks Hand Y for rank Z and gets none.
+rake aborted!
+Command failed with status (1): [rspec tests/card.spec tests/deck.spec test...]
+/Users/tarsa/src/RoleModel/gofish/Rakefile:7:in `block in <top (required)>'
+Tasks: TOP => spec
+(See full trace by running task with --trace)
+
+Compilation exited abnormally with code 1 at Fri Dec 20 13:28:54
