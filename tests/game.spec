@@ -35,17 +35,14 @@ describe Game, "Initial game setup." do
 end # game setup tests
 
 describe Game, "Play typical rounds." do
-  context "Create a game with 6 known hands." do
+  context "Create a game with 3 known hands." do
     before (:each) do
       @hand_size = 6
-      @number_of_test_hands = 6
+      @number_of_test_hands = 3
       target_hand, stacked_deck = [],[]
       target_hand[0] = "2C 2H 3C QH 5C 4H".split
       target_hand[1] = "2S 2D 3S 3D 5S 4D".split
-      target_hand[2] = "4S 5D 6S 6D 7S 7D".split
-      target_hand[3] = "4C 5H 6C 6H 7C 7H".split
-      target_hand[4] = "10S 10D JS JD AS AD".split
-      target_hand[5] = "10C 10H JC JH AC AH".split
+      target_hand[2] = "10C 10H 10S 10D AC AH ".split
       @hand_size.downto(0) { |card_num| 
         @number_of_test_hands.times { |hand_num|
           stacked_deck << target_hand[hand_num][card_num]
@@ -67,21 +64,22 @@ describe Game, "Play typical rounds." do
 
       # test a few samples for validity
       @game.hands[0].cards[3].should == Card.new("Q", "H")
-      @game.hands[5].cards[0].should == Card.new("10", "C")
+      @game.hands[2].cards[0].should == Card.new("10", "C")
       @game.deck.cards[0].should == Card.new("3", "H")
     end # before (:each)
 
-    it "#ask_hand_for_card: does not get it; resulting # of cards is 0." do
-      result = @game.ask_hand_for_card(@game.hands[1],"8")
+    it "#ask_for_matches: does not get it; resulting # of cards is 0." do
+      # puts "-----", @game.hands[0].cards
+      result = @game.ask_for_matches(@game.hands[1],"8")
       result.number_of_cards_received.should == 0
       result.cards_received_from.should == nil
     end
 
-    it "#ask_hand_for_card: gets it; resulting # of cards is 1, cards removed from target hand." do
+    it "#ask_for_matches: gets it; resulting # of cards is 1, cards removed from target hand." do
       hand0_count = @game.hands[0].cards.length
       hand1_count = @game.hands[1].cards.length
 
-      result = @game.ask_hand_for_card(@game.hands[1],"5")
+      result = @game.ask_for_matches(@game.hands[1],"5")
       result.number_of_cards_received.should == 1
       result.cards_received_from.should == @game.hands[1]
 
@@ -89,11 +87,11 @@ describe Game, "Play typical rounds." do
       @game.hands[1].cards.length.should == hand1_count - 1
     end
 
-    it "#ask_hand_for_card: gets > 1; resulting # of cards reflects # received." do
+    it "#ask_for_matches: gets > 1; resulting # of cards reflects # received." do
       hand0_count = @game.hands[0].cards.length
       hand1_count = @game.hands[1].cards.length
 
-      result = @game.ask_hand_for_card(@game.hands[1],"2")
+      result = @game.ask_for_matches(@game.hands[1],"3")
       result.number_of_cards_received.should == 2
       result.cards_received_from.should == @game.hands[1]
 
@@ -126,7 +124,7 @@ describe Game, "Play typical rounds." do
       @game.current_hand.should eql 0
     end
 
-    it "play_round: 3( Player->Victim: gets; Pile: N/A; Book: Yes; plays again." do
+    it "play_round: 3) Player->Victim: gets; Pile: N/A; Book: Yes; plays again." do
       result = @game.play_round(@game.hands[1], "2")  # hand 1 has 2 x 2s
       result.requesting_hand.should == @game.hands[0]
       result.target_hand.should == @game.hands[1]
@@ -162,23 +160,29 @@ describe Game, "Play typical rounds." do
       @game.current_hand.should eql 0
     end
 
+    it "check for books in initial hand" do
+      @game.advance_to_next_hand while @game.current_hand != 2
+      @game.hands[@game.current_hand].cards.map { |card|
+        result = @game.ask_for_matches(@game.hands[@game.current_hand],
+                                         card.rank)
+        break if result.number_of_books_made > 0
+      }
+    end
 
-    
+    it "check for end of game" do
+      #take last card from deck
+      card = @game.deck.give_card
+      @game.deck.length.should == 0
 
+      next_card = @game.deck.give_card
+      next_card.should be_nil
 
-    # it "play_round: Hand X asks Hand Y for Rank Z and gets them.)." do
-    #   pending ("Test waiting for completion of ask method")
-    #   result = @game.play_round(0, 1, "6")
-    #   result.should_not be_nil
+      # Play a round: ask for 3 from hand 2, don't get one, don't get from pile
+      result = @game.play_round(@game.hands[2], "3")
+      result.number_of_cards_received.should == 0
+      
+      result.game_over.should == true
+    end
 
-    #   result.requesting_hand.should == 0
-    #   result.target_hand.should == 1
-    #   result.target_rank.should == "6"
-    #   result.number_of_cards_received.should == 0
-    #   result.number_of_books_made.should == 0
-    # end
-
-
-    
   end # context
-end # Hand tests
+end # Game tests
