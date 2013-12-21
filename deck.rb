@@ -5,7 +5,7 @@ class Deck
     @cards = []
     @books = []
 
-    if test_deck != []
+    unless test_deck.empty?
       @cards = test_deck
     else
       @cards = Card::SUITS.map { |suit| 

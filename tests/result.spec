@@ -19,6 +19,7 @@ describe Result, "Round Result creation and manipulation." do
       result.number_of_cards_received.should == 0
       result.cards_received_from.should == nil
       result.number_of_books_made.should == 0
+      result.game_over.should == false
 
       expect {result.requesting_hand = 1}.to raise_error
       expect {result.target_hand = 2}.to raise_error
@@ -34,6 +35,7 @@ describe Result, "Round Result creation and manipulation." do
       result.number_of_cards_received         = 4
       result.cards_received_from              = :some_one
       result.number_of_books_made             = 5
+      result.game_over                        = 6
 
       result.requesting_hand.should          == 0
       result.target_hand.should              == 1
@@ -41,6 +43,7 @@ describe Result, "Round Result creation and manipulation." do
       result.number_of_cards_received.should == 4
       result.cards_received_from.should      == :some_one
       result.number_of_books_made.should     == 5
+      result.game_over.should                == 6
     end
   end #context
 end # round results creation/manipulation
