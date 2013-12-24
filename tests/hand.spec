@@ -9,17 +9,17 @@ describe Hand, "Hand Creation and management object." do
       @hand = Hand.new
     end
 
-    it "#length: an empty hand has a 0 length" do
+    it ".length: an empty hand has a 0 length" do
       @hand.length.should == 0
     end
 
-    it "#receive_cards: A hand can receive a card." do
+    it ".receive_cards: shows a hand can receive a card." do
       card = @deck.give_card
       @hand.receive_cards(card)
       @hand.cards[0] == card
     end
 
-    it "@receive_cards: A hand can receive multiple cards." do
+    it ".receive_cards shows how many cards received." do
       starting_hand_length = @hand.length
 
       cards = []
@@ -33,12 +33,7 @@ describe Hand, "Hand Creation and management object." do
       @hand.length.should == starting_hand_length + 4
     end
 
-    it "One hand can receives all 52 cards from a deck.deal." do
-      @deck.length.times { @hand.receive_cards(@deck.give_card) }
-      @hand.length.should == 52
-    end
-
-    it "One hand receives all 52 cards one at a time." do
+    it ".receive_cards: can receive multiple cards (52 in this case) from a deck.deal." do
       52.times { @hand.receive_cards(@deck.give_card) }
 
       @deck.give_card.should eq nil
@@ -50,7 +45,7 @@ describe Hand, "Hand Creation and management object." do
     end
   end
 
-  describe Hand, "Hand can be created and queried for existence of cards." do
+  describe Hand, ".new_cards_from_s: Hand can be created from a string." do
     it "Can create a hand with specific cards" do
       # reversing so hands will be in "human-expected" order
       @hand = Hand.new(Card.new_cards_from_s("AC 3C 4C 2H").reverse)
@@ -61,34 +56,32 @@ describe Hand, "Hand Creation and management object." do
       all_cards_present.should == true
     end
 
-    context "Creating a stacked deck with 'AC 2C 3C 4C 2H 2C 2S' and 5-card hand" do
+    context "Creating a stacked deck with 'AC 2C 3C 4C 2H 2C 2S' and 5=card hand from it." do
       before (:each) do
         @deck = Deck.new(Card.new_cards_from_s("AC 3C 4C 2H 2C 2S 2D"))
         @hand = Hand.new
         @reference_deck_length = @deck.length
         @reference_deck_length.should == 7
 
-        # @deck.deal(5, [@hand])
-        # @deck.length.should eq @reference_deck_length - 5
-        
         # deal all cards out to one hand
         @deck.length.times { @hand.receive_cards(@deck.give_card) }
         @hand.length.should == @reference_deck_length
       end
 
-      it "can ask if a rank is present, or not." do
+      it ".got_rank?: can ask if a rank is present, or not." do
         @hand.got_rank?('3').should be true
         @hand.got_rank?('12').should be false
       end
 
-      it "#give_matching_cards returns [] when none match" do
+      it ".give_matching_cards returns [] when none match" do
         cards = @hand.give_matching_cards('5')
+
         cards.should_not be_nil
         cards[0].is_a?(Card).should be false
         cards.should == []
       end
 
-      it "#give_matching_cards returns array of matched cards that are removed from hand." do
+      it ".give_matching_cards returns array of matched cards that are removed from hand." do
         cards = @hand.give_matching_cards('3')
         cards.should_not be_nil
         cards[0].is_a?(Card).should be true
@@ -96,11 +89,11 @@ describe Hand, "Hand Creation and management object." do
         @hand.got_rank?('3').should be false
       end
 
-      it "can detect books" do
+      it ".got_book: can detect books" do
         @hand.got_book?('2').should == true
       end
 
-      it "can delete books" do
+      it ".give_matching_cards also deletes books" do
         @hand.got_book?('2').should == true
         cards = @hand.give_matching_cards('2')
         cards.length.should == 4

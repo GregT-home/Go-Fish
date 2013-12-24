@@ -1,7 +1,7 @@
 #Dir['../tests/*.rb'].each { |file| require_relative "#{file}" }
 require_relative "../card.rb"
 
-describe Card, "#new: cards can be created." do
+describe Card, ".new: cards can be created." do
   it "They have rank and suit." do
     card1 = Card.new('A','C')
     card2 = Card.new('A','H')
@@ -11,7 +11,7 @@ describe Card, "#new: cards can be created." do
   end
 end # cards can be created
 
-describe Card, "#new cards have a value as well as a rank and suit.." do
+describe Card, ".new cards have a value as well as a rank and suit.." do
   it "holds a card rank and suit, can be compared exactly, and can compare value" do
     card1 = Card.new('10','C')
     card1same = Card.new('10','C')
@@ -31,8 +31,8 @@ describe Card, "#new cards have a value as well as a rank and suit.." do
   end
 end # Pcard can be compared
 
-describe Card, "Playing cards can be generated from a specification string." do
-  it "can be done one or more times" do
+describe Card, ".new: cards can be generated from rank/suit strings." do
+  it ".new: can be done one or more times" do
     static_cards = [Card.new('A','C'),
                     Card.new('2','C'),
                     Card.new('3','C') ]
@@ -44,7 +44,7 @@ describe Card, "Playing cards can be generated from a specification string." do
       }
   end
 
-  it "can be done for a single card" do
+  it ".new_cards_from_string: a single card can be created" do
     card = Card.new_cards_from_s("2-H")[0]
     card.is_a?(Card).should == true
   end

@@ -8,7 +8,6 @@ class Card
   def initialize(myrank, mysuit)
     @rank = myrank
     @suit = mysuit
-    raise "Invalid rank (#{myrank}) or suit (#{mysuit}) for Card" unless rank && suit
 end
 
   def value

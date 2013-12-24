@@ -1,7 +1,7 @@
 class Game
   attr_reader :hands, :deck, :current_hand
 
-  def initialize(num_hands,test_deck = [])
+  def initialize(num_hands, test_deck = [])
     @hands = []
     @deck = Deck.new(test_deck)
 
@@ -11,7 +11,7 @@ class Game
 
     @current_hand = 0
 
-    deal(6, @hands)
+    deal((num_hands > 4) ? 5 : 7, @hands)
   end
 
   def advance_to_next_hand

@@ -10,7 +10,7 @@ describe Deck, "Creation and basic function" do #Deck can be created, measured, 
       deck.length.should eq 52
     end
 
-    it "== works to compare decks." do
+    it ".== works to compare decks." do
       deck.should == shuffled
     end
 
