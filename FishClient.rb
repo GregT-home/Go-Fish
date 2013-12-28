@@ -19,11 +19,22 @@ class FishClient
   # it can receive a multi-line message from the server
   def receive_message
     message = ""
-
-    until (line = receive_line) == FishServer::EOM_TOKEN
-      message += line + "\n"
-    end
+    begin
+      message += receive_line + "\n"
+      if /:EOM:/.match(message)
+        message[FishServer::EOM_TOKEN+"\n"]=""
+        break
+      end
+    end while true
+    
+#    until (line = receive_line) == FishServer::EOM_TOKEN
+#      message += line + "\n"
+#    end
     message
+  end
+
+  def close
+    @socket.close
   end
 
 end #FishClient

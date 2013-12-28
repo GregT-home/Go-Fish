@@ -13,29 +13,34 @@ attr_reader :clients
 
   def accept_client
     clients << @server.accept
+    clients[-1]
   end
 
-  def preceive(client)
-    client.gets.chomp
+  def put_line(fd, line)
+    fd.puts line
   end
 
-  def psend(client, msg)
-    client.puts msg
+  def put_message(fd, msg)
+    fd.puts msg + EOM_TOKEN
   end
 
-  def broadcast
-    @clients.each { |cli|
-      cli.puts(cli.gets.schomp)
+  def broadcast(msg)
+    @clients.map { |cli|
+      put_message(cli, msg)
     }
+  end
+
+  def get_line(fd)
+    fd.gets.chomp
   end
 
   def close
     @server.close
     @clients.each { |fd| fd.close }
-
+    @clients.clear
   end
-
 end # Fish_Server
+
 # class Player
 #   attr_reader :fd, :name, :hand, :next_hand_number
 
