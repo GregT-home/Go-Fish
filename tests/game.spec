@@ -17,19 +17,28 @@ describe Game, "Initial game setup." do
       }
     end # before (:each)
     
-    it ".current_hand returns the index" do
-      @game.current_hand.should == 0
+    it ".current_hand_index returns the index" do
+      @game.current_hand_index.should == 0
+    end
+
+    it ".current_hand returns the current hand" do
+      @game.current_hand == @game.hands[0]
     end
 
     it ".advance_to_next_hand advances the index to the next player" do
       @game.advance_to_next_hand
-      @game.current_hand.should == 1
+      @game.current_hand_index.should == 1
+    end
+
+    it ".advance_to_next_hand sets the current hand to the next player" do
+      @game.advance_to_next_hand
+      @game.current_hand == @game.hands[1]
     end
 
     it ".advance_to_next_hand goes around in an ordered loop of hands." do
-      first_hand = @game.current_hand
+      first_hand = @game.current_hand_index
       @number_of_test_hands.times { @game.advance_to_next_hand }
-      @game.current_hand.should eql first_hand
+      @game.current_hand_index.should eql first_hand
     end
 
   end # context for random hands
@@ -49,12 +58,11 @@ describe Game, "Play typical rounds." do
           stacked_deck << target_hand[hand_num][card_num]
         }
       }
-      extra_cards = "3H".split
-      extra_cards.map { |card_string|
-        stacked_deck << card_string
-      }
-      stacked_cards_string = stacked_deck.join(" ")
 
+      extra_cards = "3H".split
+      extra_cards.map { |card_string| stacked_deck << card_string }
+
+      stacked_cards_string = stacked_deck.join(" ")
       @game = Game.new(@number_of_test_hands,
                        Card.new_cards_from_s(stacked_cards_string))
 
@@ -110,7 +118,7 @@ describe Game, "Play typical rounds." do
       result.number_of_books_made.should == 0
 
       @game.advance_to_next_hand
-      @game.current_hand.should eql 1
+      @game.current_hand_index.should eql 1
     end
 
     it ".play_round: 2) Player asks Victim: gets; Pile: N/A; Book: N/A; plays again." do
@@ -122,7 +130,7 @@ describe Game, "Play typical rounds." do
       result.cards_received_from.should == @game.hands[1]
       result.number_of_books_made.should == 0
 
-      @game.current_hand.should eql 0
+      @game.current_hand_index.should eql 0
     end
 
     it ".play_round: 3) Player asks Victim: gets; Pile: N/A; Book: Yes; plays again." do
@@ -134,7 +142,7 @@ describe Game, "Play typical rounds." do
       result.cards_received_from.should == @game.hands[1]
       result.number_of_books_made.should == 1
 
-      @game.current_hand.should eql 0
+      @game.current_hand_index.should eql 0
     end
 
     it ".play_round: 4) Player asks Victim: no get; Pile: get; Book: no; plays again." do
@@ -146,7 +154,7 @@ describe Game, "Play typical rounds." do
       result.cards_received_from.should == :deck
       result.number_of_books_made.should == 0
 
-      @game.current_hand.should eql 0
+      @game.current_hand_index.should eql 0
     end
 
     it ".play_round: 5) Player asks Victim: no get; Pile: get; Book: yes; plays again." do
@@ -158,24 +166,25 @@ describe Game, "Play typical rounds." do
       result.cards_received_from.should == :deck
       result.number_of_books_made.should == 0
 
-      @game.current_hand.should eql 0
+      @game.current_hand_index.should eql 0
     end
 
     it ".ask_for_matches checks for books in initial hands" do
-      result = []
-      start = current = @game.current_hand
+      result = {}
+      start_hand = current_hand = @game.current_hand
       begin
-        @game.hands[current].cards.map { |card|
-          result[current] = @game.ask_for_matches(@game.hands[current],
-                                                  card.rank)
-          break if result[current].number_of_books_made > 0
+        current_hand.cards.map { |card|
+          result[current_hand] = @game.ask_for_matches(current_hand,
+                                                       card.rank)
+          break if result[current_hand].number_of_books_made > 0
         }
-      end while (current = @game.advance_to_next_hand) != start
+        current_hand = @game.advance_to_next_hand
+      end while current_hand != start_hand
 
-      @game.advance_to_next_hand while @game.current_hand != 2
-      result[0].number_of_books_made.should == 0
-      result[1].number_of_books_made.should == 0
-      result[2].number_of_books_made.should == 1
+      @game.advance_to_next_hand while @game.current_hand_index != 2
+      result[@game.hands[0]].number_of_books_made.should == 0
+      result[@game.hands[1]].number_of_books_made.should == 0
+      result[@game.hands[2]].number_of_books_made.should == 1
     end
 
     it ".play_round: checks for end of game" do

@@ -36,13 +36,4 @@ class Deck
     @cards.unshift(newcard)
   end
 
-  # def deal(number, hands)
-  #   number = @cards.length if number == 0
-  #   number.times {
-  #     hands.map { |hand|
-  #       hand.receive_card(give_card)
-  #       }
-  #   }
-  # end
-
 end # Deck
