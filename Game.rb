@@ -42,6 +42,19 @@ class Game
     end
   end
 
+  def check_all_for_books
+    result = {}
+    hands.map { |hand|
+      hand.cards.map { |card|
+        result[hand] = ask_for_matches(hand, card.rank)
+        break if result[hand].number_of_books_made > 0
+      }
+      yield(hand, result[hand])
+      advance_to_next_hand
+    }
+  end
+
+
   # returns nil if request failed.
   # returns result block with # of cards received
   # removes cards from target_hand and places into current hand

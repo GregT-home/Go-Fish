@@ -19,7 +19,7 @@ class FishServer
   def run()
     get_clients
     create_players
-    check_all_for_books
+    @game.check_all_for_books
     @game.play_round until @game.over?
   end
 
@@ -39,14 +39,10 @@ class FishServer
         put_message(client_fd[i], "what is your name? ")
         name = get_line(client_fd[i]).strip
       end while name.empty?
-      players << Player.new(@game.current_hand, name, client_fd[i])
+      players << Player.new(name, @game.current_hand, client_fd[i])
       @game.advance_to_next_hand
       i += 1
     end
-  end
-
-  def put_line(fd, line)
-    fd.puts line
   end
 
   def put_message(fd, msg)
@@ -59,24 +55,19 @@ class FishServer
     }
   end
 
-  def get_line(fd)
-    fd.gets.chomp
-  end
-
   def close
     @server.close
     @client_fd.each { |fd| fd.close }
     @client_fd.clear
   end
+
+private
+  def get_line(fd)
+    fd.gets.chomp
+  end
+
+  def put_line(fd, line)
+    fd.puts line
+  end
+
 end # Fish_Server
-
-# class Player
-#   attr_reader :fd, :name, :hand, :next_hand_number
-
-#   def initialize(name="", fd, hand)
-#     @next_hand_to_assign = @next_hand_number ? @next_hand_number + 1 : 0
-#     @name = "Unknown Player #{next_hand_number}" if name == ""
-#     @fd = fd
-#     @hand = hand
-#   end
-# end # Player

@@ -1,6 +1,7 @@
 require_relative "../FishServer.rb"
 #require_relative "../FishClient.rb"
 require_relative "../player.rb"
+require_relative "../result.rb"
 require_relative "../deck.rb"
 require_relative "../card.rb"
 require_relative "../hand.rb"
@@ -112,7 +113,7 @@ describe FishServer, ".put_message." do
     thread_id = Thread.new { server.get_clients }
 
     name = "Player One's Name"
-    mclient=MockClient.new
+    mclient = MockClient.new
 
     #sending name first for test purposes (avoids blocking)
     mclient.send_line(name)
@@ -143,7 +144,7 @@ describe FishServer, ".broadcast." do
     thread_id = Thread.new { server.get_clients }
 
     name = "Player One's Name"
-    mclient=MockClient.new
+    mclient = MockClient.new
 
     #sending name first for test purposes (avoids blocking)
     mclient.send_line(name)
@@ -154,8 +155,10 @@ describe FishServer, ".broadcast." do
 Welcome to the Fish Server
 
 EOM
+puts "server.broadcast"
     server.broadcast(welcome_message)
 
+puts "mclient receive"
     msg = mclient.receive_message
 
     msg.should eq welcome_message
@@ -165,30 +168,58 @@ end # .broadcast
 
 
 describe FishServer, ".check_all_for_books" do
-  it "tbd.: checks each player's hand for books" do
-    server = FishServer.new(1)
+  it "check each player's hand for books and broadcast results" do
+
+    # stack a deck so that 2nd hand has a book
+    test_hand_size = 7
+    number_of_test_hands = 2
+    target_hand, stacked_deck = [],[]
+    target_hand[0] = "2C 2H 3C QH 5C 4H 9H".split
+    target_hand[1] = "10C 10H 10S 10D 2S 2D 9S".split
+    test_hand_size.downto(0) { |card_num| 
+      number_of_test_hands.times { |hand_num|
+        stacked_deck << target_hand[hand_num][card_num]
+      }
+    }
+    stacked_cards_string = stacked_deck.join(" ")
+
+    server = FishServer.new(2, Card.new_cards_from_s(stacked_cards_string))
 
     # kick-off a non-blocking server thread
     thread_id = Thread.new { server.get_clients }
 
-    name = "Player One's Name"
-    mclient=MockClient.new
+    name1 = "******* Player One's Name"
+    mclient1 = MockClient.new
 
-    #sending name first for test purposes (avoids blocking)
-    mclient.send_line(name)
+    name2 = "******* Player Two's Name"
+    mclient2 = MockClient.new
+
+    #sending names first for test purposes (avoids blocking)
+    mclient1.send_line(name1)
+    mclient2.send_line(name2)
+
     server.create_players
-    mclient.consume_message
 
-    welcome_message = <<EOM
-Welcome to the Fish Server
+    mclient1.consume_message
+    mclient2.consume_message
 
-EOM
-    server.broadcast(welcome_message)
+    server.game.hands.length.should be 2
+    server.game.hands.length.times { |i|
+      server.game.hands[i].length.should be 7
+    }
 
-    msg = mclient.receive_message
+    server.game.current_hand.should == server.game.hands[0]
+    
+    i = 0
+    server.game.check_all_for_books { |player, result|
+      puts "", "yielding for iteration #{i}"
+      result.number_of_books_made.should == 0 if i == 0
+      result.number_of_books_made.should == 1 if i == 1
+      puts result.to_s
+      i = i + 1
+      }
 
-    msg.should eq welcome_message
-
+    expect {server.game.check_all_for_books}.to raise_error
   end
 end # .check_all_for_books
 
