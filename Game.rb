@@ -3,6 +3,7 @@ class Game
 
   def initialize(num_hands, test_deck = [])
     @hands = []
+    @game_over = false
     @deck = Deck.new(test_deck)
 
     num_hands.times { |i|
@@ -66,7 +67,7 @@ class Game
       #  puts "card = #{card.inspect}"
       # no cards, game is over
       if card.nil?
-        result.game_over=true
+        @game_over = result.game_over = true
       else
         # cards: take the top one note that it is from the deck
         target_hand.receive_cards(card)
@@ -76,5 +77,9 @@ class Game
       end
     end
     result
+  end
+
+  def over?
+    @game_over
   end
 end # Game

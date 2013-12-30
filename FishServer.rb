@@ -4,16 +4,45 @@ class FishServer
   PORT = 54011
   EOM_TOKEN = ":EOM:"
 
-attr_reader :clients
+  attr_reader :client_fd, :names, :players, :number_of_players, :game
 
-  def initialize()
-    @clients = []
+  def initialize(number, test_deck = [])
+    @client_fd = []
+    @players = []
+    @number_of_players = number
+    @game = nil
+
+    @game = Game.new(number_of_players, test_deck)
     @server = TCPServer.open(PORT)	# listen on our port
   end
 
-  def accept_client
-    clients << @server.accept
-    clients[-1]
+  def run()
+    get_clients
+    create_players
+    check_all_for_books
+    @game.play_round until @game.over?
+  end
+
+  def get_clients
+      while client_fd.length < number_of_players
+        client_fd << @server.accept 
+        #consume the "new player" response and let the client know
+        put_line(client_fd[-1], get_line(client_fd[-1]))
+      end
+  end
+
+  # get name, associate
+  def create_players
+    i = 0
+    while i < number_of_players do
+      begin
+        put_message(client_fd[i], "what is your name? ")
+        name = get_line(client_fd[i]).strip
+      end while name.empty?
+      players << Player.new(@game.current_hand, name, client_fd[i])
+      @game.advance_to_next_hand
+      i += 1
+    end
   end
 
   def put_line(fd, line)
@@ -25,7 +54,7 @@ attr_reader :clients
   end
 
   def broadcast(msg)
-    @clients.map { |cli|
+    @client_fd.map { |cli|
       put_message(cli, msg)
     }
   end
@@ -36,8 +65,8 @@ attr_reader :clients
 
   def close
     @server.close
-    @clients.each { |fd| fd.close }
-    @clients.clear
+    @client_fd.each { |fd| fd.close }
+    @client_fd.clear
   end
 end # Fish_Server
 
