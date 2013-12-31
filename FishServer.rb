@@ -19,7 +19,9 @@ class FishServer
   def run()
     get_clients
     create_players
-    @game.check_all_for_books
+    @game.check_all_for_books { |result|
+#      broadcast(
+      }
     @game.play_round until @game.over?
   end
 

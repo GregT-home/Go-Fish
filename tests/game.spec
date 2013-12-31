@@ -79,18 +79,18 @@ describe Game, "Play typical rounds." do
 
     it ".ask_for_matches: ask for a card; does not get it; no cards gained." do
       # puts "-----", @game.hands[0].cards
-      result = @game.ask_for_matches(@game.hands[1],"8")
-      result.number_of_cards_received.should eq 0
-      result.cards_received_from.should eq nil
+      result = @game.ask_for_matches(1,"8")
+      result.number_received.should eq 0
+      result.received_from.should eq nil
     end
 
     it ".ask_for_matches: asks and gets 1 added to hand; victim loses card." do
       hand0_count = @game.hands[0].cards.length
       hand1_count = @game.hands[1].cards.length
 
-      result = @game.ask_for_matches(@game.hands[1],"5")
-      result.number_of_cards_received.should eq 1
-      result.cards_received_from.should eq @game.hands[1]
+      result = @game.ask_for_matches(1,"5")
+      result.number_received.should eq 1
+      result.received_from.should eq 1
 
       @game.hands[0].cards.length.should eq hand0_count + 1
       @game.hands[1].cards.length.should eq hand1_count - 1
@@ -100,21 +100,21 @@ describe Game, "Play typical rounds." do
       hand0_count = @game.hands[0].cards.length
       hand1_count = @game.hands[1].cards.length
 
-      result = @game.ask_for_matches(@game.hands[1],"3")
-      result.number_of_cards_received.should eq 2
-      result.cards_received_from.should eq @game.hands[1]
+      result = @game.ask_for_matches(1,"3")
+      result.number_received.should eq 2
+      result.received_from.should eq 1
 
       @game.hands[0].cards.length.should eq hand0_count + 2
       @game.hands[1].cards.length.should eq hand1_count - 2
     end
 
     it ".play_round: 1) Player asks Victim: none; Pile: Yes; Book: N/A; turn over." do
-      result = @game.play_round(@game.hands[1], "6")  # hand 1 has no 6s
-      result.requesting_hand.should eq @game.hands[0]
-      result.target_hand.should eq @game.hands[1]
-      result.target_rank.should eq "6"
-      result.number_of_cards_received.should eq 1
-      result.cards_received_from.should eq :deck
+      result = @game.play_round(1, "6")  # hand 1 has no 6s
+      result.requester.should eq 0
+      result.victim.should eq 1
+      result.rank.should eq "6"
+      result.number_received.should eq 1
+      result.received_from.should eq :deck
       result.number_of_books_made.should eq 0
 
       @game.advance_to_next_hand
@@ -122,48 +122,48 @@ describe Game, "Play typical rounds." do
     end
 
     it ".play_round: 2) Player asks Victim: gets; Pile: N/A; Book: N/A; plays again." do
-      result = @game.play_round(@game.hands[1], "3")  # hand 1 has 2 x 3s
-      result.requesting_hand.should eq @game.hands[0]
-      result.target_hand.should eq @game.hands[1]
-      result.target_rank.should eq "3"
-      result.number_of_cards_received.should eq 2
-      result.cards_received_from.should eq @game.hands[1]
+      result = @game.play_round(1, "3")  # hand 1 has 2 x 3s
+      result.requester.should eq 0
+      result.victim.should eq 1
+      result.rank.should eq "3"
+      result.number_received.should eq 2
+      result.received_from.should eq 1
       result.number_of_books_made.should eq 0
 
       @game.current_hand_index.should eql 0
     end
 
     it ".play_round: 3) Player asks Victim: gets; Pile: N/A; Book: Yes; plays again." do
-      result = @game.play_round(@game.hands[1], "2")  # hand 1 has 2 x 2s
-      result.requesting_hand.should eq @game.hands[0]
-      result.target_hand.should eq @game.hands[1]
-      result.target_rank.should eq "2"
-      result.number_of_cards_received.should eq 2
-      result.cards_received_from.should eq @game.hands[1]
+      result = @game.play_round(1, "2")  # hand 1 has 2 x 2s
+      result.requester.should eq 0
+      result.victim.should eq 1
+      result.rank.should eq "2"
+      result.number_received.should eq 2
+      result.received_from.should eq 1
       result.number_of_books_made.should eq 1
 
       @game.current_hand_index.should eql 0
     end
 
     it ".play_round: 4) Player asks Victim: no get; Pile: get; Book: no; plays again." do
-      result = @game.play_round(@game.hands[1], "8")  # hand 1 has no 8s
-      result.requesting_hand.should eq @game.hands[0]
-      result.target_hand.should eq @game.hands[1]
-      result.target_rank.should eq "8"
-      result.number_of_cards_received.should eq 1
-      result.cards_received_from.should eq :deck
+      result = @game.play_round(1, "8")  # hand 1 has no 8s
+      result.requester.should eq 0
+      result.victim.should eq 1
+      result.rank.should eq "8"
+      result.number_received.should eq 1
+      result.received_from.should eq :deck
       result.number_of_books_made.should eq 0
 
       @game.current_hand_index.should eql 0
     end
 
     it ".play_round: 5) Player asks Victim: no get; Pile: get; Book: yes; plays again." do
-      result = @game.play_round(@game.hands[1], "8")  # hand 1 has no 8s
-      result.requesting_hand.should eq @game.hands[0]
-      result.target_hand.should eq @game.hands[1]
-      result.target_rank.should eq "8"
-      result.number_of_cards_received.should eq 1
-      result.cards_received_from.should eq :deck
+      result = @game.play_round(1, "8")  # hand 1 has no 8s
+      result.requester.should eq 0
+      result.victim.should eq 1
+      result.rank.should eq "8"
+      result.number_received.should eq 1
+      result.received_from.should eq :deck
       result.number_of_books_made.should eq 0
 
       @game.current_hand_index.should eql 0
@@ -174,7 +174,7 @@ describe Game, "Play typical rounds." do
       start_hand = current_hand = @game.current_hand
       begin
         current_hand.cards.map { |card|
-          result[current_hand] = @game.ask_for_matches(current_hand,
+          result[current_hand] = @game.ask_for_matches(@game.current_hand_index,
                                                        card.rank)
           break if result[current_hand].number_of_books_made > 0
         }
@@ -196,8 +196,8 @@ describe Game, "Play typical rounds." do
       next_card.should be_nil
 
       # Play a round: ask for 3 from hand 2, don't get one, don't get from pile
-      result = @game.play_round(@game.hands[2], "3")
-      result.number_of_cards_received.should eq 0
+      result = @game.play_round(2, "3")
+      result.number_received.should eq 0
       
       result.game_over.should eq true
       @game.over?.should eq true

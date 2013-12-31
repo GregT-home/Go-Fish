@@ -17,19 +17,6 @@ task :clean do
   sh "rm -f #{files}"
 end
 
-task :game do
-  rspec game.spec
+task :this, [:target] do | task, args|
+  sh "rspec tests/#{args[:target]}.spec"
 end
-
-task :card do
-  rspec card.spec
-end
-
-task :deck do
-  rspec deck.spec
-end
-
-task :hand do
-  rspec hand.spec
-end
-

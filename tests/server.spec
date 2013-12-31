@@ -155,10 +155,7 @@ describe FishServer, ".broadcast." do
 Welcome to the Fish Server
 
 EOM
-puts "server.broadcast"
     server.broadcast(welcome_message)
-
-puts "mclient receive"
     msg = mclient.receive_message
 
     msg.should eq welcome_message
@@ -211,8 +208,7 @@ describe FishServer, ".check_all_for_books" do
     server.game.current_hand.should == server.game.hands[0]
     
     i = 0
-    server.game.check_all_for_books { |player, result|
-      puts "", "yielding for iteration #{i}"
+    server.game.check_all_for_books { |result|
       result.number_of_books_made.should == 0 if i == 0
       result.number_of_books_made.should == 1 if i == 1
       puts result.to_s

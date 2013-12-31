@@ -44,12 +44,12 @@ class Game
 
   def check_all_for_books
     result = {}
-    hands.map { |hand|
+    hands.each_with_index { |hand, hand_index|
       hand.cards.map { |card|
-        result[hand] = ask_for_matches(hand, card.rank)
+        result[hand] = ask_for_matches(hand_index, card.rank)
         break if result[hand].number_of_books_made > 0
       }
-      yield(hand, result[hand])
+      yield(result[hand])
       advance_to_next_hand
     }
   end
@@ -58,24 +58,27 @@ class Game
   # returns nil if request failed.
   # returns result block with # of cards received
   # removes cards from target_hand and places into current hand
-  def ask_for_matches(target_hand, target_rank)
-    result = Result.new(@current_hand, target_hand, target_rank)
+  def ask_for_matches(target_index, target_rank)
+    result = Result.new(@current_hand_index, target_index, target_rank)
 
+    target_hand = hands[target_index]
     match_cards = target_hand.give_matching_cards(target_rank)
 
     if match_cards.length > 0
       @current_hand.receive_cards(match_cards)
-      result.number_of_cards_received += match_cards.length
-      result.cards_received_from = target_hand
+      result.number_received += match_cards.length
+      result.received_from = target_index
       result.number_of_books_made = process_books(target_rank)
     end
     result
   end
 
-  def play_round(target_hand, target_rank)
-    result = ask_for_matches(target_hand, target_rank)
+  def play_round(target_index, target_rank)
+    result = ask_for_matches(target_index, target_rank)
 
-    if result.number_of_cards_received == 0
+    target_hand = hands[target_index]
+
+    if result.number_received == 0
       card = @deck.give_card
       #  puts "card = #{card.inspect}"
       # no cards, game is over
@@ -84,8 +87,8 @@ class Game
       else
         # cards: take the top one note that it is from the deck
         target_hand.receive_cards(card)
-        result.number_of_cards_received = 1
-        result.cards_received_from = :deck
+        result.number_received = 1
+        result.received_from = :deck
         @current_hand.give_matching_cards(target_rank)
       end
     end
