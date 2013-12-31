@@ -101,4 +101,15 @@ describe Hand, "Hand Creation and management object." do
       end
     end # context, using stacked_deck & hand of 5
   end # Hand can be queried
-end # Hand query methods
+
+  describe Hand, ".to_s:" do
+    it "can display a hand as a string" do
+      # reversing so hands will be in "human-expected" order
+      @hand = Hand.new(Card.new_cards_from_s("AC 3C 4C 2H").reverse)
+
+      @hand.to_s.should eq "[A-C] [3-C] [4-C] [2-H]"
+    end
+  end
+end # Hand
+
+

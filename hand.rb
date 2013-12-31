@@ -32,6 +32,10 @@ class Hand
     cards.length == 4
   end
 
+  def to_s
+    cards.map {|card| "[" + card.to_s + "]"}.join (" ")
+  end
+
   private 
   def get_cards_of_rank(rank)
             cards.select { |card| card.rank == rank}
@@ -41,6 +45,4 @@ class Hand
     @cards -= these_cards
     these_cards
   end
-
- 
 end # Hand

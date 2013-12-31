@@ -19,9 +19,9 @@ describe Card, ".new cards have a value as well as a rank and suit.." do
     card3higher = Card.new('A','S')
     card4lower = Card.new('2','D')
     
-    card1.should == card1same
-    card1.should_not == card2eq_rank
-    card1.value.should == card2eq_rank.value
+    card1.should eq card1same
+    card1.should_not eq card2eq_rank
+    card1.value.should eq card2eq_rank.value
 
     card1.value.should eql card2eq_rank.value
     
@@ -40,12 +40,18 @@ describe Card, ".new: cards can be generated from rank/suit strings." do
     cards = Card.new_cards_from_s("A-C 3C 4c")
 
     cards.each { |card|
-      card.is_a?(Card).should == true
+      card.is_a?(Card).should eq true
       }
   end
 
   it ".new_cards_from_string: a single card can be created" do
     card = Card.new_cards_from_s("2-H")[0]
-    card.is_a?(Card).should == true
+    card.is_a?(Card).should eq true
   end
+
+  it ".to_s: a card can be represented as a string" do
+    card = Card.new_cards_from_s("2-H")[0]
+    card.to_s.should eq "2-H"
+  end
+
 end # Can be created from strings

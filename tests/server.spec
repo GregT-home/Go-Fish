@@ -211,7 +211,7 @@ describe FishServer, ".check_all_for_books" do
     server.game.check_all_for_books { |result|
       result.number_of_books_made.should == 0 if i == 0
       result.number_of_books_made.should == 1 if i == 1
-      puts result.to_s
+      puts "", result.to_s
       i = i + 1
       }
 
