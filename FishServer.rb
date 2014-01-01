@@ -22,7 +22,8 @@ class FishServer
     broadcast("The begins.  Dealing cards...\n")
     @game.check_all_for_books { |result|
       if result.number_of_books_made > 0
-        broadcast("#{@players[result.requester].name} was dealt a book of #{result.rank}s.\n")
+        broadcast("#{@players[result.requester].name} was dealt " +
+                  "a book of #{result.rank}s.\n")
       end
     }
 

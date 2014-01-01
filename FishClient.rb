@@ -4,7 +4,7 @@ class FishClient
   attr_reader :socket
 
   # it can connect to the server
-  def initialize(hostname='localhost',port=FishServer::PORT)
+  def initialize(hostname = 'localhost', port = FishServer::PORT)
     @socket = TCPSocket.open(hostname,port)
     send_line("Hello") # initiate contact with the server
     receive_line
