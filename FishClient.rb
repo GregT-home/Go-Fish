@@ -5,19 +5,10 @@ class FishClient
 
   # it can connect to the server
   def initialize(hostname = 'localhost', port = FishServer::PORT)
-    @socket = TCPSocket.open(hostname,port)
-    send_line("Hello") # initiate contact with the server
-    receive_line
+    @socket = TCPSocket.open(hostname, port)
+    send_line("Hello").inspect # initiate contact with the server
+    receive_line.inspect
   end
-
-  # # it can display an indefinite series of messages from the server
-  # # does not block
-  # def display_server_messages
-  #   @thread_id = Thread.new {
-  #     loop do
-  #       puts receive_message
-  #     end
-  #   }
 
   # it can send a single line message to the server
   def send_line(string)
@@ -39,10 +30,6 @@ class FishClient
         break
       end
     end while true
-    
-#    until (line = receive_line) == FishServer::EOM_TOKEN
-#      message += line + "\n"
-#    end
     message
   end
 
@@ -50,5 +37,15 @@ class FishClient
     @socket.close
 #    @thread_id.kill
   end
+
+  # # it can display an indefinite series of messages from the server
+  # # does not block
+  # def display_server_messages
+  #   @thread_id = Thread.new {
+  #     loop do
+  #       puts receive_message
+  #     end
+  #   }
+
 
 end #FishClient

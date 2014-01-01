@@ -1,106 +1,120 @@
 require_relative "../FishServer.rb"
+require_relative "../card.rb"
+require_relative "../deck.rb"
+require_relative "../hand.rb"
+#require_relative "../result.rb"
+#require_relative "../player.rb"
+require_relative "../Game.rb"
 require_relative "../FishClient.rb"
+
 require "socket"
 
-# describe FishClient, "can connect to, receive and send to Server" do
-#   context "Create a test server" do
-#     # create a standard server
-#     before (:each) do
-#       @mock_server = FishServer.new
-#     end
+# class FishServer
+#   PORT = 54011
+#   EOM_TOKEN = ":EOM:"
+# end
 
-#     # close when done
-#     after (:each) do
-#       @mock_server.close
-#     end
+class MockServer
+   PORT = 54011
+   EOM_TOKEN = ":EOM:"
 
-#     it ".new: can create a socket connection to a running server." do
-#       client = FishClient.new
+  attr_reader :client_fd, :names, :players, :number_of_players, :game
 
-#       client_fd = @mock_server.accept_client
-#       @mock_server.clients.count.should == 1
+  def initialize(number)
+    @client_fd = []
+    @players = []
+    @number_of_players = number
+    @game = nil
 
-#       client_fd.is_a?(TCPSocket).should be true
-#     end
+    @game = Game.new(number_of_players)
+    @server = TCPServer.open(MockServer::PORT)	# listen on our port
+  end
 
-#     it ".send_line: can connect a single client and exchange messages." do
-#       client = FishClient.new
+  def put_message(fd, msg)
+    fd.puts msg + MockServer::EOM_TOKEN
+  end
 
-#       # client sends to server first, for test purposes.
-#       test_message = "Client: Hello"
-#       client.send_line test_message
+  def close
+    @server.close
+    @client_fd.each { |fd| fd.close }
+  end
 
-#       client_list = @mock_server.accept_client
-#       cfd = @mock_server.clients[0]
-#       msg = cfd.gets
-#     end
+  def get_clients
+      while client_fd.length < number_of_players
+        client_fd << @server.accept 
+        #consume the "new player" response and let the client know
+        put_line(client_fd[-1], get_line(client_fd[-1]))
+      end
+  end
 
-#     it ".send_line: can connect to multiple clients and exchange messages." do
-#       client1 = FishClient.new
-#       client2 = FishClient.new
+  def get_line(fd)
+    fd.gets.chomp
+  end
 
-#       # client sends to server first, for test purposes.
-#       test_msg1 = "Client1: Hello"
-#       test_msg2 = "Client2: Hello"
-#       client2.send_line test_msg2
-#       client1.send_line test_msg1
+  def put_line(fd, line)
+    fd.puts line
+  end
 
-#       c1fd = @mock_server.accept_client
-#       c2fd = @mock_server.accept_client
-#       @mock_server.clients.length.should == 2
+end # MockServer
 
-#       msg2 = @mock_server.get_line(c2fd)
-#       msg1 = @mock_server.get_line(c1fd)
+ describe FishClient, "can connect to, receive and send to Server." do
+  context "Create a one-player mock server" do
+    # create a standard server
+    before (:each) do
+      num_players = 1
+      @mock_server = MockServer.new(num_players)
+      @mock_server.number_of_players.should eq num_players
 
-#       msg1.should == test_msg1
-#       msg2.should == test_msg2
-#     end
+      # kick-off a non-blocking server thread
+      thread_id = Thread.new { @mock_server.get_clients }
+    end
 
-#     it ".get_message: can receive a multi-line message from the server." do
-#       client1 = FishClient.new
+    # close when done
+    after (:each) do
+      @mock_server.close
+    end
 
-#       # client sends to server first, for test purposes.
-#       hello_msg1 = "Client1: Hello"
-#       client1.send_line hello_msg1
+    it ".new: can create a socket connection to a running server." do
+      client = FishClient.new
 
-#       c1fd = @mock_server.accept_client
-#       @mock_server.clients.length.should == 1
+      @mock_server.client_fd.count.should == 1
 
-#       mline_test_msg1 = "Client1:\nthis\nis\n\n\na\ntest1"
+      @mock_server.client_fd[0].is_a?(TCPSocket).should be true
+    end
 
-#       @mock_server.put_line(c1fd, mline_test_msg1+FishServer::EOM_TOKEN)
-#       msg1 = client1.receive_message
+    it ".send_line: can connect a single client and exchange messages." do
+      client = FishClient.new
 
-#       msg1.should == mline_test_msg1
-#     end
+      # client sends to server first, for test purposes.
+      test_message = "Client: Hello"
+      client.send_line test_message
 
-#     it ".get_message: can receive a multi-line message from the server." do
-#       client1, client2 = FishClient.new, FishClient.new
+      cfd = @mock_server.client_fd[0]
+      msg = @mock_server.client_fd[0].gets.chomp
+      msg.should eql test_message
+    end
 
-#       # client sends to server first, for test purposes.
-#       hello_msg1 = "Client1: Hello"
-#       hello_msg2 = "Client2: Hello"
-#       client1.send_line hello_msg1
-#       client2.send_line hello_msg2
+    it ".get_line: can receive a single-line from the server." do
+      client = FishClient.new
 
-#       c1fd = @mock_server.accept_client
-#       c2fd = @mock_server.accept_client
-#       @mock_server.clients.length.should == 2
+      test_line = "Client: this is a test"
 
-#       mline_test_msg1 = "Client1:\nthis\nis\na\ntest1\n"
-#       mline_test_msg2 = "Client2:\nthis\nis\na\ntest2\n"
+      @mock_server.put_line(@mock_server.client_fd[0], test_line)
+      line = client.receive_line
 
-#       @mock_server.put_line(c1fd, mline_test_msg1+FishServer::EOM_TOKEN)
-#       msg1 = client1.receive_message
-#       @mock_server.put_line(c2fd, mline_test_msg2+FishServer::EOM_TOKEN)
-#       msg2 = client2.receive_message
+      line.should == test_line
+    end
 
-#       msg1.should == mline_test_msg1
-#       msg2.should == mline_test_msg2
-#     end
+    it ".get_message: can receive a multi-line message from the server." do
+      client = FishClient.new
 
-#   end # context
+      mline_test_msg = "Client:\nthis\nis\n\n\na\ntest1"
 
+      @mock_server.put_message(@mock_server.client_fd[0], mline_test_msg)
+      msg = client.receive_message
 
-# end # FishServer
+      msg.should == mline_test_msg
+    end
+  end # context
+end # client.spec
 
