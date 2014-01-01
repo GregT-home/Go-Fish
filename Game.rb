@@ -50,14 +50,10 @@ class Game
         break if result[hand].number_of_books_made > 0
       }
       yield(result[hand])
-      advance_to_next_hand
     }
   end
 
 
-  # returns nil if request failed.
-  # returns result block with # of cards received
-  # removes cards from target_hand and places into current hand
   def ask_for_matches(target_index, target_rank)
     result = Result.new(@current_hand_index, target_index, target_rank)
 

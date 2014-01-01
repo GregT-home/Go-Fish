@@ -19,22 +19,21 @@ class FishServer
   def run()
     get_clients
     create_players
-    broadcast("The game is beginning.  Dealing cards...\n")
+    broadcast("The begins.  Dealing cards...\n")
     @game.check_all_for_books { |result|
       if result.number_of_books_made > 0
-        name = @players[result.requester].name
-        rank = result.rank
-        broadcast("#{name} was dealt a book of #{rank}s.\n")
+        broadcast("#{@players[result.requester].name} was dealt a book of #{result.rank}s.\n")
       end
     }
+
     broadcast("Play begins...\n")
+
     until @game.over? do
       player = players[@game.current_player_index]
       broadcast("It is #{player.name}'s turn.  ")
-      send_msg(player.fd, "Your cards are: #{player.hand.to_s}")
-      @game.play_round { |result|
-        broadcast(result.to_s)
-      }
+      send_msg(player.fd, "Your cards are: #{player.hand.to_s}\n")
+      @game.play_round
+      broadcast(result.to_s)
     end
   end
 
