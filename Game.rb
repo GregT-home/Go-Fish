@@ -1,3 +1,7 @@
+require "./card.rb"
+require "./deck.rb"
+require "./hand.rb"
+require "./result.rb"
 class Game
   attr_reader :hands, :deck, :current_hand_index, :current_hand
 
@@ -5,6 +9,7 @@ class Game
     @hands = []
     @game_over = false
     @deck = Deck.new(test_deck)
+#    deck.shuffle if test_deck.empty?
 
     num_hands.times { |i| @hands[i] = Hand.new() }
 
@@ -59,30 +64,30 @@ class Game
 
     if match_cards.length > 0
       current_hand.receive_cards(match_cards)
-      result.number_received += match_cards.length
+      result.matches += match_cards.length
       result.received_from = target_index
       result.number_of_books_made = process_books(target_rank)
     end
     result
   end
 
+  # ask for matches
+  # got any from victim?  Y: done. count matches, return
+  # no.  Get from pond.
+  # got match from pond? Y: done. count matches, return
+  # y: done
   def play_round(target_index, target_rank)
     result = ask_for_matches(target_index, target_rank)
 
-    target_hand = hands[target_index]
-
-    if result.number_received == 0
+    if result.matches == 0
       card = deck.give_card
-      #  puts "card = #{card.inspect}"
       # no cards, game is over
       if card.nil?
         @game_over = result.game_over = true
       else
-        # cards: take the top one note that it is from the deck
-        target_hand.receive_cards(card)
-        result.number_received = 1
-        result.received_from = :deck
-        current_hand.give_matching_cards(target_rank)
+        current_hand.receive_cards(card)
+        result.received_from = :pond
+        result.matches = 1 if card.rank == target_rank
       end
     end
     result

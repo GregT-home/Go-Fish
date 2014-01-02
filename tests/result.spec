@@ -16,7 +16,7 @@ describe Result, "Round Result creation and manipulation." do
       result.requester.should == @game.current_hand_index
       result.victim.should == 1
       result.rank.should == "3"
-      result.number_received.should == 0
+      result.matches.should == 0
       result.received_from.should == nil
       result.number_of_books_made.should == 0
       result.game_over.should == false
@@ -32,7 +32,7 @@ describe Result, "Round Result creation and manipulation." do
       expect {result.requester = 1}.to raise_error
       expect {result.victim = 2}.to raise_error
       expect {result.rank = 3}.to raise_error
-      result.number_received                  = 4
+      result.matches                          = 4
       result.received_from                    = :some_one
       result.number_of_books_made             = 5
       result.game_over                        = 6
@@ -40,7 +40,7 @@ describe Result, "Round Result creation and manipulation." do
       result.requester.should                == 0
       result.victim.should                   == 1
       result.rank.should                     == "3"
-      result.number_received.should          == 4
+      result.matches.should                  == 4
       result.received_from.should            == :some_one
       result.number_of_books_made.should     == 5
       result.game_over.should                == 6

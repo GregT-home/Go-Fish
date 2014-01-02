@@ -1,11 +1,11 @@
-require_relative "../FishServer.rb"
-#require_relative "../FishClient.rb"
-require_relative "../player.rb"
-require_relative "../result.rb"
-require_relative "../deck.rb"
-require_relative "../card.rb"
-require_relative "../hand.rb"
-require_relative "../game.rb"
+require_relative "../fishserver.rb"
+#require_relative "../fishclient.rb"
+#require_relative "../player.rb"
+#require_relative "../result.rb"
+#require_relative "../deck.rb"
+#require_relative "../card.rb"
+#require_relative "../hand.rb"
+#require_relative "../game.rb"
 
 require "socket"
 
@@ -80,6 +80,9 @@ describe FishServer, ".get_clients." do
     client2=MockClient.new
 
     server.client_fd.length.should eq 2
+
+    client1.close
+    client2.close
     server.close
   end
 end # .get_clients
@@ -101,6 +104,8 @@ describe FishServer, ".create_player." do
     server.players[0].hand.should eq server.game.current_hand
     server.players[0].name.should eq name
     server.players[0].fd.should_not eq 0
+
+    client1.close
     server.close
   end
 end # .create_player
@@ -133,6 +138,9 @@ EOM
     msg = mclient.receive_message
 
     msg.should eq welcome_message
+
+    mclient.close
+    server.close
   end
 end # .put_message
 
@@ -159,6 +167,8 @@ EOM
     msg = mclient.receive_message
 
     msg.should eq welcome_message
+
+    mclient.close
     server.close
   end
 end # .broadcast
@@ -216,6 +226,9 @@ describe FishServer, ".check_all_for_books" do
       }
 
     expect {server.game.check_all_for_books}.to raise_error
+
+    mclient1.close
+    mclient2.close
+    server.close
   end
 end # .check_all_for_books
-

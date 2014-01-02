@@ -1,8 +1,11 @@
+require "./game.rb"
+require "./player.rb"
 require 'socket'
 
 class FishServer
-  PORT = 54011
-  EOM_TOKEN = ":EOM:"
+  # rspec reports these as being re-defined; unless clause inhibits this.
+  PORT = 54011        unless const_defined?(:PORT)
+  EOM_TOKEN = ":EOM:" unless const_defined?(:EOM_TOKEN)
 
   attr_reader :client_fd, :names, :players, :number_of_players, :game
 
@@ -14,6 +17,7 @@ class FishServer
 
     @game = Game.new(number_of_players, test_deck)
     @server = TCPServer.open(PORT)	# listen on our port
+    STDOUT.puts "Listening for connections on %{PORT}" if @debug
   end
 
   def run()
@@ -30,10 +34,12 @@ class FishServer
     broadcast("Play begins...\n")
 
     until @game.over? do
-      player = players[@game.current_player_index]
+      player = players[@game.current_hand_index]
       broadcast("It is #{player.name}'s turn.  ")
-      send_msg(player.fd, "Your cards are: #{player.hand.to_s}\n")
-      @game.play_round
+      put_message(player.fd, "Your cards are: #{player.hand.to_s}\n")
+      # test: ask self for 2s
+    STDOUT.puts "debug: Deck has #{@game.deck.length} cards in it"
+      result = @game.play_round(0,"2")
       broadcast(result.to_s)
     end
   end
@@ -42,7 +48,8 @@ class FishServer
       while client_fd.length < number_of_players
         client_fd << @server.accept 
         #consume the "new player" response and let the client know
-        put_line(client_fd[-1], get_line(client_fd[-1]))
+        STDOUT.puts "get_clients: accepting a new client" if @debug
+        client_fd[-1].puts get_line(client_fd[-1])
       end
   end
 
@@ -62,6 +69,7 @@ class FishServer
 
   def put_message(fd, msg)
     fd.puts msg + EOM_TOKEN
+    STDOUT.puts("Debug: (to #{fd.inspect})" + msg) if @debug
   end
 
   def broadcast(msg)
@@ -76,13 +84,19 @@ class FishServer
     @client_fd.clear
   end
 
-private
-  def get_line(fd)
-    fd.gets.chomp
+  def debug
+    @debug = !@debug
   end
 
-  def put_line(fd, line)
-    fd.puts line
+private
+  def get_line(fd)
+    input = fd.gets.chomp
+    STDOUT.puts "Debug: (input from #{fd.inspect}" + input if @debug
+    input
   end
+
+  # def put_line(fd, line)
+  #   fd.puts line
+  # end
 
 end # Fish_Server

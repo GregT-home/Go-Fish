@@ -1,18 +1,13 @@
-require_relative "../FishServer.rb"
-require_relative "../card.rb"
-require_relative "../deck.rb"
-require_relative "../hand.rb"
+#require_relative "../fishserver.rb"
+#require_relative "../card.rb"
+#require_relative "../deck.rb"
+#require_relative "../hand.rb"
 #require_relative "../result.rb"
 #require_relative "../player.rb"
-require_relative "../Game.rb"
-require_relative "../FishClient.rb"
+#require_relative "../game.rb"
+require_relative "../fishclient.rb"
 
 require "socket"
-
-# class FishServer
-#   PORT = 54011
-#   EOM_TOKEN = ":EOM:"
-# end
 
 class MockServer
    PORT = 54011

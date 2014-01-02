@@ -1,6 +1,6 @@
 class Result
   attr_reader :requester, :victim, :rank
-  attr_accessor :number_received, :received_from
+  attr_accessor :matches, :received_from
   attr_accessor :number_of_books_made, :game_over
 
   def initialize(requester, victim, rank)
@@ -8,7 +8,7 @@ class Result
     @victim = victim
     @rank = rank
 
-    @number_received = 0
+    @matches = 0
     @received_from = nil
 
     @number_of_books_made = 0
@@ -23,9 +23,14 @@ class Result
 def to_s
   part1 = "Player ##{requester} asked for #{rank}s from player ##{victim}"
   if received_from != victim
-    part2 = " and was told to 'Go Fish.'"
+    part2 = " and was told to 'Go Fish.' "
+    if matches > 1
+      part2 += "He got one from the pond!"
+    else
+      part2 += "He did not get what he asked from from the pond."
+    end
   else
-    part2 = " and got #{number_received}."
+    part2 = " and got #{matches}."
   end
   
   if number_of_books_made > 0

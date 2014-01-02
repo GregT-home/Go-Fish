@@ -1,3 +1,4 @@
+require_relative "./fishserver.rb"
 require 'socket'
 
 class FishClient

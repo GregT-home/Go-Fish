@@ -18,8 +18,8 @@ class Hand
     @cards.flatten!
   end
 
-  def got_rank?(target_rank)
-    @cards.select { |card| card.rank == target_rank } != []
+  def rank_count(target_rank)
+    @cards.select { |card| card.rank == target_rank }.length
   end
 
   def give_matching_cards(rank)
