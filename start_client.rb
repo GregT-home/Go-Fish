@@ -1,3 +1,4 @@
+#!/usr/bin/ruby
 require_relative "./fishserver.rb"
 require_relative "./fishclient.rb"
 

@@ -116,7 +116,7 @@ describe Game, "test typical round outcomes." do
       result.rank.should eq "3"
       result.matches.should eq 1
       result.received_from.should eq :pond
-      result.number_of_books_made.should eq 0
+      result.books_made.should eq 0
 
       @game.current_hand.rank_count("3").should eq started_with + 1
 
@@ -130,7 +130,7 @@ describe Game, "test typical round outcomes." do
       result = @game.play_round(1, "3")  # hand 1 has 2 x 3s
       result.matches.should eq 2
       result.received_from.should eq 1
-      result.number_of_books_made.should eq 0
+      result.books_made.should eq 0
 
       @game.current_hand.rank_count("3").should eq started_with + 2
       @game.current_hand_index.should eql 0
@@ -142,7 +142,7 @@ describe Game, "test typical round outcomes." do
       result = @game.play_round(1, "2")  # hand 1 has 2 x 2s
       result.matches.should eq 2
       result.received_from.should eq 1
-      result.number_of_books_made.should eq 1
+      result.books_made.should eq 1
 
       @game.current_hand.rank_count("2").should eq 0 # book removed from hand
       @game.current_hand_index.should eql 0
@@ -154,7 +154,7 @@ describe Game, "test typical round outcomes." do
       result = @game.play_round(2, "3")  # hand 2 has no 3s, pond does
       result.matches.should eq 1
       result.received_from.should eq :pond
-      result.number_of_books_made.should eq 0
+      result.books_made.should eq 0
 
       @game.current_hand.rank_count("3").should eq started_with + 1
       @game.current_hand_index.should eql 0
@@ -168,28 +168,24 @@ describe Game, "test typical round outcomes." do
       result = @game.play_round(2, "3")  # hand 2 has no 3s, but deck does
       result.matches.should eq 1
       result.received_from.should eq :pond
-      result.number_of_books_made.should eq 1
+      result.books_made.should eq 1
 
       @game.current_hand.rank_count("3").should eq 0
       @game.current_hand_index.should eql 0
     end
 
     it ".play_round logic to check for books in initial hands" do
-      result = {}
-      start_hand = current_hand = @game.current_hand
-      begin
-        current_hand.cards.map { |card|
-          result[current_hand] = @game.play_round(@game.current_hand_index,
-                                                       card.rank)
-          break if result[current_hand].number_of_books_made > 0
-        }
-        current_hand = @game.advance_to_next_hand
-      end while current_hand != start_hand
 
-      @game.advance_to_next_hand while @game.current_hand_index != 2
-      result[@game.hands[0]].number_of_books_made.should eq 0
-      result[@game.hands[1]].number_of_books_made.should eq 0
-      result[@game.hands[2]].number_of_books_made.should eq 1
+      expected_result = [0, 0, 1]
+
+      @game.hands.each_with_index { |hand, i|
+        hand.cards.each_with_index { |card, i|
+          if @game.process_books(card.rank) != 0
+            result.books_made.should eq expected_result[i]
+            break
+          end
+        }
+      }
     end
 
     it ".play_round: checks for end of game" do

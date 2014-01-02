@@ -20,28 +20,52 @@ class FishServer
     STDOUT.puts "Listening for connections on %{PORT}" if @debug
   end
 
-  def run()
+  def setup()
     get_clients
     create_players
-    broadcast("The begins.  Dealing cards...\n")
-    @game.check_all_for_books { |result|
-      if result.number_of_books_made > 0
-        broadcast("#{@players[result.requester].name} was dealt " +
-                  "a book of #{result.rank}s.\n")
-      end
+    broadcast("The game begins...\n")
+
+    # check hands for initial books
+    players.each_with_index { |player, i|
+      player.hand.cards.map { |card|
+        if process_books(card.rank) != 0
+          broadcast "#{player.name} was dealt a book of #{card.rank}s.\n"
+          break
+        end
+      }
     }
 
+    # @game.check_all_for_books { |result|
+    #   if result.number_of_books_made > 0
+    #     broadcast("#{@players[result.requester].name} was dealt " +
+    #               "a book of #{result.rank}s.\n")
+    #   end
+  end
+
+  def endgame
+    true
+  end
+
+  def game_play
+    until @game.over? do
+        player = players[@game.current_hand_index]
+        broadcast("It is #{player.name}'s turn.  ")
+        put_message(player.fd, "Your cards are: #{player.hand.to_s}\n")
+        
+        # test: ask self for 2s
+        STDOUT.puts "debug: Deck has #{@game.deck.length} cards in it"
+        result = @game.play_round(0,"2")
+        broadcast(result.to_s)
+      end
+    end
+
+  def run()
+    setup
     broadcast("Play begins...\n")
 
-    until @game.over? do
-      player = players[@game.current_hand_index]
-      broadcast("It is #{player.name}'s turn.  ")
-      put_message(player.fd, "Your cards are: #{player.hand.to_s}\n")
-      # test: ask self for 2s
-    STDOUT.puts "debug: Deck has #{@game.deck.length} cards in it"
-      result = @game.play_round(0,"2")
-      broadcast(result.to_s)
-    end
+    game_play
+
+    endgame
   end
 
   def get_clients

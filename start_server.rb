@@ -1,3 +1,4 @@
+#!/usr/bin/ruby
 require_relative "./fishserver.rb"
 
 # take # of players from command line, if present

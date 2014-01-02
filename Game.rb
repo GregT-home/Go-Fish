@@ -44,16 +44,16 @@ class Game
     end
   end
 
-  def check_all_for_books
-    result = nil
-    hands.each_with_index { |hand, hand_index|
-      hand.cards.map { |card|
-        result = play_round(hand_index, card.rank)
-        break if result.number_of_books_made > 0
-      }
-      yield(result)
-    }
-  end
+  # def check_all_for_books
+  #   result = nil
+  #   hands.each_with_index { |hand, hand_index|
+  #     hand.cards.map { |card|
+  #       result = play_round(hand_index, card.rank)
+  #       break if result.books_made > 0
+  #     }
+  #     yield(result)
+  #   }
+  # end
 
   def play_round(target_index, target_rank)
     victim_matches = hands[target_index].rank_count(target_rank)
@@ -76,7 +76,7 @@ class Game
         result.matches = 1 if card.rank == target_rank
       end
   end
-    result.number_of_books_made = process_books(target_rank)
+    result.books_made = process_books(target_rank)
     result
   end
 
