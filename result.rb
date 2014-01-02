@@ -15,28 +15,29 @@ class Result
     @game_over = false
   end
 
-# Player X asked for Ys from Player Z
-# [and got #] | [but was told to 'Go Fish']
-# (if deck) Player X fished in the pond [and got] | [did not get] a Y
-# Player X [made a book] | [did not make a book]
-# [the game is over] | [""]
+# part 1 : Player X asked for Ys from Player Z
+# part 2a: [got # matches] | [was told to 'Go Fish']
+# part 2b: (if deck) fished in pond [and got] | [did not get] a Y
+# part 3 :Player X [made a book] | [did not make a book]
+# part 4 : [the game is over] | [""]
 def to_s
-  part1 = "Player ##{requester} asked for #{rank}s from player ##{victim}"
-  if received_from != victim
-    part2 = " and was told to 'Go Fish.' "
-    if matches > 1
-      part2 += "He got one from the pond!"
-    else
-      part2 += "He did not get what he asked from from the pond."
-    end
+  part1 = "Player ##{requester} asked for #{rank}s from player ##{victim}."
+
+  if received_from == victim
+    part2 = "Player got #{matches}."
   else
-    part2 = " and got #{matches}."
+    part2 = "Player was told to 'Go Fish' and "
+    if matches == 0
+      part2 += "he did not get what he asked for from the pond."
+    else
+      part2 += "he got one from the pond!"
+    end
   end
   
-  if number_of_books_made > 0
-    part3 = "He made a book of #{rank}s."
-  else
+  if number_of_books_made == 0
     part3 = "He did not make a book."
+  else
+    part3 = "He made a book of #{rank}s."
   end
 
   if game_over
@@ -45,7 +46,7 @@ def to_s
     part4 = ""
 end
 
-  part1 + part2 + "\n" + part3 + part4
+  part1 + "\n" + part2 + "\n" + part3 + part4
 end
 
 end # Result

@@ -48,48 +48,35 @@ class Game
     result = nil
     hands.each_with_index { |hand, hand_index|
       hand.cards.map { |card|
-        result = ask_for_matches(hand_index, card.rank)
+        result = play_round(hand_index, card.rank)
         break if result.number_of_books_made > 0
       }
       yield(result)
     }
   end
 
+  def play_round(target_index, target_rank)
+    victim_matches = hands[target_index].rank_count(target_rank)
 
-  def ask_for_matches(target_index, target_rank)
     result = Result.new(current_hand_index, target_index, target_rank)
 
-    target_hand = hands[target_index]
-    match_cards = target_hand.give_matching_cards(target_rank)
-
-    if match_cards.length > 0
+    if victim_matches > 0
+      match_cards = hands[target_index].give_matching_cards(target_rank)
       current_hand.receive_cards(match_cards)
+
       result.matches += match_cards.length
       result.received_from = target_index
-      result.number_of_books_made = process_books(target_rank)
-    end
-    result
-  end
-
-  # ask for matches
-  # got any from victim?  Y: done. count matches, return
-  # no.  Get from pond.
-  # got match from pond? Y: done. count matches, return
-  # y: done
-  def play_round(target_index, target_rank)
-    result = ask_for_matches(target_index, target_rank)
-
-    if result.matches == 0
+    else
       card = deck.give_card
-      # no cards, game is over
-      if card.nil?
+      if card.nil?     # no cards, game is over
         @game_over = result.game_over = true
       else
         current_hand.receive_cards(card)
         result.received_from = :pond
         result.matches = 1 if card.rank == target_rank
       end
-    end
+  end
+    result.number_of_books_made = process_books(target_rank)
     result
   end
 
