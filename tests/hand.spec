@@ -33,7 +33,7 @@ describe Hand, "Hand Creation and management object." do
       @hand.length.should eq starting_hand_length + 4
     end
 
-    it ".receive_cards: can receive multiple cards (52 in this case) from a deck.deal." do
+    it ".receive_cards: can receive multiple cards from a deck." do
       52.times { @hand.receive_cards(@deck.give_card) }
 
       @deck.give_card.should eq nil
@@ -63,9 +63,8 @@ describe Hand, "Hand Creation and management object." do
         @reference_deck_length = @deck.length
         @reference_deck_length.should eq 7
 
-        # deal all cards out to one hand
+        # put all cards into the basic hand for subsequent test cases.
         @deck.length.times { @hand.receive_cards(@deck.give_card) }
-        @hand.length.should eq @reference_deck_length
       end
 
       it ".rank_count: can count the number of rank present in a hand." do
@@ -105,9 +104,18 @@ describe Hand, "Hand Creation and management object." do
   describe Hand, ".to_s:" do
     it "can display a hand as a string" do
       # reversing so hands will be in "human-expected" order
-      @hand = Hand.new(Card.new_cards_from_s("AC 3C 4C 2H").reverse)
+      hand = Hand.new(Card.new_cards_from_s("AC 3C 4C 2H").reverse)
 
-      @hand.to_s.should eq "[A-C] [3-C] [4-C] [2-H]"
+      hand.to_s.should eq "[A-C] [3-C] [4-C] [2-H]"
+    end
+  end
+
+  describe Hand, ".sort!:" do
+    it "can sort a hand" do
+      # reversing so hands will be in "human-expected" order
+      hand = Hand.new(Card.new_cards_from_s("AC 3C 4C 2H").reverse)
+      hand.sort!
+      hand.to_s.should eq "[A-C] [4-C] [3-C] [2-H]"
     end
   end
 end # Hand

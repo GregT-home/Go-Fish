@@ -13,7 +13,13 @@ class FishClient
 
   # it can send a single line message to the server
   def send_line(string)
-    @socket.puts string
+    begin
+      @socket.puts string
+
+    rescue => reason
+      puts "Server error: #{reason.to_s}"
+      puts "You have exited the game."
+    end
   end
 
   # it can receive a single-line message from the server

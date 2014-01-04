@@ -16,6 +16,11 @@ class Hand
   def receive_cards(newcards)
     @cards.unshift(newcards)
     @cards.flatten!
+    sort!
+  end
+
+  def sort!
+    @cards.sort! { |c1, c2| c2.rank <=> c1.rank }
   end
 
   def rank_count(target_rank)

@@ -113,6 +113,7 @@ end # .create_player
 describe FishServer, ".put_message." do
   it "can send a message to a specific client" do
     server = FishServer.new(1)
+#    server.debug
 
     # kick-off a non-blocking server thread
     thread_id = Thread.new { server.get_clients }
@@ -173,3 +174,69 @@ EOM
   end
 end # .broadcast
 
+describe FishServer, ".end_game" do
+  context "Test .setup logic by creating 3 test hands." do
+    before (:each) do
+      @server = FishServer.new(3)
+
+      # kick-off a non-blocking server thread
+      thread_id = Thread.new { @server.get_clients }
+
+      names = %w(One Two Three)
+      @clients = [MockClient.new, MockClient.new, MockClient.new]
+
+      #sending first for test purposes (avoids blocking)
+      @clients.each_with_index { |c, i| c.send_line(names[i]) }
+
+      @server.create_players
+
+      @server.players[0].hand.should eq @server.game.current_hand
+      @server.players[0].name.should eq names[0]
+      @server.players[0].fd.should_not eq 0
+
+      @clients[0].receive_message # consume "What is your name?" prompt
+    end # before each
+
+    after (:each) do
+      @clients.each { |c| c.close }
+      @server.close
+    end
+
+  it "can handle a single winner" do
+      # cook the books :-)
+
+      game = @server.game
+      game.books[0]= ["2"]
+      game.books[1]= ["4", "5", "A"]  # winner
+      game.books[2]= ["8", "9"]
+
+      @server.endgame
+      msg = @clients[0].receive_message
+      msg.should eql "There are no more fish in the pond.  Game play is over.\n"
+      msg = @clients[0].receive_message
+      msg.should eql "Here is the final outcome:\n"
+
+      msg = @clients[0].receive_message
+      msg.should eql "Player 1, Two made 3 books (4, 5, A) and is the winner!\n"
+  end
+
+  it "can handle a tie" do
+      # cook the books :-)
+
+      game = @server.game
+      game.books[0]= ["2"]
+      game.books[1]= ["4", "5", "A"]  # winner 1
+      game.books[2]= ["8", "9", "K"]  # winner 2
+
+      @server.endgame
+      msg = @clients[0].receive_message
+      msg.should eql "There are no more fish in the pond.  Game play is over.\n"
+      msg = @clients[0].receive_message
+      msg.should eql "Here is the final outcome:\n"
+
+      msg = @clients[0].receive_message
+      msg.should eql "Player 1, Two made 3 books (4, 5, A) and ties for the win!\n"
+    end
+  end # context
+
+end # .end_game

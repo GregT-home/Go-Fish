@@ -72,59 +72,27 @@ describe Game, "test typical round outcomes." do
       }
 
       # test a few samples for validity
-      @game.hands[0].cards[3].should eq Card.new("Q", "H")
-      @game.hands[2].cards[0].should eq Card.new("10", "C")
+      @game.hands[0].cards[0].should eq Card.new("Q", "H")
+      @game.hands[2].cards[3].should eq Card.new("10", "C")
       @game.deck.cards[0].should eq Card.new("3", "H")
     end # before (:each)
 
-    # it ".ask_for_matches: ask for a card; does not get it; no cards gained." do
-    #   result = @game.ask_for_matches(1,"8")
-    #   result.matches.should eq 0
-    #   result.received_from.should eq nil
-    # end
+    it ".play_round, case 1: ask Victim: none; Pond: No; Book: N/A; next player." do
+      started_with = @game.current_hand.rank_count("4")
 
-    # it ".ask_for_matches: asks and gets 1 added to hand; victim loses card." do
-    #   hand0_count = @game.hands[0].cards.length
-    #   hand1_count = @game.hands[1].cards.length
-
-    #   result = @game.ask_for_matches(1,"5")
-    #   result.matches.should eq 1
-    #   result.received_from.should eq 1
-
-    #   @game.hands[0].cards.length.should eq hand0_count + 1
-    #   @game.hands[1].cards.length.should eq hand1_count - 1
-    # end
-
-    # it ".ask_for_matches: asks, gets > 1 added to hand; victim loses same cards." do
-    #   hand0_count = @game.hands[0].cards.length
-    #   hand1_count = @game.hands[1].cards.length
-
-    #   result = @game.ask_for_matches(1,"3")
-    #   result.matches.should eq 2
-    #   result.received_from.should eq 1
-
-    #   @game.hands[0].cards.length.should eq hand0_count + 2
-    #   @game.hands[1].cards.length.should eq hand1_count - 2
-    # end
-
-    it ".play_round, Case 1: ask Victim: none; Pond: Yes; Book: N/A; turn over." do
-      started_with = @game.current_hand.rank_count("3")
-
-      result = @game.play_round(2, "3")  # hand 2 has no 3s
+      result = @game.play_round(2, "4")  # hand 2 has no 4s, nor the pond
       result.requester.should eq 0
       result.victim.should eq 2
-      result.rank.should eq "3"
-      result.matches.should eq 1
+      result.rank.should eq "4"
+      result.matches.should eq 0
       result.received_from.should eq :pond
       result.books_made.should eq 0
 
-      @game.current_hand.rank_count("3").should eq started_with + 1
-
-      @game.advance_to_next_hand
+      @game.current_hand.rank_count("4").should eq started_with
       @game.current_hand_index.should eql 1
     end
 
-    it ".play_round, Case 2: ask Victim: gets; Pond: N/A; Book: N/A; plays again." do
+    it ".play_round, case 2: ask Victim: gets; Pond: N/A; Book: no; plays again." do
       started_with = @game.current_hand.rank_count("3")
 
       result = @game.play_round(1, "3")  # hand 1 has 2 x 3s
@@ -136,7 +104,7 @@ describe Game, "test typical round outcomes." do
       @game.current_hand_index.should eql 0
     end
 
-    it ".play_round, Case 3: ask Victim: gets; Pond: N/A; Book: Yes; plays again." do
+    it ".play_round, case 3: ask Victim: gets; Pond: N/A; Book: Yes; plays again." do
       started_with = @game.current_hand.rank_count("2")
 
       result = @game.play_round(1, "2")  # hand 1 has 2 x 2s
@@ -146,9 +114,11 @@ describe Game, "test typical round outcomes." do
 
       @game.current_hand.rank_count("2").should eq 0 # book removed from hand
       @game.current_hand_index.should eql 0
+
+      @game.books[@game.current_hand_index][-1].should eq "2"
     end
 
-    it ".play_round, Case 4: ask Victim: no get; Pond: get; Book: no; plays again." do
+    it ".play_round, case 4: ask Victim: no get; Pond: get; Book: no; plays again." do
       started_with = @game.current_hand.rank_count("3")
 
       result = @game.play_round(2, "3")  # hand 2 has no 3s, pond does
@@ -160,18 +130,19 @@ describe Game, "test typical round outcomes." do
       @game.current_hand_index.should eql 0
     end
 
-    it ".play_round, Case 5: ask Victim: no get; Pond: get; Book: yes; plays again." do
+    it ".play_round, case 5: ask Victim: no get; Pond: get; Book: yes; plays again." do
       # we play 2 hands to get to do this
       started_with = @game.current_hand.rank_count("3")
       @game.play_round(1, "3") #hand 1 has 2 x 3s (test case 2)
 
-      result = @game.play_round(2, "3")  # hand 2 has no 3s, but deck does
+      result = @game.play_round(2, "3")  # hand 2 has no 3s, but pond does
       result.matches.should eq 1
       result.received_from.should eq :pond
       result.books_made.should eq 1
 
       @game.current_hand.rank_count("3").should eq 0
       @game.current_hand_index.should eql 0
+      @game.books[@game.current_hand_index][-1].should eq "3"
     end
 
     it ".play_round logic to check for books in initial hands" do
@@ -188,6 +159,13 @@ describe Game, "test typical round outcomes." do
       }
     end
 
+    it ".books_to_s can display a list of books" do
+      @game.books[0] = ["2", "K", "A"]
+
+      book_list = "2, A, K"
+      @game.books_to_s(0).should eq book_list
+    end
+
     it ".play_round: checks for end of game" do
       #take last card from deck
       card = @game.deck.give_card
@@ -198,6 +176,7 @@ describe Game, "test typical round outcomes." do
 
       # Play a round: ask for 3 from hand 2, don't get one, don't get from pond
       result = @game.play_round(2, "3")
+      result.received_from.should be_nil
       result.matches.should eq 0
       
       result.game_over.should eq true

@@ -3,15 +3,19 @@ require "./deck.rb"
 require "./hand.rb"
 require "./result.rb"
 class Game
-  attr_reader :hands, :deck, :current_hand_index, :current_hand
+  attr_reader :hands, :books, :deck, :current_hand_index, :current_hand
 
   def initialize(num_hands, test_deck = [])
-    @hands = []
+    @hands, @books = [], []
     @game_over = false
     @deck = Deck.new(test_deck)
-#    deck.shuffle if test_deck.empty?
 
-    num_hands.times { |i| @hands[i] = Hand.new() }
+    deck.shuffle if test_deck.empty?
+
+    num_hands.times { |i|
+      @hands[i] = Hand.new()
+      books[i] = []
+    }
 
     @current_hand_index = 0
     @current_hand = hands[current_hand_index]
@@ -37,23 +41,13 @@ class Game
   def process_books(target_rank)
     cards = current_hand.give_matching_cards(target_rank)
     if cards.length == 4
+      books[current_hand_index] << target_rank
       return 1
     else
       current_hand.receive_cards(cards)
       return 0
     end
   end
-
-  # def check_all_for_books
-  #   result = nil
-  #   hands.each_with_index { |hand, hand_index|
-  #     hand.cards.map { |card|
-  #       result = play_round(hand_index, card.rank)
-  #       break if result.books_made > 0
-  #     }
-  #     yield(result)
-  #   }
-  # end
 
   def play_round(target_index, target_rank)
     victim_matches = hands[target_index].rank_count(target_rank)
@@ -73,11 +67,19 @@ class Game
       else
         current_hand.receive_cards(card)
         result.received_from = :pond
-        result.matches = 1 if card.rank == target_rank
+        if card.rank == target_rank
+          result.matches = 1
+        else
+          advance_to_next_hand  # no matches anywhere: turn over
+        end
       end
   end
     result.books_made = process_books(target_rank)
     result
+  end
+
+  def books_to_s(index)
+    books[index].sort.join(", ")
   end
 
   def over?
