@@ -24,7 +24,10 @@ def stack_deck
 end
 
 # take # of players from command line, if present
+# also use a stacked deck, if requested
 num = ARGV.length > 0 ? ARGV[0].to_i : 0
+use_stacked_deck = true if ARGV[1] == "stack" or ARGV[1] == "test"
+puts "Using stacked deck." if use_stacked_deck == true
 
 # get it from terminal, if not in command line
 until num >= 1 && num <= 10
@@ -32,7 +35,11 @@ until num >= 1 && num <= 10
   num = gets.chomp.strip.to_i
 end
 
-test_deck = stack_deck
+if use_stacked_deck
+  test_deck = stack_deck
+else
+  test_deck = []
+end
 
 puts "Creating a Fish Server for #{num} players..."
 server = FishServer.new(num, test_deck)

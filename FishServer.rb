@@ -142,7 +142,7 @@ def endgame
       put_message(player.socket, "Rank not recognized.\n") unless rank
       return false
     else
-      if victim > number_of_players
+      if victim >= number_of_players
         put_message(player.socket, "That player does not exist.\n")
         return false
       else

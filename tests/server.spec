@@ -409,6 +409,14 @@ describe FishServer, "." do
      end
 
    it ".process_commands: understands well-formed ask with invalid player and processes it" do
+      type = @server.process_commands(@server.players[0], "ask 3 for 3s")
+      
+      type.should eq :private
+
+      test_regexp = Regexp.new("That player does not exist.")
+      msg = @clients[0].receive_message.strip
+      msg.should =~ test_regexp
+
       type = @server.process_commands(@server.players[0], "ask 10 for 3s")
       
       type.should eq :private
