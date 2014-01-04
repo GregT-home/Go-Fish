@@ -32,27 +32,27 @@ class FishClient
     message = ""
     begin
       message += receive_line + "\n"
-      if /:EOM:/.match(message)
+      eom = Regexp.new(FishServer::EOM_TOKEN)
+      if eom.match(message)
         message[FishServer::EOM_TOKEN+"\n"]=""
         break
       end
     end while true
+    eog = Regexp.new(FishServer::GAME_OVER_TOKEN)
+    exit if eog.match(message)
     message
   end
 
   def close
     @socket.close
-#    @thread_id.kill
+    @thread_id.kill
   end
 
-  # # it can display an indefinite series of messages from the server
-  # # does not block
-  # def display_server_messages
-  #   @thread_id = Thread.new {
-  #     loop do
-  #       puts receive_message
-  #     end
-  #   }
-
-
+  def display_server_messages
+    @thread_id = Thread.new {
+      loop do
+        puts receive_message
+      end
+    }
+  end
 end #FishClient

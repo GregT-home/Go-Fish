@@ -2,14 +2,6 @@
 require_relative "./fishserver.rb"
 require_relative "./fishclient.rb"
 
-def display_server_messages
-  @thread_id = Thread.new {
-    loop do
-      puts @client.receive_message
-    end
-  }
-end
-
 welcome = <<EOF
 Welcome to the Fish Server
 
@@ -47,14 +39,9 @@ def connect_to_server(args)
     puts "Creating FishClient to #{server_name}"
     @client = FishClient.new(server_name); break
 
-  rescue Errno::ECONNREFUSED
-    puts "#{server_name} is not accepting connections (Errno::ECONNREFUSED)"
+  rescue Errno::ECONNREFUSED, SocketError => reason
+    puts "#{server_name} error: #{reason.to_s}"
     server_name = nil
-
-  rescue SocketError
-    puts "#{server_name} does not appear to be a valid node name. (SocketError)"
-    server_name = nil
-
   ensure
     args = nil
   end while server_name = get_server_name()
@@ -73,26 +60,16 @@ display_server_messages
 #puts @client.receive_message
 
 while true do
-  @client.send_line(STDIN.gets.chomp)
   begin
+    @client.send_line(STDIN.gets.chomp)
     @client.socket.recv(0)
   rescue Errno::ECONNRESET
     puts "The Server has closed the connection unexpectedly"
+    break
+  rescue NoMethodError
+    puts "Client termination requested."
     break
   end
 end
 
 puts "exiting..."
-exit
-
-
-while not EOF
-
-  get_line
-  result = parse_line
-  process_locally if local
-  process_on_server if remote
-end
-
-
-puts "test complete"

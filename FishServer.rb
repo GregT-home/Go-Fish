@@ -6,6 +6,7 @@ class FishServer
   # rspec reports these as being re-defined; unless clause inhibits this.
   PORT = 54011        unless const_defined?(:PORT)
   EOM_TOKEN = ":EOM:" unless const_defined?(:EOM_TOKEN)
+  GAME_OVER_TOKEN = "::GAME_OVER::" unless const_defined?(:GAME_OVER_TOKEN)
 
   attr_reader :client_fd, :names, :players, :number_of_players, :game
 
@@ -23,7 +24,7 @@ class FishServer
   def setup()
     get_clients
     create_players
-    broadcast("The game begins...\n")
+    broadcast("=====================\nAnd now play begins...\n")
 
     # check hands for initial books
     players.each_with_index { |player, i|
@@ -36,61 +37,104 @@ class FishServer
     }
   end
 
+Help_string =<<-EOF
+Choices are:
+    ask <player #> for <rank>
+    deck size
+    hand
+    status
+EOF
+
   def game_play
     until @game.over? do
       player = players[@game.current_hand_index]
-      broadcast("It is Player #{@game.current_hand_index}, #{player.name}'s turn.  ")
+      broadcast("-------------------")
+      broadcast("It is Player #{@game.current_hand_index}," +
+                " #{player.name}'s turn.  ")
       put_message(player.fd, "Your cards: #{player.hand.to_s}\n")
       STDOUT.puts "debug: Deck has #{@game.deck.length} cards in it" if @debug
+
       loop { # loop for local commands
         put_message(player.fd, "What action do you want to take? ")
         raw_input = get_line(player.fd)
         args = raw_input.split
+
         if args[0] == "deck" && args[1] == "size"
-          put_message(player.fd, "#{@game.deck.length} cards are left in the pond\n")
-          next
+          put_message(player.fd,
+                      "#{@game.deck.length} cards are left in the pond\n")
+          next # utility command
         end
         if args[0] == "hand"
           put_message(player.fd, "Your cards: #{player.hand.to_s}\n")
-          next
+          next # utility command
+        end
+        if args[0] == "status"
+          put_status(player.fd)
+          next # utility command
         end
         if args[0] == "ask"
-          victim, rank = parse_ask(raw_input)
-          puts victim.inspect, rank.inspect
-          if victim || rank
-            result = @game.play_round(victim, rank)
-            broadcast(result.to_s)
-
-            put_message(players[victim].fd,
-                        "Your cards: #{players[victim].hand.to_s}\n")
-            put_message(player.fd,
-                        "Your cards: #{player.hand.to_s}\n")
-            break
+          if process_ask(raw_input, player)
+            break # out of utility commands
           end
-        end # if ask
-        put_message(player.fd,
-                    "Not understood.  Choices are:\n[ask] <player> for <rank>\ndeck size\nhand\n")
+          next
+        end
+        put_message(player.fd, "Not understood.\n" + Help_string)
       } # utility commmand loop
+
     end # game command loop
   end # game_play
+
+  def put_status(socket)
+    players.each_with_index { |player, i|
+      put_message(socket,
+                  "#{player.name} (##{i}) has #{player.hand.length}" +
+                  " cards and has made #{@game.books[i].length} books" +
+                  " (#{@game.books_to_s(i)})\n")
+    }
+    put_message(socket, "Deck has #{@game.deck.length} cards remaining.\n")
+  end
+
+  def process_ask(raw_input, player)
+    victim, rank = parse_ask(raw_input)
+
+    if victim == @game.current_hand_index
+      put_message(player.fd, "?? You cannot request cards from yourself.")
+      return false
+    end
+
+    if !victim || !rank
+      put_message(player.fd, "Victim number not recognized.\n") unless victim
+      put_message(player.fd, "Rank not recognized.\n") unless rank
+      return false
+    else
+      result = @game.play_round(victim, rank)
+      broadcast("#{player.name} (player ##{@game.current_hand_index})," +
+                " asked for #{rank}s from player" +
+                " ##{victim}, #{players[victim].name}.\n" +
+                result.to_s)
+      put_message(players[victim].fd,
+                  "Your cards: #{players[victim].hand.to_s}\n")
+      put_message(player.fd,
+                  "Your cards: #{player.hand.to_s}\n")
+    end
+    true
+  end
 
   def  parse_ask(string)
     puts "parse_ask(#{string})"
     match = string.match(%r{\S*(10*|\d+).*(10|[2-9]|[JQKA])}i)
-    puts match.inspect
-    player_num = match[1].to_i
-    rank = match[2]
-    puts "match = #{match}, player_num = #{player_num}, rank = #{rank}"
-    puts "returning #{player_num} and #{rank}"
+    if match
+      player_num = match[1].to_i unless match[1].nil?
+      rank = match[2] unless match[2].nil?
+      STDOUT.puts "parse_ask: match = #{match}" if @debug
+      STDOUT.puts "parse_ask: returning #{player_num} and #{rank}" if @debug
+    end
     return player_num, rank
   end
 
   def run()
     setup
-    broadcast("Play begins...\n")
-
     game_play
-
     endgame
   end
 
@@ -121,35 +165,41 @@ class FishServer
   end
 
 def endgame
+    broadcast "========================="
     broadcast "There are no more fish in the pond.  Game play is over.\n"
     broadcast "Here is the final outcome:\n"
 
     rank_list = calculate_rankings
 
-    winner_count = 0
-    rank_list.each { |rank| winner_count += 1 if rank == 0 }
+    winners = 0; rank_list.each { |rank| winners += 1 if rank == 0 }
 
     players.each_with_index { |player, i|
-      part1 = "Player #{i}, #{player.name} made " +
+      part1 = "Player #{i}, #{player.name}, made " +
                  "#{@game.books[i].length} books (#{@game.books_to_s(i)})"
 
       if rank_list[i] == 0
-        broadcast part1 + " and is the winner!\n" if winner_count == 1
-        broadcast part1 + " and ties for the win!\n" if winner_count > 1
+        broadcast part1 + " and is the winner!\n" if winners == 1
+        broadcast part1 + " and ties for the win!\n" if winners > 1
+      else
+        broadcast part1
       end
     }
+  broadcast "Thank you for Playing.\n"
+  broadcast "========================="
+  broadcast GAME_OVER_TOKEN
   end
 
   def calculate_rankings
-    book_count = []
-    players.each_with_index { |player, i| book_count << @game.books[i].length }
+    # 1. make an array of the number of books each player made
+    player_books = []
+    players.each_with_index { |player, i| player_books << @game.books[i].length }
 
-    # 1: make a list of the ranks we have
-    # 2: review the book_count list to see who has what ranking
+    # 2: make a list of the rankings we have
+    # 3: review the player_books list to see who has what ranking
     # Final result now indicates player rankings. Duplicates indicate ties.
-    list = book_count.sort.uniq.reverse
-    book_count.map { |bucket| list.index(bucket) }
-  end
+    bucket_list = player_books.sort.uniq.reverse
+    player_books.map { |player| bucket_list.index(player) }
+   end
 
   def put_message(fd, msg)
     fd.puts msg + EOM_TOKEN

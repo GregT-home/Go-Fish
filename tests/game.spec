@@ -162,7 +162,7 @@ describe Game, "test typical round outcomes." do
     it ".books_to_s can display a list of books" do
       @game.books[0] = ["2", "K", "A"]
 
-      book_list = "2, A, K"
+      book_list = "2s, As, Ks"
       @game.books_to_s(0).should eq book_list
     end
 

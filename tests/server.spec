@@ -212,12 +212,21 @@ describe FishServer, ".end_game" do
 
       @server.endgame
       msg = @clients[0].receive_message
+      msg.should eql "========================="
+
+      msg = @clients[0].receive_message
       msg.should eql "There are no more fish in the pond.  Game play is over.\n"
       msg = @clients[0].receive_message
       msg.should eql "Here is the final outcome:\n"
 
       msg = @clients[0].receive_message
-      msg.should eql "Player 1, Two made 3 books (4, 5, A) and is the winner!\n"
+      msg.should eql "Player 0, One, made 1 books (2s)"
+
+      msg = @clients[0].receive_message
+      msg.should eql "Player 1, Two, made 3 books (4s, 5s, As) and is the winner!\n"
+
+      msg = @clients[0].receive_message
+      msg.should eql "Player 2, Three, made 2 books (8s, 9s)"
   end
 
   it "can handle a tie" do
@@ -230,12 +239,20 @@ describe FishServer, ".end_game" do
 
       @server.endgame
       msg = @clients[0].receive_message
+      msg.should eql "========================="
+
+      msg = @clients[0].receive_message
       msg.should eql "There are no more fish in the pond.  Game play is over.\n"
       msg = @clients[0].receive_message
       msg.should eql "Here is the final outcome:\n"
 
       msg = @clients[0].receive_message
-      msg.should eql "Player 1, Two made 3 books (4, 5, A) and ties for the win!\n"
+      msg.should eql "Player 0, One, made 1 books (2s)"
+
+      msg = @clients[0].receive_message
+      msg.should eql "Player 1, Two, made 3 books (4s, 5s, As) and ties for the win!\n"
+      msg = @clients[0].receive_message
+      msg.should eql "Player 2, Three, made 3 books (8s, 9s, Ks) and ties for the win!\n"
     end
   end # context
 

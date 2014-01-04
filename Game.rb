@@ -79,7 +79,7 @@ class Game
   end
 
   def books_to_s(index)
-    books[index].sort.join(", ")
+    books[index].map { |i| i + "s"}.sort.join(", ")
   end
 
   def over?

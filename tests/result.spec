@@ -50,7 +50,6 @@ describe Result, "Round Result creation and manipulation." do
   context ".to_str" do
     it "case 1: ask Victim: none; Pond: Yes; Book: N/A; turn over." do
       test_string =<<EOF
-Player #0 asked for 3s from player #2.
 Player was told to 'Go Fish' and he got one from the pond!
 He did not make a book.
 EOF
@@ -67,7 +66,6 @@ EOF
 
     it "case 2: ask Victim: gets; Pond: N/A; Book: N/A; plays again." do
       test_string =<<EOF
-Player #0 asked for 3s from player #1.
 Player got 2.
 He did not make a book.
 EOF
@@ -84,7 +82,6 @@ EOF
 
     it "case 3: ask Victim: gets; Pond: N/A; Book: Yes; plays again." do
       test_string =<<EOF
-Player #0 asked for 2s from player #1.
 Player got 2.
 He made a book of 2s.
 EOF
@@ -101,7 +98,6 @@ EOF
 
     it "case 4: ask Victim: no get; Pond: get; Book: no; plays again." do
       test_string =<<EOF
-Player #0 asked for 3s from player #2.
 Player was told to 'Go Fish' and he got one from the pond!
 He did not make a book.
 EOF
@@ -118,7 +114,6 @@ EOF
 
     it "case 5: ask Victim: no get; Pond: get; Book: yes; plays again." do
       test_string =<<EOF
-Player #0 asked for 3s from player #2.
 Player was told to 'Go Fish' and he got one from the pond!
 He made a book of 3s.
 EOF
@@ -135,7 +130,6 @@ EOF
     
     it "case 5: ask Victim: no get; Pond: get; Book: yes; plays again." do
       test_string =<<EOF
-Player #0 asked for 3s from player #2.
 Player was told to 'Go Fish' and he did not get what he asked for from the pond.
 He did not make a book.
 The Game is now over
