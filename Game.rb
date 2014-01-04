@@ -3,7 +3,7 @@ require "./deck.rb"
 require "./hand.rb"
 require "./result.rb"
 class Game
-  attr_reader :hands, :books, :deck, :current_hand_index
+  attr_reader :hands, :books, :deck, :current
 
   def initialize(num_hands, test_deck = [])
     @hands, @books = [], []
@@ -17,12 +17,12 @@ class Game
       books[i] = []
     }
 
-    @current_hand_index = 0
+    @current = 0
     deal((num_hands > 4) ? 5 : 7, hands)
   end
 
   def advance_to_next_hand
-    @current_hand_index = (current_hand_index + 1) % hands.length
+    @current = (current + 1) % hands.length
   end
 
   def deal(number, hands)
@@ -36,12 +36,12 @@ class Game
 
   # check for book, if found then remove and return 1, else 0.
   def process_books(target_rank)
-    cards = hands[current_hand_index].give_matching_cards(target_rank)
+    cards = hands[current].give_matching_cards(target_rank)
     if cards.length == 4
-      books[current_hand_index] << target_rank
+      books[current] << target_rank
       return 1
     else
-      hands[current_hand_index].receive_cards(cards)
+      hands[current].receive_cards(cards)
       return 0
     end
   end
@@ -49,32 +49,38 @@ class Game
   def play_round(target_index, target_rank)
     victim_matches = hands[target_index].rank_count(target_rank)
 
-    result = Result.new(current_hand_index, target_index, target_rank)
+    result = Result.new(current, target_index, target_rank)
 
-    if victim_matches > 0
+    if victim_matches > 0  # intended match
       match_cards = hands[target_index].give_matching_cards(target_rank)
-      hands[current_hand_index].receive_cards(match_cards)
+      hands[current].receive_cards(match_cards)
 
       result.matches += match_cards.length
       result.received_from = target_index
-    else
+    else 
       card = deck.give_card
       if card.nil?     # no cards, game is over
         @game_over = result.game_over = true
       else
-        hands[current_hand_index].receive_cards(card)
+        hands[current].receive_cards(card)
         result.received_from = :pond
-        if card.rank == target_rank
+        if card.rank == target_rank  # intended match
           result.matches = 1
-        else
-          advance_to_next_hand  # no matches anywhere: turn over
+        else # possible surprise match
+          if process_books(card.rank) == 1
+            result.books_made += 1
+            result.surprise_rank = card.rank
+          end
+          advance_to_next_hand  # no intended match anywhere: turn over
         end
       end
-  end
-    result.books_made = process_books(target_rank)
+    end
+    result.books_made += process_books(target_rank)
     result
   end
-
+  def debug
+    @debug = !@debug
+  end
   def books_to_s(index)
     books[index].map { |i| i + "s"}.sort.join(", ")
   end

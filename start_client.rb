@@ -37,7 +37,7 @@ def connect_to_server(args)
 
   begin
     puts "Creating FishClient to #{server_name}"
-    @client = FishClient.new(server_name); break
+    client = FishClient.new(server_name); break
 
   rescue Errno::ECONNREFUSED, SocketError => reason
     puts "#{server_name} error: #{reason.to_s}"
@@ -45,6 +45,7 @@ def connect_to_server(args)
   ensure
     args = nil
   end while server_name = get_server_name()
+  client
 end
 
 
@@ -52,17 +53,14 @@ end
 
 print welcome
 
-connect_to_server(ARGV)
+client = connect_to_server(ARGV)
 
-display_server_messages
-
-#puts @client.receive_line
-#puts @client.receive_message
+client.display_server_messages
 
 while true do
   begin
-    @client.send_line(STDIN.gets.chomp)
-    @client.socket.recv(0)
+    client.send_line(STDIN.gets.chomp)
+    client.socket.recv(0)
   rescue Errno::ECONNRESET
     puts "The Server has closed the connection unexpectedly"
     break

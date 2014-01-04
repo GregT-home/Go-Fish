@@ -51,7 +51,7 @@ class FishClient
   def display_server_messages
     @thread_id = Thread.new {
       loop do
-        puts receive_message
+        print receive_message
       end
     }
   end

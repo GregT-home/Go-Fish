@@ -1,7 +1,7 @@
 class Result
   attr_reader :requester, :victim, :rank
-  attr_accessor :matches, :received_from
-  attr_accessor :books_made, :game_over
+  attr_accessor :matches, :received_from, :books_made
+  attr_accessor :surprise_rank, :game_over
 
   def initialize(requester, victim, rank)
     @requester = requester
@@ -12,6 +12,7 @@ class Result
     @received_from = nil
 
     @books_made = 0
+    @surprise_rank = nil
     @game_over = false
   end
 
@@ -35,7 +36,11 @@ class Result
     if books_made == 0
       part2 = "He did not make a book."
     else
-      part2 = "He made a book of #{rank}s."
+      if surprise_rank
+        part2 = "He was surprised to make a book of #{surprise_rank}s."
+      else
+        part2 = "He made a book of #{rank}s."
+      end
     end
 
     if game_over

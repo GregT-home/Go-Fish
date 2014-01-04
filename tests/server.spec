@@ -1,13 +1,7 @@
 require_relative "../fishserver.rb"
-#require_relative "../fishclient.rb"
-#require_relative "../player.rb"
-#require_relative "../result.rb"
-#require_relative "../deck.rb"
-#require_relative "../card.rb"
-#require_relative "../hand.rb"
-#require_relative "../game.rb"
-
 require "socket"
+
+Hand_str_regexp = Regexp.new("\[|10|[2-9]|[JQKA]|-[CDHS]]", true)
 
 class MockClient
   attr_reader :socket
@@ -101,7 +95,7 @@ describe FishServer, ".create_player." do
     client1.send_line(name)
 
     server.create_players
-    server.players[0].hand.should eq server.game.hands[server.game.current_hand_index]
+    server.players[0].hand.should eq server.game.hands[server.game.current]
     server.players[0].name.should eq name
     server.players[0].fd.should_not eq 0
 
@@ -131,14 +125,16 @@ describe FishServer, ".put_message." do
     mclient.consume_message
 
     welcome_message = <<EOM
-Welcome to the Fish Server
+    Welcome to the Fish Server
 
 EOM
     server.put_message(server.players[0].fd, welcome_message)
 
     msg = mclient.receive_message
-
-    msg.should eq welcome_message
+    msg.should =~ Hand_str_regexp
+    
+    msg = mclient.receive_message.strip
+    msg.should eq welcome_message.strip
 
     mclient.close
     server.close
@@ -161,13 +157,16 @@ describe FishServer, ".broadcast." do
     mclient.consume_message
 
     welcome_message = <<EOM
-Welcome to the Fish Server
+    Welcome to the Fish Server
 
 EOM
     server.broadcast(welcome_message)
-    msg = mclient.receive_message
 
-    msg.should eq welcome_message
+    msg = mclient.receive_message
+    msg.should =~ Hand_str_regexp
+
+    msg = mclient.receive_message.strip
+    msg.should eq welcome_message.strip
 
     mclient.close
     server.close
@@ -190,7 +189,7 @@ describe FishServer, ".end_game" do
 
       @server.create_players
 
-      @server.players[0].hand.should eq @server.game.hands[@server.game.current_hand_index]
+      @server.players[0].hand.should eq @server.game.hands[@server.game.current]
       @server.players[0].name.should eq names[0]
       @server.players[0].fd.should_not eq 0
 
@@ -211,21 +210,25 @@ describe FishServer, ".end_game" do
       game.books[2]= ["8", "9"]
 
       @server.endgame
-      msg = @clients[0].receive_message
-      msg.should eql "========================="
 
       msg = @clients[0].receive_message
-      msg.should eql "There are no more fish in the pond.  Game play is over.\n"
-      msg = @clients[0].receive_message
-      msg.should eql "Here is the final outcome:\n"
+      msg.should =~ Hand_str_regexp
 
-      msg = @clients[0].receive_message
+      target_msg =<<-EOF
+=========================
+There are no more fish in the pond.  Game play is over.
+Here is the final outcome:
+EOF
+      msg = @clients[0].receive_message.strip
+      msg.should eql target_msg.strip
+
+      msg = @clients[0].receive_message.strip
       msg.should eql "Player 0, One, made 1 books (2s)"
 
-      msg = @clients[0].receive_message
-      msg.should eql "Player 1, Two, made 3 books (4s, 5s, As) and is the winner!\n"
+      msg = @clients[0].receive_message.strip
+      msg.should eql "Player 1, Two, made 3 books (4s, 5s, As) and is the winner!"
 
-      msg = @clients[0].receive_message
+      msg = @clients[0].receive_message.strip
       msg.should eql "Player 2, Three, made 2 books (8s, 9s)"
   end
 
@@ -238,21 +241,25 @@ describe FishServer, ".end_game" do
       game.books[2]= ["8", "9", "K"]  # winner 2
 
       @server.endgame
-      msg = @clients[0].receive_message
-      msg.should eql "========================="
 
-      msg = @clients[0].receive_message
-      msg.should eql "There are no more fish in the pond.  Game play is over.\n"
-      msg = @clients[0].receive_message
-      msg.should eql "Here is the final outcome:\n"
+      msg = @clients[0].receive_message.strip
+      msg.should =~ Hand_str_regexp
 
-      msg = @clients[0].receive_message
+      target_msg =<<-EOF
+=========================
+There are no more fish in the pond.  Game play is over.
+Here is the final outcome:
+EOF
+      msg = @clients[0].receive_message.strip
+      msg.should eql target_msg.strip
+
+      msg = @clients[0].receive_message.strip
       msg.should eql "Player 0, One, made 1 books (2s)"
 
-      msg = @clients[0].receive_message
-      msg.should eql "Player 1, Two, made 3 books (4s, 5s, As) and ties for the win!\n"
-      msg = @clients[0].receive_message
-      msg.should eql "Player 2, Three, made 3 books (8s, 9s, Ks) and ties for the win!\n"
+      msg = @clients[0].receive_message.strip
+      msg.should eql "Player 1, Two, made 3 books (4s, 5s, As) and ties for the win!"
+      msg = @clients[0].receive_message.strip
+      msg.should eql "Player 2, Three, made 3 books (8s, 9s, Ks) and ties for the win!"
     end
   end # context
 

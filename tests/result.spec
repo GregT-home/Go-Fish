@@ -11,9 +11,9 @@ describe Result, "Round Result creation and manipulation." do
     end
 
     it "A Round Result can be created." do
-      result = Result.new(@game.current_hand_index, 1, "3")
+      result = Result.new(@game.current, 1, "3")
 
-      result.requester.should == @game.current_hand_index
+      result.requester.should == @game.current
       result.victim.should == 1
       result.rank.should == "3"
       result.matches.should == 0
@@ -27,7 +27,7 @@ describe Result, "Round Result creation and manipulation." do
     end
 
     it "A Round Results can have its values changed." do
-      result = Result.new(@game.current_hand_index, 1, "3")
+      result = Result.new(@game.current, 1, "3")
 
       expect {result.requester = 1}.to raise_error
       expect {result.victim = 2}.to raise_error
@@ -128,7 +128,24 @@ EOF
       result.to_s.should eq test_string
     end
     
-    it "case 5: ask Victim: no get; Pond: get; Book: yes; plays again." do
+    it "case 6: ask Victim: no get; Pond: get; Book: yes--surprise; next player." do
+      test_string =<<EOF
+Player was told to 'Go Fish' and he got one from the pond!
+He was surprised to make a book of 3s.
+EOF
+      test_string = test_string.chomp
+
+      result = Result.new(0,2,"Q")
+      result.matches = 1
+      result.received_from = :pond
+      result.books_made = 1
+      result.surprise_rank = "3"
+      result.game_over = false
+
+      result.to_s.should eq test_string
+    end
+    
+    it "end case: ask Victim: no get; Pond: get; Book: yes; plays again." do
       test_string =<<EOF
 Player was told to 'Go Fish' and he did not get what he asked for from the pond.
 He did not make a book.
