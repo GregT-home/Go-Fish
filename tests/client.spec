@@ -13,10 +13,10 @@ class MockServer
    PORT = 54011
    EOM_TOKEN = ":EOM:"
 
-  attr_reader :client_fd, :names, :players, :number_of_players, :game
+  attr_reader :client, :names, :players, :number_of_players, :game
 
   def initialize(number)
-    @client_fd = []
+    @client = []
     @players = []
     @number_of_players = number
     @game = nil
@@ -31,14 +31,14 @@ class MockServer
 
   def close
     @server.close
-    @client_fd.each { |fd| fd.close }
+    @client.each { |fd| fd.close }
   end
 
   def get_clients
-      while client_fd.length < number_of_players
-        client_fd << @server.accept 
+      while client.length < number_of_players
+        client << @server.accept 
         #consume the "new player" response and let the client know
-        put_line(client_fd[-1], get_line(client_fd[-1]))
+        put_line(client[-1], get_line(client[-1]))
       end
   end
 
@@ -72,9 +72,9 @@ end # MockServer
     it ".new: can create a socket connection to a running server." do
       client = FishClient.new
 
-      @mock_server.client_fd.count.should == 1
+      @mock_server.client.count.should == 1
 
-      @mock_server.client_fd[0].is_a?(TCPSocket).should be true
+      @mock_server.client[0].is_a?(TCPSocket).should be true
     end
 
     it ".send_line: can connect a single client and exchange messages." do
@@ -84,8 +84,8 @@ end # MockServer
       test_message = "Client: Hello"
       client.send_line test_message
 
-      cfd = @mock_server.client_fd[0]
-      msg = @mock_server.client_fd[0].gets.chomp
+      cfd = @mock_server.client[0]
+      msg = @mock_server.client[0].gets.chomp
       msg.should eql test_message
     end
 
@@ -94,7 +94,7 @@ end # MockServer
 
       test_line = "Client: this is a test"
 
-      @mock_server.put_line(@mock_server.client_fd[0], test_line)
+      @mock_server.put_line(@mock_server.client[0], test_line)
       line = client.receive_line
 
       line.should == test_line
@@ -105,7 +105,7 @@ end # MockServer
 
       mline_test_msg = "Client:\nthis\nis\n\n\na\ntest1"
 
-      @mock_server.put_message(@mock_server.client_fd[0], mline_test_msg)
+      @mock_server.put_message(@mock_server.client[0], mline_test_msg)
       msg = client.receive_message
 
       msg.should == mline_test_msg

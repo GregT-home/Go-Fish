@@ -15,10 +15,10 @@ class FishServer
     status
 EOF
 
-  attr_reader :client_fd, :names, :players, :number_of_players, :game
+  attr_reader :client, :names, :players, :number_of_players, :game
 
   def initialize(number, test_deck = [])
-    @client_fd = []
+    @client = []
     @players = []
     @number_of_players = number
     @game = nil
@@ -180,11 +180,11 @@ def endgame
   end
 
   def get_clients
-    while client_fd.length < number_of_players
-      client_fd << @server.accept 
+    while client.length < number_of_players
+      client << @server.accept 
       #consume the "new player" response and let the client know
       log "get_clients: accepting a new client"
-      client_fd[-1].puts get_line(client_fd[-1])
+      client[-1].puts get_line(client[-1])
     end
   end
 
@@ -193,10 +193,10 @@ def endgame
     i = 0
     while i < number_of_players do
       begin
-        put_message(client_fd[i], "What is your name? ")
-        name = get_line(client_fd[i]).strip
+        put_message(client[i], "What is your name? ")
+        name = get_line(client[i]).strip
       end while name.empty?
-      players << Player.new(name, @game.hands[@game.current], client_fd[i])
+      players << Player.new(name, @game.hands[@game.current], client[i])
       put_message(players[-1].socket,
                   "Your cards: #{players[-1].hand.to_s}\n")
       @game.advance_to_next_hand
@@ -223,15 +223,15 @@ def endgame
   end
 
   def broadcast(msg)
-    @client_fd.map { |cli|
+    @client.map { |cli|
       put_message(cli, msg)
     }
   end
 
   def close
     @server.close
-    @client_fd.each { |fd| fd.close }
-    @client_fd.clear
+    @client.each { |fd| fd.close }
+    @client.clear
   end
 
   def debug
