@@ -52,8 +52,16 @@ EOF
       put_message(player.fd, "Your cards: #{player.hand.to_s}\n")
       log "Deck has #{@game.deck.length} cards in it"
 
-      process_commands(player)
+      loop {
+        put_message(player.fd, "What action do you want to take? ")
+        raw_input = get_line(player.fd)
 
+        if process_commands(player, raw_input) == :private
+          next  # no status update needed
+        else
+          break # broadcast status update
+        end
+      }
     end # game command loop
   end # game_play
 
@@ -92,36 +100,33 @@ def endgame
     put_message(socket, "  Deck has #{@game.deck.length} cards remaining.\n")
   end
 
-  def process_commands(player)
-    loop {
-      put_message(player.fd, "What action do you want to take? ")
-      raw_input = get_line(player.fd)
-      args = raw_input.split
+  def process_commands(player, raw_input)
+    args = raw_input.split
 
-      if args[0] == "deck" && args[1] == "size"
-        put_message(player.fd,
-                    "#{@game.deck.length} cards are left in the pond\n")
-        next # utility command
-      end
+    if args[0] == "deck" && args[1] == "size"
+      put_message(player.fd,
+                  "#{@game.deck.length} cards are left in the pond\n")
+      return :private # utility command
+    end
 
-      if args[0] == "hand"
-        put_message(player.fd, "Your cards: #{player.hand.to_s}\n")
-        next # utility command
-      end
+    if args[0] == "hand"
+      put_message(player.fd, "Your cards: #{player.hand.to_s}\n")
+      return :private # utility command
+    end
 
-      if args[0] == "status"
-        put_status(player.fd)
-        next # utility command
-      end
+    if args[0] == "status"
+      put_status(player.fd)
+      return :private # utility command
+    end
 
-      if args[0] == "ask"
-        if process_ask(raw_input, player)
-          break # out of utility commands
-        end
-        next
+    if args[0] == "ask"
+      if process_ask(raw_input, player)
+        return :public # game
       end
-      put_message(player.fd, "Not understood.\n" + Help_string)
-    }
+      return :private
+    end
+    put_message(player.fd, "Not understood.\n" + Help_string)
+    return :private
   end
 
   def process_ask(raw_input, player)
@@ -137,25 +142,31 @@ def endgame
       put_message(player.fd, "Rank not recognized.\n") unless rank
       return false
     else
-      result = @game.play_round(victim, rank)
-      broadcast("#{player.name} (player ##{@game.current})," +
-                " asked for #{rank}s from player" +
-                " ##{victim}, #{players[victim].name}.\n" +
-                result.to_s)
-      put_message(players[victim].fd,
-                  "Your cards: #{players[victim].hand.to_s}\n")
-      put_message(player.fd,
-                  "Your cards: #{player.hand.to_s}\n")
+      if victim > number_of_players
+        put_message(player.fd, "That player does not exist.\n")
+        return false
+      else
+        result = @game.play_round(victim, rank)
+        broadcast("#{player.name} (player ##{@game.current})," +
+                  " asked for #{rank}s from player" +
+                  " ##{victim}, #{players[victim].name}.\n" +
+                  result.to_s)
+        put_message(players[victim].fd,
+                    "Your cards: #{players[victim].hand.to_s}\n")
+        put_message(player.fd,
+                    "Your cards: #{player.hand.to_s}\n")
+      end
     end
     true
   end
 
   def  parse_ask(string)
-    puts "parse_ask(#{string})"
-    match = string.match(%r{\S*(10*|\d+).*(10|[2-9]|[JQKA])}i)
+    log "parse_ask(#{string})"
+    match = string.match(%r{\D*(\d+).*(10|[2-9]|[JQKA])}i)
     if match
       player_num = match[1].to_i unless match[1].nil?
-      rank = match[2] unless match[2].nil?
+      log "parse_ask: #{match.inspect}"
+      rank = match[2].upcase unless match[2].nil?
       log "parse_ask: match = #{match}"
       log "parse_ask: returning #{player_num} and #{rank}"
     end
