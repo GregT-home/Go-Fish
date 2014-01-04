@@ -97,7 +97,7 @@ describe FishServer, ".create_player." do
     server.create_players
     server.players[0].hand.should eq server.game.hands[server.game.current]
     server.players[0].name.should eq name
-    server.players[0].fd.should_not eq 0
+    server.players[0].socket.should_not eq 0
 
     client1.close
     server.close
@@ -127,7 +127,7 @@ describe FishServer, ".put_message." do
     Welcome to the Fish Server
 
 EOM
-    server.put_message(server.players[0].fd, welcome_message)
+    server.put_message(server.players[0].socket, welcome_message)
 
     msg = mclient.receive_message
     msg.should =~ Hand_str_regexp
@@ -190,7 +190,7 @@ describe FishServer, ".end_game" do
 
       @server.players[0].hand.should eq @server.game.hands[@server.game.current]
       @server.players[0].name.should eq names[0]
-      @server.players[0].fd.should_not eq 0
+      @server.players[0].socket.should_not eq 0
 
       @clients[0].receive_message # consume "What is your name?" prompt
     end # before each
@@ -284,7 +284,7 @@ describe FishServer, "." do
 
       @server.players[0].hand.should eq @server.game.hands[@server.game.current]
       @server.players[0].name.should eq names[0]
-      @server.players[0].fd.should_not eq 0
+      @server.players[0].socket.should_not eq 0
 
       # consume "What is your name?" prompt
       @clients.map {|client| client.receive_message }
@@ -304,17 +304,17 @@ describe FishServer, "." do
       @server.game.books[1] << "7"
       @server.game.books[2] << "A"
 
-      @server.put_status(@server.players[0].fd)
+      @server.put_status(@server.players[0].socket)
       test_msg = "One (#0) has 7 cards and has made 0 books ()"
       msg = @clients[0].receive_message.strip
       msg.should eq test_msg  
 
-      @server.put_status(@server.players[0].fd)
+      @server.put_status(@server.players[0].socket)
       test_msg = "Two (#1) has 7 cards and has made 3 books (2s, 7s, Qs)"
       msg = @clients[0].receive_message.strip
       msg.should eq test_msg  
 
-      @server.put_status(@server.players[0].fd)
+      @server.put_status(@server.players[0].socket)
       test_msg = "Three (#2) has 7 cards and has made 1 books (As)"
       msg = @clients[0].receive_message.strip
       msg.should eq test_msg  

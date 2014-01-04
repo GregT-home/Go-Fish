@@ -49,12 +49,12 @@ EOF
       player = players[@game.current]
       broadcast("-------------------\n" + "It is Player #{@game.current}," +
                 " #{player.name}'s turn.\n")
-      put_message(player.fd, "Your cards: #{player.hand.to_s}\n")
+      put_message(player.socket, "Your cards: #{player.hand.to_s}\n")
       log "Deck has #{@game.deck.length} cards in it"
 
       loop {
-        put_message(player.fd, "What action do you want to take? ")
-        raw_input = get_line(player.fd)
+        put_message(player.socket, "What action do you want to take? ")
+        raw_input = get_line(player.socket)
 
         if process_commands(player, raw_input) == :private
           next  # no status update needed
@@ -104,18 +104,18 @@ def endgame
     args = raw_input.split
 
     if args[0] == "deck" && args[1] == "size"
-      put_message(player.fd,
+      put_message(player.socket,
                   "#{@game.deck.length} cards are left in the pond\n")
       return :private # utility command
     end
 
     if args[0] == "hand"
-      put_message(player.fd, "Your cards: #{player.hand.to_s}\n")
+      put_message(player.socket, "Your cards: #{player.hand.to_s}\n")
       return :private # utility command
     end
 
     if args[0] == "status"
-      put_status(player.fd)
+      put_status(player.socket)
       return :private # utility command
     end
 
@@ -125,7 +125,7 @@ def endgame
       end
       return :private
     end
-    put_message(player.fd, "Not understood.\n" + Help_string)
+    put_message(player.socket, "Not understood.\n" + Help_string)
     return :private
   end
 
@@ -133,17 +133,17 @@ def endgame
     victim, rank = parse_ask(raw_input)
 
     if victim == @game.current
-      put_message(player.fd, "?? You cannot request cards from yourself.\n")
+      put_message(player.socket, "?? You cannot request cards from yourself.\n")
       return false
     end
 
     if !victim || !rank
-      put_message(player.fd, "Victim number not recognized.\n") unless victim
-      put_message(player.fd, "Rank not recognized.\n") unless rank
+      put_message(player.socket, "Victim number not recognized.\n") unless victim
+      put_message(player.socket, "Rank not recognized.\n") unless rank
       return false
     else
       if victim > number_of_players
-        put_message(player.fd, "That player does not exist.\n")
+        put_message(player.socket, "That player does not exist.\n")
         return false
       else
         result = @game.play_round(victim, rank)
@@ -151,9 +151,9 @@ def endgame
                   " asked for #{rank}s from player" +
                   " ##{victim}, #{players[victim].name}.\n" +
                   result.to_s)
-        put_message(players[victim].fd,
+        put_message(players[victim].socket,
                     "Your cards: #{players[victim].hand.to_s}\n")
-        put_message(player.fd,
+        put_message(player.socket,
                     "Your cards: #{player.hand.to_s}\n")
       end
     end
@@ -197,7 +197,8 @@ def endgame
         name = get_line(client_fd[i]).strip
       end while name.empty?
       players << Player.new(name, @game.hands[@game.current], client_fd[i])
-      put_message(players[-1].fd, "Your cards: #{players[-1].hand.to_s}\n")
+      put_message(players[-1].socket,
+                  "Your cards: #{players[-1].hand.to_s}\n")
       @game.advance_to_next_hand
       i += 1
     end
@@ -216,9 +217,9 @@ def endgame
     player_books.map { |player| bucket_list.index(player) }
    end
 
-  def put_message(fd, msg)
-    fd.puts "  "+ msg + EOM_TOKEN
-    log "(to #{fd.inspect})" + msg
+  def put_message(socket, msg)
+    socket.puts "  "+ msg + EOM_TOKEN
+    log "(to #{socket.inspect})" + msg
   end
 
   def broadcast(msg)
@@ -238,10 +239,10 @@ def endgame
   end
 
 private
-  def get_line(fd)
+  def get_line(socket)
     begin
-      input = fd.gets.chomp
-      log "(input from #{fd.inspect}" + input
+      input = socket.gets.chomp
+      log "(input from #{socket.inspect}" + input
 
     rescue => reason
       log "player lost: #{reason.to_s}"

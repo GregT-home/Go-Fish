@@ -1,10 +1,10 @@
 class Player
-  attr_reader :name, :hand, :fd
+  attr_reader :name, :hand, :socket
 
-  def initialize(name, hand, fd)
+  def initialize(name, hand, socket)
     @name = name
     @hand = hand
-    @fd = fd
+    @socket = socket
   end
 
 end #Player
