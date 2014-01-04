@@ -155,10 +155,10 @@ EOF
         put_message(client_fd[i], "what is your name? ")
         name = get_line(client_fd[i]).strip
       end while name.empty?
-      players << Player.new(name, @game.current_hand, client_fd[i])
+      players << Player.new(name, @game.hands[@game.current_hand_index], client_fd[i])
 # gt Jan-2014. causes put_message test in server.spec to fail, need to
 # investigate why
-#      put_message(players[-1].fd, @game.current_hand.to_s)
+#      put_message(players[-1].fd, @game.hands[@game.current_hand_index].to_s)
       @game.advance_to_next_hand
       i += 1
     end

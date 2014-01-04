@@ -101,7 +101,7 @@ describe FishServer, ".create_player." do
     client1.send_line(name)
 
     server.create_players
-    server.players[0].hand.should eq server.game.current_hand
+    server.players[0].hand.should eq server.game.hands[server.game.current_hand_index]
     server.players[0].name.should eq name
     server.players[0].fd.should_not eq 0
 
@@ -190,7 +190,7 @@ describe FishServer, ".end_game" do
 
       @server.create_players
 
-      @server.players[0].hand.should eq @server.game.current_hand
+      @server.players[0].hand.should eq @server.game.hands[@server.game.current_hand_index]
       @server.players[0].name.should eq names[0]
       @server.players[0].fd.should_not eq 0
 

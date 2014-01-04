@@ -3,7 +3,7 @@ require "./deck.rb"
 require "./hand.rb"
 require "./result.rb"
 class Game
-  attr_reader :hands, :books, :deck, :current_hand_index, :current_hand
+  attr_reader :hands, :books, :deck, :current_hand_index
 
   def initialize(num_hands, test_deck = [])
     @hands, @books = [], []
@@ -18,14 +18,11 @@ class Game
     }
 
     @current_hand_index = 0
-    @current_hand = hands[current_hand_index]
-
     deal((num_hands > 4) ? 5 : 7, hands)
   end
 
   def advance_to_next_hand
     @current_hand_index = (current_hand_index + 1) % hands.length
-    @current_hand = hands[current_hand_index]
   end
 
   def deal(number, hands)
@@ -39,12 +36,12 @@ class Game
 
   # check for book, if found then remove and return 1, else 0.
   def process_books(target_rank)
-    cards = current_hand.give_matching_cards(target_rank)
+    cards = hands[current_hand_index].give_matching_cards(target_rank)
     if cards.length == 4
       books[current_hand_index] << target_rank
       return 1
     else
-      current_hand.receive_cards(cards)
+      hands[current_hand_index].receive_cards(cards)
       return 0
     end
   end
@@ -56,7 +53,7 @@ class Game
 
     if victim_matches > 0
       match_cards = hands[target_index].give_matching_cards(target_rank)
-      current_hand.receive_cards(match_cards)
+      hands[current_hand_index].receive_cards(match_cards)
 
       result.matches += match_cards.length
       result.received_from = target_index
@@ -65,7 +62,7 @@ class Game
       if card.nil?     # no cards, game is over
         @game_over = result.game_over = true
       else
-        current_hand.receive_cards(card)
+        hands[current_hand_index].receive_cards(card)
         result.received_from = :pond
         if card.rank == target_rank
           result.matches = 1
