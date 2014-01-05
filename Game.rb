@@ -1,3 +1,15 @@
+#
+# Future features possibilities:
+# 1) Currently, the game allows the player to lie about what is in his
+# hand.  It might be an interesting feature to allow this, but allow
+# other players to accuse him/her of lying, with an appropriate
+# penalty, losing all books or losing the game, if rightly accused or
+# the accuser getting the penalty if incorrect.
+#
+# 2) Alternately, prevent the player from asking for cards he does not
+# possess.
+# -Greg Jan 2014
+
 require "./card.rb"
 require "./deck.rb"
 require "./hand.rb"
