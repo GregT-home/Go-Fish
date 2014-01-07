@@ -13,8 +13,11 @@ task :pretty_spec do
 end
 
 task :clean do
-  files = Dir["*~", "tests/*~"].join(" ")
-  sh "rm -f #{files}"
+#  files = system "find . -name '*~' -print"
+# how to get the output of system into an array?
+#  puts files
+  files = Dir["*~", "*/*~", "*/*/*~"].join(" ")
+  sh "rm #{files}"
 end
 
 task :this, [:target] do | task, args|

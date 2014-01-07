@@ -37,22 +37,40 @@ nav {
     padding-bottom: 0em;
     border-width: thin;
     border-bottom-style: solid;
+    list-style: none;
+    text-align: center;
 }
-nav ul {
-    text-align: justify;
-    list-style-type: none;
-    margin-top: .25em;
-    margin-bottom: .25em
-}
+/* nav ul { */
+/*     margin: 0; */
+/*     padding: 0; */
+/*     text-align: center; */
+/* text-align: justify; */
+/* list-style-type: none; */
+/* margin-top: .25em; */
+/* margin-bottom: .25em */
+/* } */
 nav li {
     display: inline;
 }
-    
-nav ul:after {
-    content: '';
-    display: inline-block;
-    width: 100%;
+
+nav a {
+    display:inline-block;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
+    
+/* nav ul:after { */
+/*     content: ''; */
+/*     display: inline-block; */
+/*     width: 100%; */
+/* } */
+
+/* nav ul:before { */
+/*     content: ''; */
+/*     display: block; */
+/* } */
 
 #game-area {
     background-color: forestgreen;
@@ -69,19 +87,19 @@ nav ul:after {
 
 /* hand stacks horizontally w/ rank visible. */
 .hand {
-    margin:0;
+    margin:.1em;
     padding:0;
     list-style-type: none;
     }
 .hand li:first-child { text-indent: 0 }
 .hand li {
     display: inline-block;
-    text-indent: -3.6em;
+    text-indent: -3.2em;
  }
 
 /* books stack horizontally w/ rank not visible. */
 .books {
-    margin:0;
+    margin:.1em;
     padding:0;
     list-style-type: none;
     display: inline-block;
@@ -89,7 +107,7 @@ nav ul:after {
 .books li:first-child { text-indent: 0 }
 .books li {
     display: inline-block;
-    text-indent: -4.5em;
+    text-indent: -3.8em;
 }
 
 p.history-area {

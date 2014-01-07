@@ -1,0 +1,95 @@
+doctype
+html
+  head
+    meta content="text/html; charset=UTF-8" http-equiv="Content-Type"
+    link href="styles/styles.css" rel="stylesheet"
+      title Go Fish
+  body
+    header
+      h1 Go Fish:
+      p Playing: B-Obama, G-Bush, Greg-T, B-Clinton
+    nav
+      ul
+        li
+          a href="index.html" Home
+        li
+          a href="#player-hand" Hand
+        li
+          a href="#player-books" Books
+        li
+          a href="#game-actions" Action
+        li
+          a href="#game-status" Status
+        li
+          a href="http://en.wikipedia.org/wiki/Go_Fish" Help
+
+    section#game-area
+      section.hand-area
+        h2 Your Cards:
+        ul.hand
+          li
+            img alt="5-of-Hearts-pic" src="images/cards/h5.png"
+          li
+            img alt="6-of-Diamonds-pic" src="images/cards/d6.png"
+          li
+            img alt="9-of-Clubs-pic" src="images/cards/c9.png"
+          li
+            img alt="King-of-Diamonds-pic" src="images/cards/dk.png"
+          li
+            img alt="King-of-Hearts-pic" src="images/cards/hk.png"
+
+      section.books-area
+        h2 Your Books
+        ul.books
+          li
+            img alt="5-of-Hearts-pic" src="images/cards/h7.png"
+          li
+            img alt="6-of-Diamonds-pic" src="images/cards/s7.png"
+          li
+            img alt="9-of-Clubs-pic" src="images/cards/d7.png"
+          li
+            img alt="King-of-Diamonds-pic" src="images/cards/c7.png"
+
+      section.history-area
+        h2 Last Round
+        p B-Obama asked for Qs from Greg-T and did not get one.
+        p
+          | He was told to 'Go Fish' and he did not get what he asked
+          | for from the pond.
+        p He was surprised to make a book of 3s.
+
+      section.status-area
+        h2 Game Status
+        ul.status
+          li Deck has 17 cards.
+          li It is B-Obama's turn.
+          li B-Obama has 8 cards and has made 0 books.
+          li G-Bush has 5 cards and has made 1 book.
+          li B-Clinton has 7 cards and has made 0 books.
+
+      section.action-area
+        h2 Actions you can take
+        form action="process_action.php" method="post"
+          ul.action
+            li
+              | Ask
+              select name="players"
+                option B-Obama
+                option G-Bush
+                option B-Clinton
+              | got any
+              select name="ranks"
+                option 2
+                option 3
+                option 4
+                option 5
+                option 6
+                option 7
+                option 8
+                option 9
+                option 10
+                option J
+                option Q
+                option K
+                option A
+              button type="submit" submit
