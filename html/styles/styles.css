@@ -84,10 +84,11 @@ nav ul:before {
  }
 
 /* books stack horizontally w/ rank not visible. */
-.books ul {
+.books {
     margin:0;
     padding:0;
     list-style-type: none;
+    display: inline-block;
     }
 .books li:first-child { text-indent: 0 }
 .books li {
@@ -99,21 +100,15 @@ nav ul:before {
     margin-bottom: .25em;
     margin-top: .25em;
     margin-left: 2em;
-.25em;
 }
 
-.status ul {
+.status li {
     list-style-type: none;
-    margin: 5em;
-    padding: 5em;
+    margin: .25em;
+    padding: .25em;
 }
 
-.action ul {
+.action li {
     list-style-type: none;
 }
-
-
-    
-
-
 
