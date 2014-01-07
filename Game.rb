@@ -8,6 +8,8 @@
 #
 # 2) Alternately, prevent the player from asking for cards he does not
 # possess.
+#
+# 3) Save a list of all moves made; potentially deck & game status as well (for roll-back or re-play)
 # -Greg Jan 2014
 
 require "./card.rb"

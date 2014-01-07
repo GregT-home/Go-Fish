@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="styles/styles.css">
+    <title>Go Fish</title>
+  </head>
+  <body>
+    <header>
+      <h1>Go Fish:</h1> <p> Playing: B-Obama, G-Bush, Greg-T, B-Clinton </p>
+    </header>
+    <nav>
+      <ul>
+	<li class="nav-item"><a href="index.html">Home</a></li>
+	<li class="nav-item"><a href="#player-hand">Hand</a></li>
+	<li class="nav-item"><a href="#player-books">Books</a></li>
+	<li class="nav-item"><a href="#game-actions">Actions</a></li>
+	<li class="nav-item"><a href="#game-status">Status</a></li>
+	<li class="nav-item"><a href="http://en.wikipedia.org/wiki/Go_Fish">Help</a></li>
+      </ul>
+    </nav>
+    <section id="game-area">
+      <section class="box">
+	<h2>Your Cards: </h2>
+	<ul class="hand">
+	  <li class="card"><img src="images/cards/h5.png" width="71" height="96" alt="5-of-Hearts-pic" /></li>
+	  <li class="card"><img src="images/cards/d6.png" width="71" height="96" alt="6-of-Diamonds-pic" /></li>
+	  <li class="card"><img src="images/cards/c9.png" width="71" height="96" alt="9-of-Clubs-pic" /></li>
+	  <li class="card"><img src="images/cards/dk.png" width="71" height="96" alt="King-of-Diamonds-pic" /></li>
+	  <li class="card"><img src="images/cards/hk.png" width="71" height="96" alt="King-of-Hearts-pic" /></li>
+	</ul>
+      </section>
+
+      <section class="box">
+	<h2>Your Books</h2>
+	<ul class="books">
+	  <li class="card"><img src="images/cards/h7.png" width="71" height="96" alt="5-of-Hearts-pic" /></li>
+	  <li class="card"><img src="images/cards/s7.png" width="71" height="96" alt="6-of-Diamonds-pic" /></li>
+	  <li class="card"><img src="images/cards/d7.png" width="71" height="96" alt="9-of-Clubs-pic" /></li>
+	  <li class="card"><img src="images/cards/c7.png" width="71" height="96" alt="King-of-Diamonds-pic" /></li>
+	</ul>
+      </section>
+
+      <section class="box">
+	<h2>Last Round</h2>
+
+	<p class="commentary">B-Obama asked for Qs from Greg-T and did not get one.</p>
+	<p class="commentary">He was told to 'Go Fish' and he did not get what he asked
+	  for from the pond.</p>
+	<p class="commentary">He was surprised to make a book of 3s.</p>
+      </section>
+
+      <section class="box">
+	<h2>Game Status</h2>
+	<ul class="status">
+	  <li class="status">Deck has 17 cards.</li>
+	  <li class="status">It is B-Obama's turn.</li>
+	  <li class="status">B-Obama has 8 cards and has made 0 books.</li>
+	  <li class="status">G-Bush has 5 cards and has made 1 book.</li>
+	  <li class="status">B-Clinton has 7 cards and has made 0 books.</li>
+	</ul>
+      </section>
+
+      <section class="box">
+	<h2>Actions you can take</h2>
+	<form action="process_action.php" method="post">
+	  <ul class="status">
+	    <li class="action">Ask 
+	      <select class="list" name="players">
+		<option>B-Obama</option>
+		<option>G-Bush</option>
+		<option>B-Clinton</option>
+	      </select>
+	      got any
+	      <select class="list" name="ranks">
+		<option>2</option>
+		<option>3</option>
+		<option>4</option>
+		<option>5</option>
+		<option>6</option>
+		<option>7</option>
+		<option>8</option>
+		<option>9</option>
+		<option>10</option>
+		<option>J</option>
+		<option>Q</option>
+		<option>K</option>
+		<option>A</option>
+	      </select>
+
+	  </ul>
+	</form>
+      </section>
+    </section>
+    <footer>
+      <!-- links of use, but not important enough to take top horiz space -->
+    </footer>
+  </body>
+</html>
