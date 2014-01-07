@@ -23,21 +23,21 @@
       <section class="box">
 	<h2>Your Cards: </h2>
 	<ul class="hand">
-	  <li class="card"><img src="images/cards/h5.png" width="71" height="96" alt="5-of-Hearts-pic" /></li>
-	  <li class="card"><img src="images/cards/d6.png" width="71" height="96" alt="6-of-Diamonds-pic" /></li>
-	  <li class="card"><img src="images/cards/c9.png" width="71" height="96" alt="9-of-Clubs-pic" /></li>
-	  <li class="card"><img src="images/cards/dk.png" width="71" height="96" alt="King-of-Diamonds-pic" /></li>
-	  <li class="card"><img src="images/cards/hk.png" width="71" height="96" alt="King-of-Hearts-pic" /></li>
+	  <li><img src="images/cards/h5.png" width="71" height="96" alt="5-of-Hearts-pic" /></li>
+	  <li><img src="images/cards/d6.png" width="71" height="96" alt="6-of-Diamonds-pic" /></li>
+	  <li><img src="images/cards/c9.png" width="71" height="96" alt="9-of-Clubs-pic" /></li>
+	  <li><img src="images/cards/dk.png" width="71" height="96" alt="King-of-Diamonds-pic" /></li>
+	  <li><img src="images/cards/hk.png" width="71" height="96" alt="King-of-Hearts-pic" /></li>
 	</ul>
       </section>
 
       <section class="box">
 	<h2>Your Books</h2>
 	<ul class="books">
-	  <li class="card"><img src="images/cards/h7.png" width="71" height="96" alt="5-of-Hearts-pic" /></li>
-	  <li class="card"><img src="images/cards/s7.png" width="71" height="96" alt="6-of-Diamonds-pic" /></li>
-	  <li class="card"><img src="images/cards/d7.png" width="71" height="96" alt="9-of-Clubs-pic" /></li>
-	  <li class="card"><img src="images/cards/c7.png" width="71" height="96" alt="King-of-Diamonds-pic" /></li>
+	  <li><img src="images/cards/h7.png" width="71" height="96" alt="5-of-Hearts-pic" /></li>
+	  <li><img src="images/cards/s7.png" width="71" height="96" alt="6-of-Diamonds-pic" /></li>
+	  <li><img src="images/cards/d7.png" width="71" height="96" alt="9-of-Clubs-pic" /></li>
+	  <li><img src="images/cards/c7.png" width="71" height="96" alt="King-of-Diamonds-pic" /></li>
 	</ul>
       </section>
 
@@ -53,26 +53,26 @@
       <section class="box">
 	<h2>Game Status</h2>
 	<ul class="status">
-	  <li class="status">Deck has 17 cards.</li>
-	  <li class="status">It is B-Obama's turn.</li>
-	  <li class="status">B-Obama has 8 cards and has made 0 books.</li>
-	  <li class="status">G-Bush has 5 cards and has made 1 book.</li>
-	  <li class="status">B-Clinton has 7 cards and has made 0 books.</li>
+	  <li>Deck has 17 cards.</li>
+	  <li>It is B-Obama's turn.</li>
+	  <li>B-Obama has 8 cards and has made 0 books.</li>
+	  <li>G-Bush has 5 cards and has made 1 book.</li>
+	  <li>B-Clinton has 7 cards and has made 0 books.</li>
 	</ul>
       </section>
 
       <section class="box">
 	<h2>Actions you can take</h2>
 	<form action="process_action.php" method="post">
-	  <ul class="status">
-	    <li class="action">Ask 
-	      <select class="list" name="players">
+	  <ul class="action">
+	    <li>Ask 
+	      <select name="players">
 		<option>B-Obama</option>
 		<option>G-Bush</option>
 		<option>B-Clinton</option>
 	      </select>
 	      got any
-	      <select class="list" name="ranks">
+	      <select name="ranks">
 		<option>2</option>
 		<option>3</option>
 		<option>4</option>
@@ -87,8 +87,8 @@
 		<option>K</option>
 		<option>A</option>
 	      </select>
-
-	  </ul>
+	    </li>
+	  <ul class="action">
 	</form>
       </section>
     </section>

@@ -75,7 +75,7 @@ nav ul:before {
 .hand ul {
     margin:0;
     padding:0;
-    list-style: none;
+    list-style-type: none;
     }
 .hand li:first-child { text-indent: 0 }
 .hand li {
@@ -87,7 +87,7 @@ nav ul:before {
 .books ul {
     margin:0;
     padding:0;
-    list-style: none;
+    list-style-type: none;
     }
 .books li:first-child { text-indent: 0 }
 .books li {
@@ -98,18 +98,21 @@ nav ul:before {
 .commentary {
     margin-bottom: .25em;
     margin-top: .25em;
-}
-
-#round-summary p {
-
+    margin-left: 2em;
+.25em;
 }
 
 .status ul {
-    list-style: none;
+    list-style-type: none;
+    margin: 5em;
+    padding: 5em;
 }
+
 .action ul {
-    list-style: none;
+    list-style-type: none;
 }
+
+
     
 
 
