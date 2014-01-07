@@ -72,7 +72,7 @@ nav ul:before {
 }
 
 /* hand stacks horizontally w/ rank visible. */
-.hand ul {
+.hand {
     margin:0;
     padding:0;
     list-style-type: none;
