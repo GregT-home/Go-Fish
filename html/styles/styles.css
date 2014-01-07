@@ -66,7 +66,7 @@ nav ul:before {
     margin-bottom: .5em;
 }
 
-.box {
+.game-area, .books-area, .history-area, .status-area, .action-area {
     border-width: thin;
     border-style: dotted;
 }
@@ -96,9 +96,9 @@ nav ul:before {
     text-indent: -4.5em;
 }
 
-.commentary {
+p.history-area {
     margin-bottom: .25em;
-    margin-top: .25em;
+    margin-top: 1em;
     margin-left: 2em;
 }
 

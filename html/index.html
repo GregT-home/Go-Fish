@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html >
+<html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/styles.css">
     <title>Go Fish</title>
   </head>
   <body>
@@ -11,46 +11,46 @@
     </header>
     <nav>
       <ul>
-	<li class="nav-item"><a href="index.html">Home</a></li>
-	<li class="nav-item"><a href="#player-hand">Hand</a></li>
-	<li class="nav-item"><a href="#player-books">Books</a></li>
-	<li class="nav-item"><a href="#game-actions">Actions</a></li>
-	<li class="nav-item"><a href="#game-status">Status</a></li>
-	<li class="nav-item"><a href="http://en.wikipedia.org/wiki/Go_Fish">Help</a></li>
+	<li><a href="index.html">Home</a></li>
+	<li><a href="#player-hand">Hand</a></li>
+	<li><a href="#player-books">Books</a></li>
+	<li><a href="#game-actions">Actions</a></li>
+	<li><a href="#game-status">Status</a></li>
+	<li><a href="http://en.wikipedia.org/wiki/Go_Fish">Help</a></li>
       </ul>
     </nav>
     <section id="game-area">
-      <section class="box">
+      <section class="hand-area">
 	<h2>Your Cards: </h2>
 	<ul class="hand">
-	  <li><img src="images/cards/h5.png" width="71" height="96" alt="5-of-Hearts-pic" /></li>
-	  <li><img src="images/cards/d6.png" width="71" height="96" alt="6-of-Diamonds-pic" /></li>
-	  <li><img src="images/cards/c9.png" width="71" height="96" alt="9-of-Clubs-pic" /></li>
-	  <li><img src="images/cards/dk.png" width="71" height="96" alt="King-of-Diamonds-pic" /></li>
-	  <li><img src="images/cards/hk.png" width="71" height="96" alt="King-of-Hearts-pic" /></li>
+	  <li><img src="images/cards/h5.png" alt="5-of-Hearts-pic" /></li>
+	  <li><img src="images/cards/d6.png" alt="6-of-Diamonds-pic" /></li>
+	  <li><img src="images/cards/c9.png" alt="9-of-Clubs-pic" /></li>
+	  <li><img src="images/cards/dk.png" alt="King-of-Diamonds-pic" /></li>
+	  <li><img src="images/cards/hk.png" alt="King-of-Hearts-pic" /></li>
 	</ul>
       </section>
 
-      <section class="box">
+      <section class="books-area">
 	<h2>Your Books</h2>
 	<ul class="books">
-	  <li><img src="images/cards/h7.png" width="71" height="96" alt="5-of-Hearts-pic" /></li>
-	  <li><img src="images/cards/s7.png" width="71" height="96" alt="6-of-Diamonds-pic" /></li>
-	  <li><img src="images/cards/d7.png" width="71" height="96" alt="9-of-Clubs-pic" /></li>
-	  <li><img src="images/cards/c7.png" width="71" height="96" alt="King-of-Diamonds-pic" /></li>
+	  <li><img src="images/cards/h7.png" alt="5-of-Hearts-pic" /></li>
+	  <li><img src="images/cards/s7.png" alt="6-of-Diamonds-pic" /></li>
+	  <li><img src="images/cards/d7.png" alt="9-of-Clubs-pic" /></li>
+	  <li><img src="images/cards/c7.png" alt="King-of-Diamonds-pic" /></li>
 	</ul>
       </section>
 
-      <section class="box">
+      <section class="history-area">
 	<h2>Last Round</h2>
 
-	<p class="commentary">B-Obama asked for Qs from Greg-T and did not get one.</p>
-	<p class="commentary">He was told to 'Go Fish' and he did not get what he asked
+	<p>B-Obama asked for Qs from Greg-T and did not get one.</p>
+	<p>He was told to 'Go Fish' and he did not get what he asked
 	  for from the pond.</p>
-	<p class="commentary">He was surprised to make a book of 3s.</p>
+	<p>He was surprised to make a book of 3s.</p>
       </section>
 
-      <section class="box">
+      <section class="status-area">
 	<h2>Game Status</h2>
 	<ul class="status">
 	  <li>Deck has 17 cards.</li>
@@ -61,7 +61,7 @@
 	</ul>
       </section>
 
-      <section class="box">
+      <section class="action-area">
 	<h2>Actions you can take</h2>
 	<form action="process_action.php" method="post">
 	  <ul class="action">
