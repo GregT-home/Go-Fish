@@ -1,8 +1,17 @@
 doctype html
-meta content="text/html;" http-equiv="Content-Type"
 html
   == slim :_head
   body
     == slim :_header
-    == yield
-    == slim :_footer
+    == slim :_nav
+    <!-- <section class="game-area"> -->
+    section class="game-area"
+      == yield
+      == slim :_hand_area
+      == slim :_books_area
+      == slim :_history_area
+      == slim :_status_area
+      == slim :_action_area
+    footer
+      == slim :_footer
+  p this is the end
