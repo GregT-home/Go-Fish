@@ -13,9 +13,8 @@ task :pretty_spec do
 end
 
 task :clean do
-#  files = system "find . -name '*~' -print"
-# how to get the output of system into an array?
-#  puts files
+#  files = `find . -name '*~' -print`.
+# how to get multi-line find output into a quoted form for rm
   files = Dir["*~", "*/*~", "*/*/*~"].join(" ")
   sh "rm #{files}"
 end

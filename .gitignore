@@ -12,6 +12,11 @@ test/tmp
 test/version_tmp
 tmp
 
+.sass-cache
+public/stylesheets/sass/*.css
+public/stylesheets/*.css
+tests/f.rb
+
 # YARD artifacts
 .yardoc
 _yardoc

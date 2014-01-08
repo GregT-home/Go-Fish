@@ -1,31 +1,29 @@
-html {
-    font-size: 16px;
-}
-body {
-    font-family: "Sorts Mill Goudy", Georgia, serif;
-}
+$gameboard-color: forestgreen;
+$heading-color: MediumBlue;
+
+html { font-size: 16px; }
+
+body { font-family: "Sorts Mill Goudy", Georgia, serif; }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: Tahoma, Geneva, sans-serif;
+    color: $heading-color;
 }
 
 header {
     border-width: thin;
     border-bottom-style: solid;
-}
-
-header h1 {
-    color: MediumBlue;
-    font-size: 1.5em;
-    display: inline; 
-}
-header p {
-    color: MediumBlue;
-    font-size: 1em;
-    display: inline; 
-    text-indent: 1.5em;
-    margin: 1em;
-    padding: 0;
+    h1 {
+	font-size: 1.5em;
+	display: inline; 
+    }
+    p {
+	font-size: 1em;
+	display: inline; 
+	text-indent: 1.5em;
+	margin: 1em;
+	padding: 0;
+    }
 }
 
 nav {
@@ -39,45 +37,24 @@ nav {
     border-bottom-style: solid;
     list-style: none;
     text-align: center;
-}
-/* nav ul { */
-/*     margin: 0; */
-/*     padding: 0; */
-/*     text-align: center; */
-/* text-align: justify; */
-/* list-style-type: none; */
-/* margin-top: .25em; */
-/* margin-bottom: .25em */
-/* } */
-nav li {
-    display: inline;
-}
+    li {
+	display: inline;
+    }
+    a {
+	display:inline-block;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 0;
+	padding-bottom: 0;
+    }
+}    
 
-nav a {
-    display:inline-block;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 0;
-    padding-bottom: 0;
-}
-    
-/* nav ul:after { */
-/*     content: ''; */
-/*     display: inline-block; */
-/*     width: 100%; */
-/* } */
-
-/* nav ul:before { */
-/*     content: ''; */
-/*     display: block; */
-/* } */
-
-#game-area {
-    background-color: forestgreen;
-}
-#game-area h2 {
-    margin-top: .5em; 
-    margin-bottom: .5em;
+.game-area {
+    background-color: $gameboard-color;
+    h2 {
+	margin-top: .5em; 
+	margin-bottom: .5em;
+    }
 }
 
 .game-area, .books-area, .history-area, .status-area, .action-area {
@@ -85,31 +62,28 @@ nav a {
     border-style: dotted;
 }
 
-/* hand stacks horizontally w/ rank visible. */
+// hand stacks horizontally w/ rank visible.
 .hand {
     margin:.1em;
     padding:0;
-    list-style-type: none;
+    li:first-child { text-indent: 0 }
+    li {
+	display: inline-block;
+	text-indent: -3.2em;
     }
-.hand li:first-child { text-indent: 0 }
-.hand li {
-    display: inline-block;
-    text-indent: -3.2em;
- }
+}
 
-/* books stack horizontally w/ rank not visible. */
+// books stack horizontally w/ rank not visible.
 .books {
     margin:.1em;
     padding:0;
     list-style-type: none;
-    display: inline-block;
+    li:first-child { text-indent: 0 }
+    li {
+	display: inline-block;
+	text-indent: -3.8em;
     }
-.books li:first-child { text-indent: 0 }
-.books li {
-    display: inline-block;
-    text-indent: -3.8em;
 }
-
 p.history-area {
     margin-bottom: .25em;
     margin-top: 1em;
