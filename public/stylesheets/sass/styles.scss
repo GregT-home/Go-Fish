@@ -1,0 +1,128 @@
+html {
+    font-size: 16px;
+}
+body {
+    font-family: "Sorts Mill Goudy", Georgia, serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+header {
+    border-width: thin;
+    border-bottom-style: solid;
+}
+
+header h1 {
+    color: MediumBlue;
+    font-size: 1.5em;
+    display: inline; 
+}
+header p {
+    color: MediumBlue;
+    font-size: 1em;
+    display: inline; 
+    text-indent: 1.5em;
+    margin: 1em;
+    padding: 0;
+}
+
+nav {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0;
+    margin-bottom: .25em;
+    padding-bottom: 0em;
+    border-width: thin;
+    border-bottom-style: solid;
+    list-style: none;
+    text-align: center;
+}
+/* nav ul { */
+/*     margin: 0; */
+/*     padding: 0; */
+/*     text-align: center; */
+/* text-align: justify; */
+/* list-style-type: none; */
+/* margin-top: .25em; */
+/* margin-bottom: .25em */
+/* } */
+nav li {
+    display: inline;
+}
+
+nav a {
+    display:inline-block;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+    
+/* nav ul:after { */
+/*     content: ''; */
+/*     display: inline-block; */
+/*     width: 100%; */
+/* } */
+
+/* nav ul:before { */
+/*     content: ''; */
+/*     display: block; */
+/* } */
+
+#game-area {
+    background-color: forestgreen;
+}
+#game-area h2 {
+    margin-top: .5em; 
+    margin-bottom: .5em;
+}
+
+.game-area, .books-area, .history-area, .status-area, .action-area {
+    border-width: thin;
+    border-style: dotted;
+}
+
+/* hand stacks horizontally w/ rank visible. */
+.hand {
+    margin:.1em;
+    padding:0;
+    list-style-type: none;
+    }
+.hand li:first-child { text-indent: 0 }
+.hand li {
+    display: inline-block;
+    text-indent: -3.2em;
+ }
+
+/* books stack horizontally w/ rank not visible. */
+.books {
+    margin:.1em;
+    padding:0;
+    list-style-type: none;
+    display: inline-block;
+    }
+.books li:first-child { text-indent: 0 }
+.books li {
+    display: inline-block;
+    text-indent: -3.8em;
+}
+
+p.history-area {
+    margin-bottom: .25em;
+    margin-top: 1em;
+    margin-left: 2em;
+}
+
+.status li {
+    list-style-type: none;
+    margin: .25em;
+    padding: .25em;
+}
+
+.action li {
+    list-style-type: none;
+}
+
