@@ -1,4 +1,5 @@
-$gameboard-color: forestgreen;
+$gameboard-color1: #33AD33;
+$gameboard-color2: #003D00;
 $heading-color: MediumBlue;
 
 html { font-size: 16px; }
@@ -28,44 +29,39 @@ header {
 
 nav {
     width: 75%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 0;
-    margin-bottom: .25em;
+    height: 1.25em;
+    margin: 0 auto .25em auto;
     padding-bottom: 0em;
-    border-width: thin;
-    border-bottom-style: solid;
+    border-width: thin solid;
     list-style: none;
     text-align: center;
-    li {
-	display: inline;
+    ul {
+	padding-left: 0;
+	margin-bottom: .25em;
+	margin-top: .25em;
     }
-    a {
-	display:inline-block;
-	padding-left: 10px;
-	padding-right: 10px;
-	padding-top: 0;
-	padding-bottom: 0;
+    li {
+	float:left;
+	display: block;
+	width: 16%;
     }
 }    
 
 .game-area {
-    background-color: $gameboard-color;
+    background: linear-gradient($gameboard-color1, $gameboard-color2);
     h2 {
-	margin-top: .5em; 
-	margin-bottom: .5em;
+	margin-top: .5em 0 .5em 0
     }
 }
 
 .game-area, .books-area, .history-area, .status-area, .action-area {
-    border-width: thin;
-    border-style: dotted;
+    border: thin dotted;
 }
 
 // hand stacks horizontally w/ rank visible.
 .hand {
-    margin:.1em;
-    padding:0;
+    margin: .1em;
+    padding: 0;
     li:first-child { text-indent: 0 }
     li {
 	display: inline-block;
@@ -78,16 +74,15 @@ nav {
     margin:.1em;
     padding:0;
     list-style-type: none;
+    display: inline-block;
     li:first-child { text-indent: 0 }
     li {
 	display: inline-block;
-	text-indent: -3.8em;
+	text-indent: -4em;
     }
 }
 p.history-area {
-    margin-bottom: .25em;
-    margin-top: 1em;
-    margin-left: 2em;
+    margin: 1em .25em .25em 2em
 }
 
 .status li {
@@ -100,3 +95,16 @@ p.history-area {
     list-style-type: none;
 }
 
+footer {
+    font-size: .7em; 
+    ul {
+	padding-left: 0;
+	margin-bottom: .1em;
+	margin-top: .1em;
+	display: block;
+	width: 100%;
+	list-style-type: none;
+    }
+    .left { float: left; }
+    .right {float: right; }
+}
