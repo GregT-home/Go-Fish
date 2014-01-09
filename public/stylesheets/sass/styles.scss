@@ -1,89 +1,94 @@
+$default-body-color: Linen;
+$header-area-color: LightGray;
+$footer-area-color: $header-area-color;
 $gameboard-color1: #33AD33;
 $gameboard-color2: #003D00;
 $heading-color: MediumBlue;
+$non-cards-area-color: BlanchedAlmond;
+$hand-card-width: 6em;
+$hand-book-ratio: .85;
+$book-card-width: $hand-card-width * $hand-book-ratio;
+
+$needs_compressed: 800px;
+$needs_minimum: 400px;
+
+@mixin clearfix() {
+    &:before, &:after {
+	content: " ";
+	display: table;
+    }
+    &:after { clear: both; }
+}
+
+@import '_header+nav';
 
 html { font-size: 16px; }
-
 body { font-family: "Sorts Mill Goudy", Georgia, serif; }
-
 h1, h2, h3, h4, h5, h6 {
     font-family: Tahoma, Geneva, sans-serif;
     color: $heading-color;
 }
 
-header {
-    border-width: thin;
-    border-bottom-style: solid;
-    h1 {
-	font-size: 1.5em;
-	display: inline; 
-    }
-    p {
-	font-size: 1em;
-	display: inline; 
-	text-indent: 1.5em;
-	margin: 1em;
-	padding: 0;
-    }
-}
-
-nav {
-    width: 75%;
-    height: 1.25em;
-    margin: 0 auto .25em auto;
-    padding-bottom: 0em;
-    border-width: thin solid;
-    list-style: none;
-    text-align: center;
-    ul {
-	padding-left: 0;
-	margin-bottom: .25em;
-	margin-top: .25em;
-    }
-    li {
-	float:left;
-	display: block;
-	width: 16%;
-    }
-}    
-
 .game-area {
-    background: linear-gradient($gameboard-color1, $gameboard-color2);
-    h2 {
-	margin-top: .5em 0 .5em 0
-    }
+    margin: .25em
 }
 
-.game-area, .books-area, .history-area, .status-area, .action-area {
-    border: thin dotted;
+.play-area {
+    background-color: $non-cards-area-color;
+    clear: both;
+    @include clearfix;
+}
+
+.cards-area {
+    background: linear-gradient($gameboard-color1, $gameboard-color2);
+    clear: both;
+    @include clearfix;
+
+    h2 { margin: .15em 0 .5em 0 }
+    h3 { margin: .5em 0 .25em 0; }
+ }
+
+.action-area, .history-area, .hand-area, .books-area {
+    width: 100%;
+    float: none;
+    @media (min-width: $needs_minimum) {
+	width: 50%;
+	float: left;
+    }
 }
 
 // hand stacks horizontally w/ rank visible.
 .hand {
-    margin: .1em;
+    margin: $hand-card-width * .08;
     padding: 0;
+    
     li:first-child { text-indent: 0 }
     li {
 	display: inline-block;
-	text-indent: -3.2em;
+	text-indent: -$hand-card-width * .80;
     }
+    li img { width: $hand-card-width; }
 }
 
 // books stack horizontally w/ rank not visible.
 .books {
-    margin:.1em;
-    padding:0;
+    margin: $hand-card-width * .08;
+    padding: 0;
     list-style-type: none;
     display: inline-block;
     li:first-child { text-indent: 0 }
     li {
 	display: inline-block;
-	text-indent: -4em;
+	text-indent: -$book-card-width * 1.1;
     }
+    li img { width: $book-card-width; }
 }
+
 p.history-area {
     margin: 1em .25em .25em 2em
 }
+
+.status-area { background-color: $non-cards-area-color; }
 
 .status li {
     list-style-type: none;
@@ -95,16 +100,4 @@ p.history-area {
     list-style-type: none;
 }
 
-footer {
-    font-size: .7em; 
-    ul {
-	padding-left: 0;
-	margin-bottom: .1em;
-	margin-top: .1em;
-	display: block;
-	width: 100%;
-	list-style-type: none;
-    }
-    .left { float: left; }
-    .right {float: right; }
-}
+@import '_footer';

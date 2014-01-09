@@ -1,0 +1,14 @@
+footer {
+    background-color: $footer-area-color;
+    font-size: .7em; 
+    ul {
+	padding-left: 0;
+	margin-bottom: .1em;
+	margin-top: .1em;
+	display: block;
+	width: 100%;
+	list-style-type: none;
+    }
+    .left { float: left; }
+    .right {float: right; }
+}

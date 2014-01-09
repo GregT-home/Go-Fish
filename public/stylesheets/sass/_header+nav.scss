@@ -1,0 +1,43 @@
+body {
+    background-color: $default-body-color;
+}
+
+header {
+    border-width: thin;
+    border-bottom-style: solid;
+    background-color: $header-area-color;
+    h1 {
+	font-size: 1.5em;
+	@media (min-width: $needs_compressed) {
+	    display:block;
+	}
+	display: inline; 
+    }
+    p {
+	font-size: 1em;
+	display: inline; 
+	text-indent: 1.5em;
+	margin: 1em;
+	padding: 0;
+    }
+}
+
+nav {
+    width: 75%;
+    height: 1.25em;
+    margin: 0 auto .25em auto;
+    padding-bottom: 0em;
+    border-width: thin solid;
+    list-style: none;
+    text-align: center;
+    ul {
+	padding-left: 0;
+	margin-bottom: .25em;
+	margin-top: .25em;
+    }
+    li {
+	float:left;
+	display: block;
+	width: 16%;
+    }
+}    
