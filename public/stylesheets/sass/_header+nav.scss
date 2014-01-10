@@ -6,19 +6,29 @@ header {
     border-width: thin;
     border-bottom-style: solid;
     background-color: $header-area-color;
-    h1 {
-	font-size: 1.5em;
-	@media (min-width: $needs_compressed) {
-	    display:block;
+    @media all {
+	h1 {
+	    font-size: 1.5em;
+	    display: inline; 
 	}
-	display: inline; 
+	p {
+	    font-size: 1em;
+	    display: inline; 
+	    text-indent: 1.5em;
+	    margin: 1em;
+	    padding: 0;
+	}
     }
-    p {
-	font-size: 1em;
-	display: inline; 
-	text-indent: 1.5em;
-	margin: 1em;
-	padding: 0;
+    @media (max-width: $tablet_size) {
+	h1 {
+	    font-size: 1.5em * $compression_ratio;
+	    display:block;
+	    margin-bottom: 0;
+	}
+	p {
+	    text-indent: 0;
+	    font-size: 1em * $compression_ratio;
+	}
     }
 }
 
@@ -27,7 +37,7 @@ nav {
     height: 1.25em;
     margin: 0 auto .25em auto;
     padding-bottom: 0em;
-    border-width: thin solid;
+    border: thin solid;
     list-style: none;
     text-align: center;
     ul {
@@ -36,8 +46,8 @@ nav {
 	margin-top: .25em;
     }
     li {
-	float:left;
-	display: block;
-	width: 16%;
+	float: none;
+	text-align: center;
+	display: inline-block;
     }
-}    
+}

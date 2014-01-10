@@ -1,15 +1,15 @@
-section class="game-area"
-  section class="play-area"
-    section class="history-area"
+section.game-area
+  section.play-area
+    section.history-area
       h2 Last Round
       p B-Obama asked for Qs from Greg-T and did not get one.  He was told to 'Go Fish' and he did not get what he asked for from the pond. He was surprised to make a book of 3s.
 
-    section class="action-area"
+    section.action-area
       h2 Actions you can take
       form action="process_action.php" method="post"
         ul.action
           li
-            | Ask
+            | Hey
             select name="players"
               option B-Obama
               option G-Bush
@@ -29,7 +29,7 @@ section class="game-area"
               option Q
               option K
               option A
-            button type="submit" submit
+            button type="submit" ask
 
   section class="cards-area"
     section class="hand-area"

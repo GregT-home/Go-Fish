@@ -1,16 +1,24 @@
+// area colors
 $default-body-color: Linen;
 $header-area-color: LightGray;
 $footer-area-color: $header-area-color;
+$non-cards-area-color: BlanchedAlmond;
 $gameboard-color1: #33AD33;
 $gameboard-color2: #003D00;
-$heading-color: MediumBlue;
-$non-cards-area-color: BlanchedAlmond;
-$hand-card-width: 6em;
-$hand-book-ratio: .85;
-$book-card-width: $hand-card-width * $hand-book-ratio;
 
-$needs_compressed: 800px;
-$needs_minimum: 400px;
+// Text colors
+$heading-color: MediumBlue;
+
+// hand/book scaling parameters
+$hand-card-width: 96px;
+$book-card-width: $hand-card-width * .50;
+
+//media-oriented parameters
+$base-font-size: 16px;
+$tablet_size: 800px;
+$phone_size: 450px;
+$compression-ratio: .85;
+$card-shrink-ratio: .75;
 
 @mixin clearfix() {
     &:before, &:after {
@@ -22,15 +30,23 @@ $needs_minimum: 400px;
 
 @import '_header+nav';
 
-html { font-size: 16px; }
+// compression: shrink base font by 2 px
+@media all { html { font-size: $base-font-size; } }
+@media (max-width: $tablet_size) { html { font-size: $base-font-size * $compression-ratio; } }
+
 body { font-family: "Sorts Mill Goudy", Georgia, serif; }
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3 {
     font-family: Tahoma, Geneva, sans-serif;
     color: $heading-color;
+    margin: 0 .25em 0 .25em
 }
 
 .game-area {
     margin: .25em
+}
+
+p.history-area {
+    margin: .25em 0 0 .5em
 }
 
 .play-area {
@@ -39,65 +55,106 @@ h1, h2, h3, h4, h5, h6 {
     @include clearfix;
 }
 
-.cards-area {
-    background: linear-gradient($gameboard-color1, $gameboard-color2);
-    clear: both;
-    @include clearfix;
+// minimum: move to 1-col
+@media all {
+    .cards-area {
+	background: linear-gradient($gameboard-color1, $gameboard-color2);
+	clear: both;
+	@include clearfix;
 
-    h2 { margin: .15em 0 .5em 0 }
-    h3 { margin: .5em 0 .25em 0; }
- }
+	h2 { margin: .15em 0 .5em 0 }
+	h3 { margin: .5em 0 .25em 0; }
+    }
 
-.action-area, .history-area, .hand-area, .books-area {
-    width: 100%;
-    float: none;
-    @media (min-width: $needs_minimum) {
+    .action-area, .history-area, .hand-area{
 	width: 50%;
 	float: left;
     }
+    .hand-area {
+	width: 68%;
+    }
 }
 
-// hand stacks horizontally w/ rank visible.
-.hand {
-    margin: $hand-card-width * .08;
-    padding: 0;
+@media (max-width: $phone_size) {
+    .cards-area {
+	h2 { margin: .05em 0 .05em 0 }
+	h3 { margin: .05em 0 .05em 0
+	   }
+    }
+
+    .action-area, .history-area, .hand-area, .books-area {
+	width: 100%;
+	float: none;
+    }
+}
+@media all {
+    .status-area { background-color: $non-cards-area-color; }
+
+    // hand stacks horizontally w/ rank visible.
+    .hand {
+	margin: $hand-card-width * .08;
+	padding: 0;
+	display: inline;
+	img { width: $hand-card-width; }
+
+	li:first-child { text-indent: 0 }
+	li {
+	    display: inline-block;
+	    text-indent: -$hand-card-width * .80;
+	}
+    }
+
+    // books stack horizontally w/ rank not visible.
+    .books {
+	list-style-type: none;
+	img { width: $book-card-width; }
+	display: inline;
+	padding: 0;
+
+	li:first-child { text-indent: 0 }
+	li {
+	    display: inline-block;
+	    text-indent: -$book-card-width * .95;
+	}
+    }
+}
+@media (max-width: $tablet_size) {
+    // reduce margin
+    .hand {
+	margin: $hand-card-width * .05;
+	img { width: $hand-card-width * $card-shrink-ratio; }
+	li { text-indent: -$hand-card-width * .60 * $card-shrink-ratio; }
+    }
+}
+@media (max-width: $phone_size) {
+    // books margin needed, match to hand, shrink book size as well
+    .books {
+	margin: $hand-card-width * .05; 
+	img { width: $book-card-width * $card-shrink-ratio; }
+	li { text-indent: -$book-card-width * 1.1 * $card-shrink-ratio; }
+    }
+}
     
-    li:first-child { text-indent: 0 }
-    li {
-	display: inline-block;
-	text-indent: -$hand-card-width * .80;
+@media all {
+    .status li {
+	list-style-type: none;
+	padding: .25em;
     }
-    li img { width: $hand-card-width; }
-}
-
-// books stack horizontally w/ rank not visible.
-.books {
-    margin: $hand-card-width * .08;
-    padding: 0;
-    list-style-type: none;
-    display: inline-block;
-    li:first-child { text-indent: 0 }
-    li {
-	display: inline-block;
-	text-indent: -$book-card-width * 1.1;
+    .action li {
+	list-style-type: none;
     }
-    li img { width: $book-card-width; }
 }
-
-p.history-area {
-    margin: 1em .25em .25em 2em
-}
-
-.status-area { background-color: $non-cards-area-color; }
-
-.status li {
-    list-style-type: none;
-    margin: .25em;
-    padding: .25em;
-}
-
-.action li {
-    list-style-type: none;
+@media (max-width: $tablet_size) {
+    .status { padding:0; }
+    .status li {
+	list-style-type: none;
+	margin: 0;
+	padding:0;
+    }
+    .action li {
+	list-style-type: none;
+    }
+    .action { padding: 0 }
 }
 
 @import '_footer';
