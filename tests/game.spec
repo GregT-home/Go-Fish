@@ -10,13 +10,13 @@ describe Game, "Initial game setup." do
       @number_of_test_hands = 6
       @hand_length = (@number_of_test_hands > 4) ? 5 : 7
       @game = Game.new(@number_of_test_hands)
-
-      @game.hands.length.should be @number_of_test_hands
-      @game.hands.length.times { |i|
-          @game.hands[i].length.should be @hand_length
-      }
     end # before (:each)
     
+    it ".new sets up properly" do
+      @game.hands.length.should be @number_of_test_hands
+      @game.hands.each { |hand| hand.length.should be @hand_length }
+    end
+
     it ".current returns the index" do
       @game.current.should eq 0
     end
