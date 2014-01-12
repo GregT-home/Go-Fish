@@ -1,10 +1,3 @@
-#require_relative "../fishserver.rb"
-#require_relative "../card.rb"
-#require_relative "../deck.rb"
-#require_relative "../hand.rb"
-#require_relative "../result.rb"
-#require_relative "../player.rb"
-#require_relative "../game.rb"
 require_relative "../fishclient.rb"
 
 require "socket"

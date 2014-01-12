@@ -95,7 +95,7 @@ describe FishServer, ".create_player." do
     client1.send_line(name)
 
     server.create_players
-    server.players[0].hand.should eq server.game.hands[server.game.current]
+    server.players[0].hand.should eq server.game.current_hand
     server.players[0].name.should eq name
     server.players[0].socket.should_not eq 0
 
@@ -188,11 +188,14 @@ describe FishServer, ".end_game" do
 
       @server.create_players
 
-      @server.players[0].hand.should eq @server.game.hands[@server.game.current]
+      @server.players[0].hand.should eq @server.game.current_hand
       @server.players[0].name.should eq names[0]
       @server.players[0].socket.should_not eq 0
 
       @clients[0].receive_message # consume "What is your name?" prompt
+
+puts @server.game.hands
+
     end # before each
 
     after (:each) do
@@ -200,10 +203,11 @@ describe FishServer, ".end_game" do
       @server.close
     end
 
-  it "can handle a single winner" do
+    it "can handle a single winner" do
       # cook the books :-)
 
       game = @server.game
+
       game.books[0]= ["2"]
       game.books[1]= ["4", "5", "A"]  # winner
       game.books[2]= ["8", "9"]
@@ -279,10 +283,7 @@ describe FishServer, "." do
 
       @server.create_players
 
-#puts ""; @server.players.each_with_index { |player, i| puts "Player[#{i}] hand: #{player.hand.to_s}" }
-
-
-      @server.players[0].hand.should eq @server.game.hands[@server.game.current]
+      @server.players[0].hand.should eq @server.game.current_hand
       @server.players[0].name.should eq names[0]
       @server.players[0].socket.should_not eq 0
 

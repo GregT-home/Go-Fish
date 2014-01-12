@@ -11,9 +11,9 @@ describe Result, "Round Result creation and manipulation." do
     end
 
     it "A Round Result can be created." do
-      result = Result.new(@game.current, 1, "3")
+      result = Result.new(@game.current_hand, 1, "3")
 
-      result.requester.should == @game.current
+      result.requester.should == @game.current_hand
       result.victim.should == 1
       result.rank.should == "3"
       result.matches.should == 0
@@ -27,7 +27,7 @@ describe Result, "Round Result creation and manipulation." do
     end
 
     it "A Round Results can have its values changed." do
-      result = Result.new(@game.current, 1, "3")
+      result = Result.new(@game.current_hand, 1, "3")
 
       expect {result.requester = 1}.to raise_error
       expect {result.victim = 2}.to raise_error
@@ -37,7 +37,7 @@ describe Result, "Round Result creation and manipulation." do
       result.books_made              = 5
       result.game_over               = 6
 
-      result.requester.should       == 0
+      result.requester.should       == @game.current_hand
       result.victim.should          == 1
       result.rank.should            == "3"
       result.matches.should         == 4

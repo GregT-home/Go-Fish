@@ -46,8 +46,8 @@ EOF
 
   def game_play
     until @game.over? do
-      player = players[@game.current]
-      broadcast("-------------------\n" + "It is Player #{@game.current}," +
+      player = players[@game.current_index]
+      broadcast("-------------------\n" + "It is Player #{@game.current_index}," +
                 " #{player.name}'s turn.\n")
       put_message(player.socket, "Your cards: #{player.hand.to_s}\n")
       log "Deck has #{@game.deck.length} cards in it"
@@ -132,7 +132,7 @@ def endgame
   def process_ask(raw_input, player)
     victim, rank = parse_ask(raw_input)
 
-    if victim == @game.current
+    if victim == @game.current_index
       put_message(player.socket, "?? You cannot request cards from yourself.\n")
       return false
     end
@@ -147,7 +147,7 @@ def endgame
         return false
       else
         result = @game.play_round(victim, rank)
-        broadcast("#{player.name} (player ##{@game.current})," +
+        broadcast("#{player.name} (player ##{@game.current_index})," +
                   " asked for #{rank}s from player" +
                   " ##{victim}, #{players[victim].name}.\n" +
                   result.to_s)
@@ -196,7 +196,7 @@ def endgame
         put_message(client[i], "What is your name? ")
         name = get_line(client[i]).strip
       end while name.empty?
-      players << Player.new(name, @game.hands[@game.current], client[i])
+      players << Player.new(name, @game.current_hand, client[i])
       put_message(players[-1].socket,
                   "Your cards: #{players[-1].hand.to_s}\n")
       @game.advance_to_next_hand

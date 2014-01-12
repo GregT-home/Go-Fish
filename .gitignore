@@ -15,7 +15,7 @@ tmp
 .sass-cache
 public/stylesheets/sass/*.css
 public/stylesheets/*.css
-tests/f.rb
+specs/f.rb
 
 # YARD artifacts
 .yardoc

@@ -37,20 +37,20 @@ describe Card, ".new: cards can be generated from rank/suit strings." do
                     Card.new('2','C'),
                     Card.new('3','C') ]
 
-    cards = Card.new_cards_from_s("A-C 3C 4c")
+    cards = Card.new_from_hand_strings("A-C 3C 4c")
 
     cards.each { |card|
       card.is_a?(Card).should eq true
       }
   end
 
-  it ".new_cards_from_string: a single card can be created" do
-    card = Card.new_cards_from_s("2-H")[0]
+  it ".new_from_hand_strings: a single card can be created" do
+    card = Card.new_from_hand_strings("2-H")[0]
     card.is_a?(Card).should eq true
   end
 
   it ".to_s: a card can be represented as a string" do
-    card = Card.new_cards_from_s("2-H")[0]
+    card = Card.new_from_hand_strings("2-H")[0]
     card.to_s.should eq "2-H"
   end
 

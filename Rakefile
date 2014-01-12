@@ -3,22 +3,21 @@ task :default => [:spec] do
 end
 
 task :spec do
-  files = Dir["tests/*.spec"].join(" ")
+  files = Dir["specs/*.spec"].join(" ")
   sh "rspec #{files}"
 end
 
 task :pretty_spec do
-  files = Dir["tests/*.spec"].join(" ")
+  files = Dir["specs/*.spec"].join(" ")
   sh "rspec --format documentation #{files}"
 end
 
 task :clean do
-#  files = `find . -name '*~' -print`.
-# how to get multi-line find output into a quoted form for rm
-  files = Dir["*~", "*/*~", "*/*/*~"].join(" ")
-  sh "rm #{files}"
+#  files = Dir["*~", "*/*~", "*/*/*~"].join(" ")
+#  sh "rm #{files}"
+  sh 'find . -name "*~" -exec rm -v {} \;'
 end
 
 task :this, [:target] do | task, args|
-  sh "rspec tests/#{args[:target]}.spec"
+  sh "rspec specs/#{args[:target]}.spec"
 end

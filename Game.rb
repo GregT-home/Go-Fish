@@ -17,26 +17,33 @@ require "./deck.rb"
 require "./hand.rb"
 require "./result.rb"
 class Game
-  attr_reader :hands, :books, :deck, :current
+  attr_reader :hands, :books_list, :deck, :current_hand, :current_index
 
   def initialize(num_hands, test_deck = [])
-    @hands, @books = [], []
+    @hands = []
+    @books_list = {}
     @game_over = false
     @deck = Deck.new(test_deck)
 
     deck.shuffle if test_deck.empty?
 
     num_hands.times { |i|
-      @hands[i] = Hand.new()
-      books[i] = []
+      @hands << Hand.new()
+      @books_list[@hands.last] = []
     }
 
-    @current = 0
+    @current_index = 0
+    @current_hand = hands[@current_index]
     deal((num_hands > 4) ? 5 : 7, hands)
   end
 
+  def books(hand)
+    books_list[hand]
+  end
+
   def advance_to_next_hand
-    @current = (current + 1) % hands.length
+    @current_index = (current_index + 1) % hands.length
+    @current_hand = hands[@current_index]
   end
 
   def deal(number, hands)
@@ -50,12 +57,12 @@ class Game
 
   # check for book, if found then remove and return 1, else 0.
   def process_books(target_rank)
-    cards = hands[current].give_matching_cards(target_rank)
+    cards = current_hand.give_matching_cards(target_rank)
     if cards.length == 4
-      books[current] << target_rank
+      books_list[current_hand] << target_rank
       return 1
     else
-      hands[current].receive_cards(cards)
+      current_hand.receive_cards(cards)
       return 0
     end
   end
@@ -63,11 +70,11 @@ class Game
   def play_round(target_index, target_rank)
     victim_matches = hands[target_index].rank_count(target_rank)
 
-    result = Result.new(current, target_index, target_rank)
+    result = Result.new(current_hand, target_index, target_rank)
 
     if victim_matches > 0  # intended match
       match_cards = hands[target_index].give_matching_cards(target_rank)
-      hands[current].receive_cards(match_cards)
+      current_hand.receive_cards(match_cards)
 
       result.matches += match_cards.length
       result.received_from = target_index
@@ -76,7 +83,7 @@ class Game
       if card.nil?     # no cards, game is over
         @game_over = result.game_over = true
       else
-        hands[current].receive_cards(card)
+        current_hand.receive_cards(card)
         result.received_from = :pond
         if card.rank == target_rank  # intended match
           result.matches = 1
@@ -96,7 +103,7 @@ class Game
     @debug = !@debug
   end
   def books_to_s(index)
-    books[index].map { |i| i + "s"}.sort.join(", ")
+    books_list[index].map { |i| i + "s"}.sort.join(", ")
   end
 
   def over?
