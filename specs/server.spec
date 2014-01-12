@@ -187,16 +187,23 @@ end # .broadcast
 describe FishServer, ".end_game" do
   it "can handle a single winner" do
     # cook the books :-)
-    cards = Card.new_from_hand_strings("2C 2H 2S 2D JH 6H 6H 6H 6H 6H 6H 6H",
+z=0
+z=z+1; puts "--", "single winner, #{z}"
+    if true
+      server = FishServer.new(3)
+    else
+      cards = Card.new_from_hand_strings("2C 2H 2S 2D JH 6H 6H 6H 6H 6H 6H 6H",
                                        "4C 4H 4S 4D 5C 5H 5S 5D AC AH AS AD",
                                        "8C 8H 8S 8D 9C 9H 9S 9D 6S 6S 6S 6S")
-    server = FishServer.new(3, cards)
+      server = FishServer.new(3, cards)
+    end
 
     # kick-off a non-blocking server thread
     thread_id = Thread.new { server.get_clients }
 
     names = %w(One Two Three)
     clients = [MockClient.new, MockClient.new, MockClient.new]
+clients[0].debug
 
     #sending first for test purposes (avoids blocking)
     clients.each_with_index { |c, i| c.send_line(names[i]) }
@@ -209,14 +216,24 @@ describe FishServer, ".end_game" do
 
     clients[0].receive_message # consume "What is your name?" prompt
 
+server.debug
     game = server.game
- #game.hands.each_with_index { |hand, i| puts "+++", "h[#{i}: #{hand}" }
+# @server.player.each { |player| puts "+++", "h[#{player.number}]: #{player.hand}" }
 
-    # game.books[0]= ["2"]
-    # game.books[1]= ["4", "5", "A"]  # winner
-    # game.books[2]= ["8", "9"]
+    # Player 0 gets 1 x book, Player 1 gets 3, Player 2 gets 2
+z=z+1; puts "--", "single winner, #{z}"
+    @server.game.books_list[@server.players[0].hand] << "2"
+z=z+1; puts "--", "single winner, #{z}"
+
+    @server.game.books_list[@server.players[1].hand] << "4"
+    @server.game.books_list[@server.players[1].hand] << "5"
+    @server.game.books_list[@server.players[1].hand] << "A"
+    @server.game.books_list[@server.players[2].hand] << "8"
+    @server.game.books_list[@server.players[2].hand] << "9"
+z=z+1; puts "--", "single winner, #{z}"
 
     server.endgame
+z=z+1; puts "--", "single winner, #{z}"
 
     msg = clients[0].receive_message
     msg.should =~ Hand_str_regexp
@@ -308,10 +325,14 @@ describe FishServer, "." do
     end
 
     it ".put_status: can display multiple player status" do
-      @server.game.books[1] << "Q"
-      @server.game.books[1] << "2"
-      @server.game.books[1] << "7"
-      @server.game.books[2] << "A"
+      @server.game.books_list[@server.players[0].hand] << "Q"
+      @server.game.books_list[@server.players[1].hand] << "2"
+      @server.game.books_list[@server.players[1].hand] << "7"
+      @server.game.books_list[@server.players[2].hand] << "A"
+      # @server.game.books[1] << "Q"
+      # @server.game.books[1] << "2"
+      # @server.game.books[1] << "7"
+      # @server.game.books[2] << "A"
 
       @server.put_status(@server.players[0].socket)
       test_msg = "One (#0) has 7 cards and has made 0 books ()"

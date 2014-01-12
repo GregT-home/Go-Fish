@@ -26,6 +26,7 @@ describe Game, "Initial game setup." do
       prev_hand = @game.current_hand
       @game.advance_to_next_hand
       @game.current_hand.should_not eq prev_hand
+      @game.current_hand.should_not eq @game.hands
     end
 
     it ".advance_to_next_hand goes around in an ordered loop of hands." do
@@ -42,13 +43,13 @@ describe Game, "test typical round outcomes." do
     before (:each) do
       @test_hand_size = 7
       @number_of_test_hands = 3
-      cards = Card.new_from_hand_strings( "2C 2H 3C QH 5C 4H 9H",
+      test_deck = Card.new_from_hand_strings( "2C 2H 3C QH 5C 4H 9H",
                                           "2S 2D 3S 3D 5S 4D 9C",
                                           "10C 10H 10S 10D AC AH 9S")
       # add an extra card
-      cards.unshift(Card.new("3", "H"))
+      test_deck.unshift(Card.new("3", "H"))
 
-      @game = Game.new(@number_of_test_hands, cards)
+      @game = Game.new(@number_of_test_hands, test_deck)
 
     end # before (:each)
 

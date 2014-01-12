@@ -34,14 +34,14 @@ EOF
     broadcast("=====================\nAnd now play begins...\n")
 
     # check hands for initial books
-    players.each_with_index { |player, i|
-      player.hand.cards.map { |card|
+    players.each do |player|
+      player.hand.cards.map do |card|
         if @game.process_books(card.rank) != 0
           broadcast "#{player.name} was dealt a book of #{card.rank}s.\n"
           break
         end
-      }
-    }
+      end
+    end
   end
 
   def game_play
@@ -73,7 +73,7 @@ def endgame
     rank_list = calculate_rankings
 
     winners = 0; rank_list.each { |rank| winners += 1 if rank == 0 }
-  debug=false
+  debug=true
   players.each_with_index { |player, i|
     if debug
       puts "Player #{i}"
@@ -82,7 +82,7 @@ def endgame
       puts "#{@game.books(player.hand).length} books"
     end
 # causes hang
-#    puts "(#{@game.books_to_s(i)})"
+    puts "(#{@game.books_to_s(player.hand)})"
       part1 = "Player #{i}, #{player.name}, made " +
                  "{@game.books(player.hand).length} books ({@game.books_to_s(i)})"
     # this code is hanging...

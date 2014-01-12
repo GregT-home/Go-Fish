@@ -34,11 +34,11 @@ class Game
 
     @current_index = 0
     @current_hand = hands[@current_index]
-    deal(hand_size(hands.length), hands)
+    deal(hand_size(num_hands), hands)
   end
 
-  def hand_size(number_of_players)
-    if number_of_players > 4
+  def hand_size(number_of_hands)
+    if number_of_hands > 4
       5
     else
       7
@@ -110,8 +110,8 @@ class Game
   def debug
     @debug = !@debug
   end
-  def books_to_s(index)
-    books_list[index].map { |i| i + "s"}.sort.join(", ")
+  def books_to_s(hand)
+    books_list[hand].map { |i| i + "s"}.sort.join(", ")
   end
 
   def over?
