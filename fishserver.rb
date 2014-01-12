@@ -46,8 +46,9 @@ EOF
 
   def game_play
     until @game.over? do
-      player = players[@game.current_index]
-      broadcast("-------------------\n" + "It is Player #{@game.current_index}," +
+      player = players.select { |player| player.hand == @game.current_hand }
+#      player = players[@game.current_index]
+      broadcast("-------------------\n" + "It is Player #{player.number}," +
                 " #{player.name}'s turn.\n")
       put_message(player.socket, "Your cards: #{player.hand.to_s}\n")
       log "Deck has #{@game.deck.length} cards in it"
@@ -73,41 +74,31 @@ def endgame
     rank_list = calculate_rankings
 
     winners = 0; rank_list.each { |rank| winners += 1 if rank == 0 }
-  debug=true
-  players.each_with_index { |player, i|
-    if debug
-      puts "Player #{i}"
-      puts "#{player.name}"
-      puts @game.books_list.first
-      puts "#{@game.books(player.hand).length} books"
-    end
-# causes hang
-    puts "(#{@game.books_to_s(player.hand)})"
-      part1 = "Player #{i}, #{player.name}, made " +
-                 "{@game.books(player.hand).length} books ({@game.books_to_s(i)})"
-    # this code is hanging...
-      # part1 = "Player #{i}, #{player.name}, made " +
-      #            "#{@game.books[i].length} books (#{@game.books_to_s(i)})"
 
-      if rank_list[i] == 0
+  players.each do |player|
+      part1 = "Player #{player.number}, #{player.name}, made " +
+                 "#{@game.books(player.hand).length} books (#{@game.books_to_s(player.hand)})"
+
+      # rank_list is one-off from player numbers
+      if rank_list[player.number-1] == 0
         broadcast part1 + " and is the winner!\n" if winners == 1
         broadcast part1 + " and ties for the win!\n" if winners > 1
       else
         broadcast part1
       end
-    }
+  end
   broadcast ("Thank you for Playing.\n" +
              "=========================\n")
   broadcast GAME_OVER_TOKEN
   end
 
   def put_status(socket)
-    players.each_with_index { |player, i|
+    players.each do |player, |
       put_message(socket,
-                  "  #{player.name} (##{i}) has #{player.hand.length}" +
-                  " cards and has made #{@game.books[i].length} books" +
-                  " (#{@game.books_to_s(i)})\n")
-    }
+                  "  #{player.name} (##{player.number}) has #{player.hand.length}" +
+                  " cards and has made #{@game.books(player.hand).length} books" +
+                  " (#{@game.books_to_s(player.hand)})\n")
+    end
     put_message(socket, "  Deck has #{@game.deck.length} cards remaining.\n")
   end
 
@@ -141,33 +132,43 @@ def endgame
   end
 
   def process_ask(raw_input, player)
-    victim, rank = parse_ask(raw_input)
+    victim_number, rank = parse_ask(raw_input)
 
-    if victim == @game.current_index
+    if !victim_number
+      put_message(player.socket, "Victim number not recognized.\n")
+      return false
+    end
+
+    if !rank
+      put_message(player.socket, "Rank not recognized.\n")
+      return false
+    end
+
+    victim = players.select { |player| player.number == victim_number}
+
+     if victim.empty?
+      put_message(player.socket, "That player does not exist.\n")
+      return false
+     end
+
+    victim = victim[0]
+
+    if victim == player
       put_message(player.socket, "?? You cannot request cards from yourself.\n")
       return false
     end
 
-    if !victim || !rank
-      put_message(player.socket, "Victim number not recognized.\n") unless victim
-      put_message(player.socket, "Rank not recognized.\n") unless rank
-      return false
-    else
-      if victim >= number_of_players
-        put_message(player.socket, "That player does not exist.\n")
-        return false
-      else
-        result = @game.play_round(victim, rank)
-        broadcast("#{player.name} (player ##{@game.current_index})," +
-                  " asked for #{rank}s from player" +
-                  " ##{victim}, #{players[victim].name}.\n" +
-                  result.to_s)
-        put_message(players[victim].socket,
-                    "Your cards: #{players[victim].hand.to_s}\n")
-        put_message(player.socket,
-                    "Your cards: #{player.hand.to_s}\n")
-      end
-    end
+    victim_index = victim.number - 1
+
+    result = @game.play_round(victim_index, rank)
+    broadcast("#{player.name} (player ##{player.number})," +
+              " asked for #{rank}s from player" +
+              " ##{victim.number}, #{victim.name}.\n" +
+              result.to_s)
+    put_message(victim.socket,
+                "Your cards: #{victim.hand.to_s}\n")
+    put_message(player.socket,
+                "Your cards: #{player.hand.to_s}\n")
     true
   end
 
@@ -220,7 +221,7 @@ def endgame
     # 1. make an array of the number of books each player made
     player_books = []
     players.each { |player|
-      player_books << @game.books(player)
+      player_books << @game.books(player.hand).length
     }
 
     # 2: make a list of the rankings we have

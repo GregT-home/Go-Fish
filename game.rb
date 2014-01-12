@@ -110,6 +110,7 @@ class Game
   def debug
     @debug = !@debug
   end
+
   def books_to_s(hand)
     books_list[hand].map { |i| i + "s"}.sort.join(", ")
   end

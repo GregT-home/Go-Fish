@@ -29,7 +29,6 @@ class MockClient
   end
 
   def receive_message
-    log "receive_message called"
     message = ""
     begin
       message += receive_line + "\n"
@@ -43,6 +42,7 @@ class MockClient
   end
 
   def close
+    log "closing #{socket.inspect}"
     @socket.close
   end
 
@@ -185,80 +185,64 @@ EOM
 end # .broadcast
 
 describe FishServer, ".end_game" do
-  it "can handle a single winner" do
-    # cook the books :-)
-z=0
-z=z+1; puts "--", "single winner, #{z}"
-    if true
-      server = FishServer.new(3)
-    else
-      cards = Card.new_from_hand_strings("2C 2H 2S 2D JH 6H 6H 6H 6H 6H 6H 6H",
-                                       "4C 4H 4S 4D 5C 5H 5S 5D AC AH AS AD",
-                                       "8C 8H 8S 8D 9C 9H 9S 9D 6S 6S 6S 6S")
-      server = FishServer.new(3, cards)
+  context "Test .setup logic by creating 3 test hands." do
+    before (:each) do
+      @server = FishServer.new(3)
+
+      # kick-off a non-blocking server thread
+      thread_id = Thread.new { @server.get_clients }
+
+      names = %w(One Two Three)
+      @clients = [MockClient.new, MockClient.new, MockClient.new]
+
+      #sending first for test purposes (avoids blocking)
+      @clients.each_with_index { |c, i| c.send_line(names[i]) }
+
+      @server.create_players
+
+
+      @clients[0].receive_message # consume "What is your name?" prompt
+      @server.players[0].hand.should eq @server.game.current_hand
+      @server.players[0].name.should eq names[0]
+      @server.players[0].socket.should_not eq 0
     end
 
-    # kick-off a non-blocking server thread
-    thread_id = Thread.new { server.get_clients }
+    after (:each) do
+      @clients.each { |c| c.close }
+      @server.close
+    end
 
-    names = %w(One Two Three)
-    clients = [MockClient.new, MockClient.new, MockClient.new]
-clients[0].debug
+    it "can handle a single winner" do
+      game = @server.game
 
-    #sending first for test purposes (avoids blocking)
-    clients.each_with_index { |c, i| c.send_line(names[i]) }
+      # Player 0 gets 1 x book, Player 1 gets 3, Player 2 gets 2
+      @server.game.books_list[@server.players[0].hand] = ["2"]
+      @server.game.books_list[@server.players[1].hand] = ["4", "5", "A"]
+      @server.game.books_list[@server.players[2].hand] = ["8", "9"]
 
-    server.create_players
+      @server.endgame
 
-    server.players[0].hand.should eq server.game.current_hand
-    server.players[0].name.should eq names[0]
-    server.players[0].socket.should_not eq 0
+      msg = @clients[0].receive_message
+      msg.should =~ Hand_str_regexp
 
-    clients[0].receive_message # consume "What is your name?" prompt
-
-server.debug
-    game = server.game
-# @server.player.each { |player| puts "+++", "h[#{player.number}]: #{player.hand}" }
-
-    # Player 0 gets 1 x book, Player 1 gets 3, Player 2 gets 2
-z=z+1; puts "--", "single winner, #{z}"
-    @server.game.books_list[@server.players[0].hand] << "2"
-z=z+1; puts "--", "single winner, #{z}"
-
-    @server.game.books_list[@server.players[1].hand] << "4"
-    @server.game.books_list[@server.players[1].hand] << "5"
-    @server.game.books_list[@server.players[1].hand] << "A"
-    @server.game.books_list[@server.players[2].hand] << "8"
-    @server.game.books_list[@server.players[2].hand] << "9"
-z=z+1; puts "--", "single winner, #{z}"
-
-    server.endgame
-z=z+1; puts "--", "single winner, #{z}"
-
-    msg = clients[0].receive_message
-    msg.should =~ Hand_str_regexp
-
-    target_msg =<<-EOF
+      target_msg =<<-EOF
 =========================
 There are no more fish in the pond.  Game play is over.
 Here is the final outcome:
 EOF
-    msg = clients[0].receive_message.strip
-    msg.should eql target_msg.strip
+      msg = @clients[0].receive_message.strip
+      msg.should eql target_msg.strip
 
-    msg = clients[0].receive_message.strip
-    msg.should eql "Player 0, One, made 1 books (2s)"
+      msg = @clients[0].receive_message.strip
+      msg.should eql "Player 1, One, made 1 books (2s)"
 
-    msg = clients[0].receive_message.strip
-    msg.should eql "Player 1, Two, made 3 books (4s, 5s, As) and is the winner!"
+      msg = @clients[0].receive_message.strip
+      msg.should eql "Player 2, Two, made 3 books (4s, 5s, As) and is the winner!"
 
-    msg = clients[0].receive_message.strip
-    msg.should eql "Player 2, Three, made 2 books (8s, 9s)"
-
-    clients.each { |c| c.close }
-    server.close
-  end
-
+      msg = @clients[0].receive_message.strip
+      msg.should eql "Player 3, Three, made 2 books (8s, 9s)"
+    end
+    
 #   it "can handle a tie" do
 #       # cook the books :-)
 
@@ -288,14 +272,13 @@ EOF
 #       msg = @clients[0].receive_message.strip
 #       msg.should eql "Player 2, Three, made 3 books (8s, 9s, Ks) and ties for the win!"
 #     end
-#   end # context
+   end # context
 end # .end_game
 
 describe FishServer, "." do
   context "Create 3 test hands." do
     before (:each) do
       @server = FishServer.new(3)
-#@server.debug
 
       # kick-off a non-blocking server thread
       thread_id = Thread.new { @server.get_clients }
@@ -325,37 +308,30 @@ describe FishServer, "." do
     end
 
     it ".put_status: can display multiple player status" do
-      @server.game.books_list[@server.players[0].hand] << "Q"
-      @server.game.books_list[@server.players[1].hand] << "2"
-      @server.game.books_list[@server.players[1].hand] << "7"
-      @server.game.books_list[@server.players[2].hand] << "A"
-      # @server.game.books[1] << "Q"
-      # @server.game.books[1] << "2"
-      # @server.game.books[1] << "7"
-      # @server.game.books[2] << "A"
+      @server.game.books_list[@server.players[1].hand] = ["2", "7", "Q"]
+      @server.game.books_list[@server.players[2].hand] = ["A"]
 
       @server.put_status(@server.players[0].socket)
-      test_msg = "One (#0) has 7 cards and has made 0 books ()"
+      test_msg = "One (#1) has 7 cards and has made 0 books ()"
       msg = @clients[0].receive_message.strip
       msg.should eq test_msg  
 
       @server.put_status(@server.players[0].socket)
-      test_msg = "Two (#1) has 7 cards and has made 3 books (2s, 7s, Qs)"
+      test_msg = "Two (#2) has 7 cards and has made 3 books (2s, 7s, Qs)"
       msg = @clients[0].receive_message.strip
       msg.should eq test_msg  
 
       @server.put_status(@server.players[0].socket)
-      test_msg = "Three (#2) has 7 cards and has made 1 books (As)"
+      test_msg = "Three (#3) has 7 cards and has made 1 books (As)"
       msg = @clients[0].receive_message.strip
       msg.should eq test_msg  
     end
 
     it ".calculate_rankings: it determines player ranking" do
 
-      @server.game.books[1] << "Q" # Player 1 wins with 3
-      @server.game.books[1] << "2"
-      @server.game.books[1] << "7"
-      @server.game.books[2] << "A" # Player 2 comes second, 0 is third
+      # Player 1 wins, Player 2 comes second, 0 is third
+      @server.game.books_list[@server.players[1].hand] = ["Q", "2", "7"]
+      @server.game.books_list[@server.players[2].hand] = ["A"]
 
       rank_list = @server.calculate_rankings
       rank_list.should eq [2, 0, 1]
@@ -364,10 +340,9 @@ describe FishServer, "." do
 
     it ".calculate_rankings: it shows ties" do
 
-      @server.game.books[1] << "Q" # Player 1 and 2 both have 2
-      @server.game.books[1] << "2" # and tie for win
-      @server.game.books[2] << "7"
-      @server.game.books[2] << "A" 
+      # Players 1 & 2 both have 2
+      @server.game.books_list[@server.players[1].hand] = ["Q", "2"]
+      @server.game.books_list[@server.players[2].hand] = ["7", "A"]
 
       rank_list = @server.calculate_rankings
       rank_list.should eq [1, 0, 0]
@@ -429,7 +404,7 @@ describe FishServer, "." do
      end
 
    it ".process_commands: understands well-formed ask and processes it" do
-      type = @server.process_commands(@server.players[0], "ask 1 for 3s")
+      type = @server.process_commands(@server.players[0], "ask 2 for 3s")
       
       type.should eq :public
 
@@ -439,21 +414,22 @@ describe FishServer, "." do
      end
 
    it ".process_commands: understands well-formed ask with invalid player and processes it" do
-      type = @server.process_commands(@server.players[0], "ask 3 for 3s")
+      type = @server.process_commands(@server.players[0], "ask 4 for 3s")
       
-      type.should eq :private
-
       test_regexp = Regexp.new("That player does not exist.")
       msg = @clients[0].receive_message.strip
       msg.should =~ test_regexp
+
+      type.should eq :private
 
       type = @server.process_commands(@server.players[0], "ask 10 for 3s")
       
-      type.should eq :private
-
       test_regexp = Regexp.new("That player does not exist.")
       msg = @clients[0].receive_message.strip
       msg.should =~ test_regexp
+
+      type.should eq :private
+
      end
 
    it ".process_commands: handles badly-formed ask properly" do

@@ -21,3 +21,6 @@ end
 task :this, [:target] do | task, args|
   sh "rspec specs/#{args[:target]}.spec"
 end
+task :this_pretty, [:target] do | task, args|
+  sh "rspec --format documentation specs/#{args[:target]}.spec"
+end
