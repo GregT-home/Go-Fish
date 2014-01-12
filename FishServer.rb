@@ -73,10 +73,21 @@ def endgame
     rank_list = calculate_rankings
 
     winners = 0; rank_list.each { |rank| winners += 1 if rank == 0 }
-
-    players.each_with_index { |player, i|
+  debug=false
+  players.each_with_index { |player, i|
+    if debug
+      puts "Player #{i}"
+      puts "#{player.name}"
+      puts @game.books_list.first
+      puts "#{@game.books(player.hand).length} books"
+    end
+# causes hang
+#    puts "(#{@game.books_to_s(i)})"
       part1 = "Player #{i}, #{player.name}, made " +
-                 "#{@game.books[i].length} books (#{@game.books_to_s(i)})"
+                 "{@game.books(player.hand).length} books ({@game.books_to_s(i)})"
+    # this code is hanging...
+      # part1 = "Player #{i}, #{player.name}, made " +
+      #            "#{@game.books[i].length} books (#{@game.books_to_s(i)})"
 
       if rank_list[i] == 0
         broadcast part1 + " and is the winner!\n" if winners == 1
@@ -196,7 +207,7 @@ def endgame
         put_message(client[i], "What is your name? ")
         name = get_line(client[i]).strip
       end while name.empty?
-      players << Player.new(name, @game.current_hand, client[i])
+      players << Player.new(i+1, name, @game.current_hand, client[i])
       put_message(players[-1].socket,
                   "Your cards: #{players[-1].hand.to_s}\n")
       @game.advance_to_next_hand
@@ -208,7 +219,9 @@ def endgame
   def calculate_rankings
     # 1. make an array of the number of books each player made
     player_books = []
-    players.each_with_index { |player, i| player_books << @game.books[i].length }
+    players.each { |player|
+      player_books << @game.books(player)
+    }
 
     # 2: make a list of the rankings we have
     # 3: review the player_books list to see who has what ranking

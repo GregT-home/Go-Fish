@@ -1,7 +1,8 @@
 class Player
-  attr_reader :name, :hand, :socket
+  attr_reader :number, :name, :hand, :socket
 
-  def initialize(name, hand, socket)
+  def initialize(number, name, hand, socket)
+    @number = number
     @name = name
     @hand = hand
     @socket = socket

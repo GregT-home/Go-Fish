@@ -34,7 +34,15 @@ class Game
 
     @current_index = 0
     @current_hand = hands[@current_index]
-    deal((num_hands > 4) ? 5 : 7, hands)
+    deal(hand_size(hands.length), hands)
+  end
+
+  def hand_size(number_of_players)
+    if number_of_players > 4
+      5
+    else
+      7
+    end
   end
 
   def books(hand)
