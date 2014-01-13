@@ -8,13 +8,13 @@ describe Game, "Initial game setup." do
   context ".new for initial game setup: Create 6 random hands." do
     before (:each) do
       @number_of_test_hands = 6
-      @hand_length = (@number_of_test_hands > 4) ? 5 : 7
+      @hand_count = (@number_of_test_hands > 4) ? 5 : 7
       @game = Game.new(@number_of_test_hands)
     end # before (:each)
     
     it ".new sets up properly" do
-      @game.hands.length.should be @number_of_test_hands
-      @game.hands.each { |hand| hand.length.should be @hand_length }
+      @game.hands.count.should be @number_of_test_hands
+      @game.hands.each { |hand| hand.count.should be @hand_count }
     end
 
     it ".current_hand is a hand and the 'first' hand" do
@@ -54,9 +54,9 @@ describe Game, "test typical round outcomes." do
     end # before (:each)
 
     it "Test Deck results in expected hands." do
-      @game.hands.length.should be @number_of_test_hands
-      @game.hands.length.times { |i|
-        @game.hands[i].length.should be @test_hand_size
+      @game.hands.count.should be @number_of_test_hands
+      @game.hands.count.times { |i|
+        @game.hands[i].count.should be @test_hand_size
       }
 
       # test a few samples for validity
@@ -188,7 +188,7 @@ describe Game, "test typical round outcomes." do
     it ".play_round: checks for end of game" do
       #take last card from deck
       card = @game.deck.give_card
-      @game.deck.length.should eq 0
+      @game.deck.count.should eq 0
 
       next_card = @game.deck.give_card
       next_card.should be_nil

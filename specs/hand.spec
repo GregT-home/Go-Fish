@@ -9,8 +9,8 @@ describe Hand, "Hand Creation and management object." do
       @hand = Hand.new
     end
 
-    it ".length: an empty hand has a 0 length" do
-      @hand.length.should eq 0
+    it ".count: an empty hand has a 0 length" do
+      @hand.count.should eq 0
     end
 
     it ".receive_cards: shows a hand can receive a card." do
@@ -20,7 +20,7 @@ describe Hand, "Hand Creation and management object." do
     end
 
     it ".receive_cards shows how many cards received." do
-      starting_hand_length = @hand.length
+      starting_hand_count = @hand.count
 
       cards = []
       cards << @deck.give_card
@@ -30,14 +30,14 @@ describe Hand, "Hand Creation and management object." do
 
       @hand.receive_cards(cards)
 
-      @hand.length.should eq starting_hand_length + 4
+      @hand.count.should eq starting_hand_count + 4
     end
 
     it ".receive_cards: can receive multiple cards from a deck." do
       52.times { @hand.receive_cards(@deck.give_card) }
 
       @deck.give_card.should eq nil
-      @hand.length.should eq 52
+      @hand.count.should eq 52
 
       card = @hand.give_card
       card.should_not be_nil
@@ -60,11 +60,11 @@ describe Hand, "Hand Creation and management object." do
       before (:each) do
         @deck = Deck.new(Card.new_from_hand_strings("AC 3C 4C 2H 2C 2S 2D"))
         @hand = Hand.new
-        @reference_deck_length = @deck.length
-        @reference_deck_length.should eq 7
+        @reference_deck_count = @deck.count
+        @reference_deck_count.should eq 7
 
         # put all cards into the basic hand for subsequent test cases.
-        @deck.length.times { @hand.receive_cards(@deck.give_card) }
+        @deck.count.times { @hand.receive_cards(@deck.give_card) }
       end
 
       it ".rank_count: can count the number of rank present in a hand." do
@@ -95,7 +95,7 @@ describe Hand, "Hand Creation and management object." do
       it ".give_matching_cards also deletes books" do
         @hand.got_book?('2').should eq true
         cards = @hand.give_matching_cards('2')
-        cards.length.should eq 4
+        cards.count.should eq 4
         @hand.rank_count("2").should eq 0
       end
     end # context, using stacked_deck & hand of 5

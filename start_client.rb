@@ -21,7 +21,7 @@ Now, to begin...
 EOF
 
 def get_server_name(args)
-  server_name = args.length > 0 ? args[0] : nil
+  server_name = args.count > 0 ? args[0] : nil
 
   while server_name.nil?
     print "What is the name of your server (default: 'localhost')? "

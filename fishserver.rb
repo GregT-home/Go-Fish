@@ -52,7 +52,7 @@ EOF
       broadcast("-------------------\n" +
                 "It is Player #{player.number}, #{player.name}'s turn.\n")
       put_message(player.socket, "Your cards: #{player.hand.to_s}\n")
-      log "Deck has #{@game.deck.length} cards in it"
+      log "Deck has #{@game.deck.count} cards in it"
 
       loop do
         put_message(player.socket, "What action do you want to take? ")
@@ -78,7 +78,7 @@ EOF
 
     players.each do |player|
       part1 = "Player #{player.number}, #{player.name}, made " +
-        "#{@game.books(player.hand).length} books (#{@game.books_to_s(player.hand)})"
+        "#{@game.books(player.hand).count} books (#{@game.books_to_s(player.hand)})"
 
       # rank_list is one-off from player numbers
       if rank_list[player.number - 1] == 0
@@ -96,11 +96,11 @@ EOF
   def put_status(socket)
     players.each do |player|
       put_message(socket,
-                  "  #{player.name} (##{player.number}) has #{player.hand.length}" +
-                  " cards and has made #{@game.books(player.hand).length} books" +
+                  "  #{player.name} (##{player.number}) has #{player.hand.count}" +
+                  " cards and has made #{@game.books(player.hand).count} books" +
                   " (#{@game.books_to_s(player.hand)})\n")
     end
-    put_message(socket, "  Deck has #{@game.deck.length} cards remaining.\n")
+    put_message(socket, "  Deck has #{@game.deck.count} cards remaining.\n")
   end
 
   def process_commands(player, raw_input)
@@ -108,7 +108,7 @@ EOF
 
     if args[0] == "deck" && args[1] == "size"
       put_message(player.socket,
-                  "#{@game.deck.length} cards are left in the pond\n")
+                  "#{@game.deck.count} cards are left in the pond\n")
       return :private # utility command
     end
 
@@ -182,7 +182,7 @@ EOF
   end
 
   def get_clients
-    while client.length < number_of_players
+    while client.count < number_of_players
       client << @server.accept 
       log "get_clients: accepting a new client"
       #consume the "new player" response and let the client know
@@ -208,7 +208,7 @@ EOF
   def calculate_rankings
     # 1. make an array of the number of books each player made
     player_books = []
-    players.each { |player| player_books << @game.books(player.hand).length }
+    players.each { |player| player_books << @game.books(player.hand).count }
 
     # 2: make a list of the rankings we have
     # 3: review the player_books list to see who has what ranking

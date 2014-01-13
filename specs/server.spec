@@ -85,7 +85,7 @@ describe FishServer, ".get_clients." do
     client1=MockClient.new
     client2=MockClient.new
 
-    server.client.length.should eq 2
+    server.client.count.should eq 2
 
     client1.close
     client2.close

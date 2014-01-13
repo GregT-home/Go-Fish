@@ -6,8 +6,8 @@ describe Deck, "Creation and basic function" do #Deck can be created, measured, 
     deck = Deck.new
     shuffled=Deck.new
 
-    it ".length is 52 cards." do
-      deck.length.should eq 52
+    it ".count is 52 cards." do
+      deck.count.should eq 52
     end
 
     it ".== works to compare decks." do
@@ -35,7 +35,7 @@ describe Deck, "Cards can be given to, and received by pseudo-players." do
     
 
     it ".give_card can give all 52 cards to one pseudo-player." do
-      @player.length.should eql 0
+      @player.count.should eql 0
     end
 
     it ".give_card works 52 times on a standard deck and returns nil when no cards remain." do
@@ -46,9 +46,9 @@ describe Deck, "Cards can be given to, and received by pseudo-players." do
 
         @player.receive_card(card)
       }
-      @player.length.should eql 52
+      @player.count.should eql 52
 
-      @deck.length.should be 0
+      @deck.count.should be 0
       card.should_not be nil
     end
 
@@ -59,8 +59,8 @@ describe Deck, "Cards can be given to, and received by pseudo-players." do
         card.should_not be nil
       }
 
-    @player.length.should eql 52
-    @deck.length.should eql 0
+    @player.count.should eql 52
+    @deck.count.should eql 0
 
     card = nil
     52.times {
@@ -68,8 +68,8 @@ describe Deck, "Cards can be given to, and received by pseudo-players." do
         card.should_not be nil
       }
 
-    @player.length.should eql 0
-    @deck.length.should eql 52
+    @player.count.should eql 0
+    @deck.count.should eql 52
     end
   end
 end #cards can be dealt to players

@@ -32,16 +32,16 @@ end
   # elements: Whole String, Rank and Suit.
   CARD_REGEXP = /(10|[2-9]|[JQKA])\W*[of]*\W*([CHSD])/i
   def self.new_from_hand_strings(*hand_strings)
-    number_of_hands = hand_strings.length
+    number_of_hands = hand_strings.count
     hand_strings = hand_strings.map { |string| string = string.split }
 
-    hand_size = hand_strings[0].length
+    hand_size = hand_strings[0].count
     
     stacked_deck = []
     
     deck_array = []
     hand_size.downto(1) do |card_num| 
-      hand_strings.length.times do |hand_num|
+      hand_strings.count.times do |hand_num|
         deck_array << new_card_from_s(hand_strings[hand_num][card_num-1])
       end
     end

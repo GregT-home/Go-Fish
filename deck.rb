@@ -17,8 +17,8 @@ class Deck
     end
   end
 
-  def length
-    @cards.length
+  def count
+    @cards.count
   end
 
   def ==(deck)

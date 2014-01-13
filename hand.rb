@@ -9,8 +9,8 @@ class Hand
     card = @cards.pop
   end
 
-  def length
-    @cards.length
+  def count
+    @cards.count
   end
 
   def receive_cards(newcards)
@@ -24,7 +24,7 @@ class Hand
   end
 
   def rank_count(target_rank)
-    @cards.select { |card| card.rank == target_rank }.length
+    @cards.select { |card| card.rank == target_rank }.count
   end
 
   def give_matching_cards(rank)
@@ -34,7 +34,7 @@ class Hand
 
   def got_book?(rank)
     cards = @cards.select { |card| card.rank == rank }
-    cards.length == 4
+    cards.count == 4
   end
 
   def to_s

@@ -28,7 +28,7 @@ class MockServer
   end
 
   def get_clients
-      while client.length < number_of_players
+      while client.count < number_of_players
         client << @server.accept 
         #consume the "new player" response and let the client know
         put_line(client[-1], get_line(client[-1]))

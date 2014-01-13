@@ -25,7 +25,7 @@ end
 
 # take # of players from command line, if present
 # also use a stacked deck, if requested
-num = ARGV.length > 0 ? ARGV[0].to_i : 0
+num = ARGV.count > 0 ? ARGV[0].to_i : 0
 use_stacked_deck = true if ARGV[1] == "stack" or ARGV[1] == "test"
 puts "Using stacked deck." if use_stacked_deck == true
 

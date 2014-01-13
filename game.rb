@@ -37,12 +37,12 @@ class Game
   end
 
   def advance_to_next_hand
-    @current_hand_index = (current_hand_index + 1) % hands.length
+    @current_hand_index = (current_hand_index + 1) % hands.count
     @current_hand = hands[@current_hand_index]
   end
 
   def deal(number, hands)
-    number = cards.length if number == 0
+    number = cards.count if number == 0
     number.times do
       hands.map { |hand| hand.receive_cards(deck.give_card) }
     end
@@ -51,7 +51,7 @@ class Game
   # check for book, if found then remove and return 1, else 0.
   def process_books(target_rank)
     cards = current_hand.give_matching_cards(target_rank)
-    if cards.length == 4
+    if cards.count == 4
       books_list[current_hand] << target_rank
       return 1
     else
@@ -69,7 +69,7 @@ class Game
       match_cards = target_hand.give_matching_cards(target_rank)
       current_hand.receive_cards(match_cards)
 
-      result.matches += match_cards.length
+      result.matches += match_cards.count
       result.received_from = target_hand
     else 
       card = deck.give_card
