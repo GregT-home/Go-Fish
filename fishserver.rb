@@ -32,8 +32,10 @@ EOF
     get_clients
     create_players
     broadcast("=====================\nAnd now play begins...\n")
+    check_players_for_books
+  end
 
-    # check hands for initial books
+  def check_players_for_books
     players.each do |player|
       player.hand.cards.map do |card|
         if @game.process_books(card.rank) != 0
@@ -46,14 +48,13 @@ EOF
 
   def game_play
     until @game.over? do
-      player = players.select { |player| player.hand == @game.current_hand }
-#      player = players[@game.current_index]
-      broadcast("-------------------\n" + "It is Player #{player.number}," +
-                " #{player.name}'s turn.\n")
+      player = players.select { |player| player.hand == @game.current_hand }[0]
+      broadcast("-------------------\n" +
+                "It is Player #{player.number}, #{player.name}'s turn.\n")
       put_message(player.socket, "Your cards: #{player.hand.to_s}\n")
       log "Deck has #{@game.deck.length} cards in it"
 
-      loop {
+      loop do
         put_message(player.socket, "What action do you want to take? ")
         raw_input = get_line(player.socket)
 
@@ -62,38 +63,38 @@ EOF
         else
           break # broadcast status update
         end
-      }
-    end # game command loop
+      end
+    end
   end # game_play
 
-def endgame
+  def endgame
     broadcast ("=========================\n" +
                "There are no more fish in the pond.  Game play is over.\n" +
                "Here is the final outcome:\n")
 
     rank_list = calculate_rankings
+    winners = 0
+    rank_list.each { |rank| winners += 1 if rank == 0 }
 
-    winners = 0; rank_list.each { |rank| winners += 1 if rank == 0 }
-
-  players.each do |player|
+    players.each do |player|
       part1 = "Player #{player.number}, #{player.name}, made " +
-                 "#{@game.books(player.hand).length} books (#{@game.books_to_s(player.hand)})"
+        "#{@game.books(player.hand).length} books (#{@game.books_to_s(player.hand)})"
 
       # rank_list is one-off from player numbers
-      if rank_list[player.number-1] == 0
+      if rank_list[player.number - 1] == 0
         broadcast part1 + " and is the winner!\n" if winners == 1
         broadcast part1 + " and ties for the win!\n" if winners > 1
       else
-        broadcast part1
+        broadcast part1 + "\n"
       end
-  end
-  broadcast ("Thank you for Playing.\n" +
-             "=========================\n")
-  broadcast GAME_OVER_TOKEN
+    end
+    broadcast ("Thank you for Playing.\n" +
+               "=========================\n")
+    broadcast GAME_OVER_TOKEN
   end
 
   def put_status(socket)
-    players.each do |player, |
+    players.each do |player|
       put_message(socket,
                   "  #{player.name} (##{player.number}) has #{player.hand.length}" +
                   " cards and has made #{@game.books(player.hand).length} books" +
@@ -111,7 +112,7 @@ def endgame
       return :private # utility command
     end
 
-    if args[0] == "hand"
+    if args[0] == "hand" || args[0] == "cards"
       put_message(player.socket, "Your cards: #{player.hand.to_s}\n")
       return :private # utility command
     end
@@ -135,23 +136,16 @@ def endgame
     victim_number, rank = parse_ask(raw_input)
 
     if !victim_number
-      put_message(player.socket, "Victim number not recognized.\n")
+      put_message(player.socket, "Victim and/or rank not recognized.\n")
       return false
     end
 
-    if !rank
-      put_message(player.socket, "Rank not recognized.\n")
-      return false
-    end
+    victim = players.select { |player| player.number == victim_number}[0]
 
-    victim = players.select { |player| player.number == victim_number}
-
-     if victim.empty?
+    if victim.nil?
       put_message(player.socket, "That player does not exist.\n")
       return false
-     end
-
-    victim = victim[0]
+    end
 
     if victim == player
       put_message(player.socket, "?? You cannot request cards from yourself.\n")
@@ -165,21 +159,19 @@ def endgame
               " asked for #{rank}s from player" +
               " ##{victim.number}, #{victim.name}.\n" +
               result.to_s)
-    put_message(victim.socket,
-                "Your cards: #{victim.hand.to_s}\n")
-    put_message(player.socket,
-                "Your cards: #{player.hand.to_s}\n")
+    put_message(victim.socket, "Your cards: #{victim.hand.to_s}\n")
+    put_message(player.socket, "Your cards: #{player.hand.to_s}\n")
     true
   end
 
   def  parse_ask(string)
     log "parse_ask(#{string})"
     match = string.match(%r{\D*(\d+).*(10|[2-9]|[JQKA])}i)
+    log "parse_ask: match = #{match}"
+    log "parse_ask: #{match.inspect}"
     if match
       player_num = match[1].to_i unless match[1].nil?
-      log "parse_ask: #{match.inspect}"
       rank = match[2].upcase unless match[2].nil?
-      log "parse_ask: match = #{match}"
       log "parse_ask: returning #{player_num} and #{rank}"
     end
     return player_num, rank
@@ -194,9 +186,9 @@ def endgame
   def get_clients
     while client.length < number_of_players
       client << @server.accept 
-      #consume the "new player" response and let the client know
       log "get_clients: accepting a new client"
-      client[-1].puts get_line(client[-1])
+      #consume the "new player" response and let the client know
+      client.last.puts get_line(client.last)
     end
   end
 
@@ -209,7 +201,7 @@ def endgame
         name = get_line(client[i]).strip
       end while name.empty?
       players << Player.new(i+1, name, @game.current_hand, client[i])
-      put_message(players[-1].socket,
+      put_message(players.last.socket,
                   "Your cards: #{players[-1].hand.to_s}\n")
       @game.advance_to_next_hand
       i += 1
@@ -220,9 +212,7 @@ def endgame
   def calculate_rankings
     # 1. make an array of the number of books each player made
     player_books = []
-    players.each { |player|
-      player_books << @game.books(player.hand).length
-    }
+    players.each { |player| player_books << @game.books(player.hand).length }
 
     # 2: make a list of the rankings we have
     # 3: review the player_books list to see who has what ranking
@@ -237,9 +227,7 @@ def endgame
   end
 
   def broadcast(msg)
-    @client.map { |cli|
-      put_message(cli, msg)
-    }
+    @client.map { |cli| put_message(cli, msg) }
   end
 
   def close

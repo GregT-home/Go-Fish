@@ -437,7 +437,7 @@ describe FishServer, "." do
       
       type.should eq :private
 
-      test_msg = "Victim number not recognized."
+      test_msg = "Victim and/or rank not recognized."
       msg = @clients[0].receive_message.strip
       msg.should eq test_msg
      end

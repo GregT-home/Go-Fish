@@ -9,11 +9,11 @@ class Deck
     unless test_deck.empty?
       @cards = test_deck
     else
-      @cards = Card::SUITS.map { |suit| 
-        Card::RANKS.map { |rank|
+      @cards = Card::SUITS.map do |suit| 
+        Card::RANKS.map do |rank|
           Card.new(rank,suit)
-        }
-      }.flatten
+        end
+      end.flatten
     end
   end
 

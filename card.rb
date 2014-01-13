@@ -40,11 +40,11 @@ end
     stacked_deck = []
     
     deck_array = []
-    hand_size.downto(1) { |card_num| 
-      hand_strings.length.times { |hand_num|
+    hand_size.downto(1) do |card_num| 
+      hand_strings.length.times do |hand_num|
         deck_array << new_card_from_s(hand_strings[hand_num][card_num-1])
-      }
-    }
+      end
+    end
     deck_array.reverse
   end
 

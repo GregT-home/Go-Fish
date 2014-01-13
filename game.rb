@@ -1,23 +1,13 @@
-#
-# Future features possibilities:
-# 1) Currently, the game allows the player to lie about what is in his
-# hand.  It might be an interesting feature to allow this, but allow
-# other players to accuse him/her of lying, with an appropriate
-# penalty, losing all books or losing the game, if rightly accused or
-# the accuser getting the penalty if incorrect.
-#
-# 2) Alternately, prevent the player from asking for cards he does not
-# possess.
-#
-# 3) Save a list of all moves made; potentially deck & game status as well (for roll-back or re-play)
-# -Greg Jan 2014
-
 require "./card.rb"
 require "./deck.rb"
 require "./hand.rb"
 require "./result.rb"
 class Game
-  attr_reader :hands, :books_list, :deck, :current_hand, :current_index
+  private
+  attr_reader :current_hand_index
+
+  public
+  attr_reader :hands, :books_list, :deck, :current_hand
 
   def initialize(num_hands, test_deck = [])
     @hands = []
@@ -27,21 +17,18 @@ class Game
 
     deck.shuffle if test_deck.empty?
 
-    num_hands.times { |i|
+    num_hands.times do |i|
       @hands << Hand.new()
       @books_list[@hands.last] = []
-    }
+    end
 
-    @current_index = 0
-    @current_hand = hands[@current_index]
-    deal(hand_size(num_hands), hands)
-  end
+    @current_hand = hands.first
+    @current_hand_index = 0
 
-  def hand_size(number_of_hands)
-    if number_of_hands > 4
-      5
+    if num_hands > 4
+      deal(5, hands)
     else
-      7
+      deal(7, hands)
     end
   end
 
@@ -50,17 +37,15 @@ class Game
   end
 
   def advance_to_next_hand
-    @current_index = (current_index + 1) % hands.length
-    @current_hand = hands[@current_index]
+    @current_hand_index = (current_hand_index + 1) % hands.length
+    @current_hand = hands[@current_hand_index]
   end
 
   def deal(number, hands)
     number = cards.length if number == 0
-    number.times {
-      hands.map { |hand|
-        hand.receive_cards(deck.give_card)
-        }
-    }
+    number.times do
+      hands.map { |hand| hand.receive_cards(deck.give_card) }
+    end
   end
 
   # check for book, if found then remove and return 1, else 0.
@@ -76,6 +61,7 @@ class Game
   end
 
   def play_round(target_index, target_rank)
+
     victim_matches = hands[target_index].rank_count(target_rank)
 
     result = Result.new(current_hand, target_index, target_rank)
@@ -118,4 +104,5 @@ class Game
   def over?
     @game_over
   end
+
 end # Game
