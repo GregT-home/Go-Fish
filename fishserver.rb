@@ -152,9 +152,7 @@ EOF
       return false
     end
 
-    victim_index = victim.number - 1
-
-    result = @game.play_round(victim_index, rank)
+    result = @game.play_round(victim.hand, rank)
     broadcast("#{player.name} (player ##{player.number})," +
               " asked for #{rank}s from player" +
               " ##{victim.number}, #{victim.name}.\n" +
@@ -194,8 +192,7 @@ EOF
 
   # get name, associate
   def create_players
-    i = 0
-    while i < number_of_players do
+    0.upto(number_of_players - 1) do |i|
       begin
         put_message(client[i], "What is your name? ")
         name = get_line(client[i]).strip
@@ -204,7 +201,6 @@ EOF
       put_message(players.last.socket,
                   "Your cards: #{players[-1].hand.to_s}\n")
       @game.advance_to_next_hand
-      i += 1
     end
   end
 

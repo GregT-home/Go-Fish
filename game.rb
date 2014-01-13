@@ -60,18 +60,17 @@ class Game
     end
   end
 
-  def play_round(target_index, target_rank)
+  def play_round(target_hand, target_rank)
+    victim_matches = target_hand.rank_count(target_rank)
 
-    victim_matches = hands[target_index].rank_count(target_rank)
-
-    result = Result.new(current_hand, target_index, target_rank)
+    result = Result.new(current_hand, target_hand, target_rank)
 
     if victim_matches > 0  # intended match
-      match_cards = hands[target_index].give_matching_cards(target_rank)
+      match_cards = target_hand.give_matching_cards(target_rank)
       current_hand.receive_cards(match_cards)
 
       result.matches += match_cards.length
-      result.received_from = target_index
+      result.received_from = target_hand
     else 
       card = deck.give_card
       if card.nil?     # no cards, game is over
