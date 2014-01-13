@@ -37,7 +37,8 @@ nav {
     height: 1.25em;
     margin: 0 auto .25em auto;
     padding-bottom: 0em;
-    border: thin solid;
+    border-width: thin;
+    border-bottom-style: solid;
     list-style: none;
     text-align: center;
     ul {
@@ -46,6 +47,7 @@ nav {
 	margin-top: .25em;
     }
     li {
+	width: 25%;
 	float: none;
 	text-align: center;
 	display: inline-block;

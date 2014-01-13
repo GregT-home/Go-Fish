@@ -35,39 +35,19 @@ section.game-area
     section class="hand-area"
       h2 Your Cards:
       ul.hand
-        li
-          img alt="5-of-Hearts-pic" src="images/cards/h5.png"
-        li
-          img alt="6-of-Diamonds-pic" src="images/cards/d6.png"
-        li
-          img alt="9-of-Clubs-pic" src="images/cards/c9.png"
-        li
-          img alt="King-of-Diamonds-pic" src="images/cards/dk.png"
-        li
-          img alt="King-of-Hearts-pic" src="images/cards/hk.png"
+       - if @cards.any?
+         - @cards.each do |rs|
+           li
+             img alt="#{rs[0]}-of-#{rs[1]}-pic" src="images/cards/#{rs[1]}#{rs[0]}.png"
 
     section class="books-area"
       h3 Your Books
-      ul.books
-        li
-          img alt="7-of-hearts-pic" src="images/cards/h7.png"
-        li
-          img alt="7-of-hearts-pic" src="images/cards/s7.png"
-        li
-          img alt="7-of-hearts-pic" src="images/cards/d7.png"
-        li
-          img alt="7-of-hearts-pic" src="images/cards/c7.png"
-
-      ul.books
-        li
-          img alt="7-of-hearts-pic" src="images/cards/hj.png"
-        li
-          img alt="7-of-hearts-pic" src="images/cards/sj.png"
-        li
-          img alt="7-of-hearts-pic" src="images/cards/dj.png"
-        li
-          img alt="7-of-hearts-pic" src="images/cards/cj.png"
-
+      - if @books.any?
+        - @books.each do |r|
+          ul.books
+            - %w{h s c d}.each do |s|
+              li
+                img alt="#{r}-of-#{s}-pic" src="images/cards/#{s}#{r}.png"
 
   section class="status-area"
     h2 Game Status

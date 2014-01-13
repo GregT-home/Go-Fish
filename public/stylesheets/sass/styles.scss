@@ -100,7 +100,7 @@ p.history-area {
 	li:first-child { text-indent: 0 }
 	li {
 	    display: inline-block;
-	    text-indent: -$hand-card-width * .80;
+	    text-indent: -$hand-card-width * .85;
 	}
     }
 
@@ -123,7 +123,7 @@ p.history-area {
     .hand {
 	margin: $hand-card-width * .05;
 	img { width: $hand-card-width * $card-shrink-ratio; }
-	li { text-indent: -$hand-card-width * .60 * $card-shrink-ratio; }
+	li { text-indent: -$hand-card-width * .85 * $card-shrink-ratio; }
     }
 }
 @media (max-width: $phone_size) {

@@ -1,3 +1,5 @@
+# Jan-2014: Test(s) need to be added for == and related hash equivalence operators.
+
 #Dir['../tests/*.rb'].each { |file| require_relative "#{file}" }
 require_relative "../card.rb"
 

@@ -22,7 +22,14 @@ end
     "#{@rank}-#{@suit}"
   end
 
-  def ==(card)
+  # test this exhaustively
+  # as_1 = Card("A", "S"); as_2 = Card("A", "S")
+  # hash { as_1 => 'Wild')
+  # assert(as1 == as2)
+  # assert(as1 equal as2)
+  # assert (as1 eql? as2)
+  # check Ken's slides for actual test set
+  def == card
     rank == card.rank && suit == card.suit
   end
 

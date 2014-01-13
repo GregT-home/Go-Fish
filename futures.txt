@@ -1,5 +1,9 @@
 Future features possibilities:
 
+0) Move deck shuffling class into a test_??? class and take it out of
+   Card. Re-factor code so that start_server and tests use the same
+   deck stacking code.
+
 1) Currently, the game allows the player to lie about what is in his
    hand.  It might be an interesting feature to allow this, but allow
    other players to accuse him/her of lying, with an appropriate
