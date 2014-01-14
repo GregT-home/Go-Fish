@@ -7,7 +7,9 @@ require_relative "../result.rb"
 describe Result, "Round Result creation and manipulation." do
   context "Round results need an active game." do
     before (:each) do
-      @game = Game.new(1)
+      @game = Game.new()
+      @game.add_hand()
+      @game.start_game()
     end
 
     it "A Round Result can be created." do

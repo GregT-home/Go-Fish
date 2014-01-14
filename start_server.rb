@@ -47,8 +47,6 @@ end
 if use_stacked_deck
   puts "Using a deck stacked for the standard 3 players."
   test_deck = stack_deck
-else
-  test_deck = []
 end
 
 puts "Creating a Fish Server for #{num} players..."

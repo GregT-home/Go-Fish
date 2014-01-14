@@ -2,11 +2,11 @@ require "./card.rb"
 class Deck
   attr_reader :cards
 
-  def initialize(test_deck = [])
+  def initialize(test_deck = nil)
     @cards = []
     @books = []
 
-    unless test_deck.empty?
+    if test_deck
       @cards = test_deck
     else
       @cards = Card::SUITS.map do |suit| 

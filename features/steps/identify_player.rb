@@ -5,19 +5,15 @@ class Spinach::Features::IdentifyPlayer < Spinach::FeatureSteps
     
   end
 
-  step 'they identify themselves by name' do
-#    pending 'step not implemented'
+  step 'They identify themselves by name to the server' do
     visit "/login"
     within(".About")do
       fill_in 'user_name', :with => "Test Person"
       click_on 'Submit'
     end
-    
-    
-end
+  end
 
   step 'they\'re successfully associated with a new game and redirected to the game page.' do
-#    pending 'step not implemented'
     page.should have_content("Your Cards")
   end
 end

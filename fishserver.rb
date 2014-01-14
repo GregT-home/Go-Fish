@@ -17,13 +17,16 @@ EOF
 
   attr_reader :client, :names, :players, :number_of_players, :game
 
-  def initialize(number, test_deck = [])
+  def initialize(number, test_deck = nil)
     @client = []
     @players = []
     @number_of_players = number
     @game = nil
 
-    @game = Game.new(number_of_players, test_deck)
+    @game = Game.new()
+    number_of_players.downto(1) { @game.add_hand() }
+    @game.start_game(test_deck)
+
     @server = TCPServer.open(PORT)	# listen on our port
     log "Listening for connections on %{PORT}"
   end
@@ -197,9 +200,11 @@ EOF
         put_message(client[i], "What is your name? ")
         name = get_line(client[i]).strip
       end while name.empty?
-      players << Player.new(i+1, name, @game.current_hand, client[i])
-      put_message(players.last.socket,
-                  "Your cards: #{players[-1].hand.to_s}\n")
+
+      player = Player.new(i+1, name, @game.current_hand, client[i])
+      players << player
+      put_message(player.socket,
+                  "Your cards: #{player.hand.to_s}\n")
       @game.advance_to_next_hand
     end
   end

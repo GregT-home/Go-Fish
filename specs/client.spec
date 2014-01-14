@@ -14,7 +14,10 @@ class MockServer
     @number_of_players = number
     @game = nil
 
-    @game = Game.new(number_of_players)
+    @game = Game.new()
+    number_of_players.downto(1) { @game.add_hand() }
+    @game.start_game()
+
     @server = TCPServer.open(MockServer::PORT)	# listen on our port
   end
 

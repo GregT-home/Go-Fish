@@ -10,7 +10,9 @@ describe Game, "Initial game setup." do
     before (:each) do
       @number_of_test_hands = 6
       @hand_count = (@number_of_test_hands > 4) ? 5 : 7
-      @game = Game.new(@number_of_test_hands)
+      @game = Game.new()
+      @number_of_test_hands.downto(1) { @game.add_hand() }
+      @game.start_game()
     end # before (:each)
     
     it ".new sets up properly" do
@@ -50,15 +52,15 @@ describe Game, "test typical round outcomes." do
       # add an extra card
       test_deck.unshift(Card.new("3", "H"))
 
-      @game = Game.new(@number_of_test_hands, test_deck)
+      @game = Game.new()
+      @number_of_test_hands.downto(1) { @game.add_hand() }
+      @game.start_game(test_deck)
 
     end # before (:each)
 
     it "Test Deck results in expected hands." do
       @game.hands.count.should be @number_of_test_hands
-      @game.hands.count.times { |i|
-        @game.hands[i].count.should be @test_hand_size
-      }
+      @game.hands.each { |hand| hand.count.should be @test_hand_size }
 
       # test a few samples for validity
       @game.hands[0].cards[0].should eq Card.new("Q", "H")

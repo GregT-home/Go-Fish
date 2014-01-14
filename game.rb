@@ -2,6 +2,8 @@ require "./card.rb"
 require "./deck.rb"
 require "./hand.rb"
 require "./result.rb"
+require "pry"
+
 class Game
   private
   attr_reader :current_hand_index
@@ -9,27 +11,30 @@ class Game
   public
   attr_reader :hands, :books_list, :deck, :current_hand
 
-  def initialize(num_hands, test_deck = [])
+  def initialize()
     @hands = []
     @books_list = {}
     @game_over = false
-    @deck = Deck.new(test_deck)
+  end
 
-    deck.shuffle if test_deck.empty?
-
-    num_hands.times do |i|
-      @hands << Hand.new()
-      @books_list[@hands.last] = []
-    end
-
-    @current_hand = hands.first
-    @current_hand_index = 0
-
-    if num_hands > 4
-      deal(5, hands)
+  def start_game(cards = nil)
+    if cards.nil?
+      @deck = Deck.new()
     else
-      deal(7, hands)
+      @deck = Deck.new(cards)
     end
+    @hands.each {  |hand| @books_list[hand] = [] }
+    @current_hand_index = 0
+    @current_hand = @hands.first
+    deal(@hands.count > 4 ? 5: 7)
+  end
+
+  def add_hand
+      @hands << Hand.new()
+  end
+
+  def number_of_hands
+    @hands.count
   end
 
   def books(hand)
@@ -37,14 +42,13 @@ class Game
   end
 
   def advance_to_next_hand
-    @current_hand_index = (current_hand_index + 1) % hands.count
-    @current_hand = hands[@current_hand_index]
+    @current_hand_index = (current_hand_index + 1) % @hands.count
+    @current_hand = @hands[@current_hand_index]
   end
 
-  def deal(number, hands)
-    number = cards.count if number == 0
+  def deal(number)
     number.times do
-      hands.map { |hand| hand.receive_cards(deck.give_card) }
+      @hands.each { |hand| hand.receive_cards(@deck.give_card) }
     end
   end
 
