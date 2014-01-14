@@ -2,7 +2,8 @@ require_relative "../card.rb"
 require_relative "../deck.rb"
 require_relative "../hand.rb"
 require_relative "../game.rb"
-require_relative "../result.rb"
+require_relative "../result"
+require_relative "./testhelp"
 
 describe Game, "Initial game setup." do
   context ".new for initial game setup: Create 6 random hands." do
@@ -43,7 +44,7 @@ describe Game, "test typical round outcomes." do
     before (:each) do
       @test_hand_size = 7
       @number_of_test_hands = 3
-      test_deck = Card.new_from_hand_strings( "2C 2H 3C QH 5C 4H 9H",
+      test_deck = TestHelp.cards_from_hand_s( "2C 2H 3C QH 5C 4H 9H",
                                           "2S 2D 3S 3D 5S 4D 9C",
                                           "10C 10H 10S 10D AC AH 9S")
       # add an extra card
@@ -173,7 +174,7 @@ describe Game, "test typical round outcomes." do
       @game.current_hand.give_matching_cards("A")
 
       # Stack the hand with three books
-      cards = Card.new_from_hand_strings("2C 2S 2D 2H KC KS KD KH AC AS AD AH")
+      cards = TestHelp.cards_from_hand_s("2C 2S 2D 2H KC KS KD KH AC AS AD AH")
       @game.current_hand.receive_cards(cards)
 
       # check the hand for each kind of book

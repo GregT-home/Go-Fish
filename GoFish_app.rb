@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'pry'
 require 'slim'
+require_relative "./game"
 
 # enable pretty formatting for development.  Remove for production.
 Slim::Engine.default_options[:pretty] = true
@@ -15,11 +16,9 @@ class LoginScreen < Sinatra::Base
     unless params[:user_name].strip == ""
       # take the user name and stick it in the session.
       session['user_name'] = params[:user_name]
-      if false
-        game = FishGame.new
-        session['game_id'] = game.object_id
-        GoFishApp.games[game.object_id] = game
-      end
+      @game = Game.new(2)
+      session['game_id'] = @game.object_id
+      GoFishApp.games[@game.object_id] = @game
 
       redirect '/'
     else
@@ -30,13 +29,13 @@ class LoginScreen < Sinatra::Base
 end # LoginScreen
 
 class GoFishApp < Sinatra::Base
-  @games = {}
-  def self.games
-    @@games
-  end
-
   # middleware will run before filters
   use LoginScreen
+
+  def self.games
+    @@games ||= {}
+  end
+
 
   before do
     unless session['user_name']
@@ -45,12 +44,18 @@ class GoFishApp < Sinatra::Base
   end
 
   get '/' do
+
+#    games << session['game_id']
+#    @game = games[session['game_id']]
+
     if session['user_name'].downcase == "debug"
       binding.pry
     end
 
     @cards = %w{5h 6d 6s 9c 9s kd kh ks}.map { |e| e.downcase}
     @books = %w{7 J 8}
+#    @game = @@game.first
+    @game = Game.new(2)
     slim :fish_dashboard
   end
 end

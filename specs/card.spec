@@ -2,6 +2,7 @@
 
 #Dir['../tests/*.rb'].each { |file| require_relative "#{file}" }
 require_relative "../card.rb"
+require_relative "./testhelp.rb"
 
 describe Card, ".new: cards can be created." do
   it "They have rank and suit." do
@@ -33,27 +34,38 @@ describe Card, ".new cards have a value as well as a rank and suit.." do
   end
 end # Pcard can be compared
 
-describe Card, ".new: cards can be generated from rank/suit strings." do
+describe TestHelp, ".new: cards can be generated from rank/suit strings." do
   it ".new: can be done one or more times" do
     static_cards = [Card.new('A','C'),
                     Card.new('2','C'),
                     Card.new('3','C') ]
+    static_cards[0].rank.should eql "A"
+    static_cards[0].suit.should eql "C"
+    static_cards[1].rank.should eql "2"
+    static_cards[1].suit.should eql "C"
+    static_cards[2].rank.should eql "3"
+    static_cards[2].suit.should eql "C"
+  end
 
-    cards = Card.new_from_hand_strings("A-C 3C 4c")
+  it ".card_from_s: a card can be created from string" do
+    card = TestHelp.cards_from_hand_s("A-C")[0]
+    card.rank.should eql "A"
+    card.suit.should eql "C"
+  end
+
+  it ".card_from_s: multiple cards can be created from string" do
+    cards = TestHelp.cards_from_hand_s("A-C 3C 4c")
 
     cards.each { |card|
       card.is_a?(Card).should eq true
       }
   end
 
-  it ".new_from_hand_strings: a single card can be created" do
-    card = Card.new_from_hand_strings("2-H")[0]
+  it ".cards_from_hand_s: a single card can be created and represented as a string" do
+    card = TestHelp.card_from_s("2-H")
     card.is_a?(Card).should eq true
-  end
-
-  it ".to_s: a card can be represented as a string" do
-    card = Card.new_from_hand_strings("2-H")[0]
     card.to_s.should eq "2-H"
   end
+
 
 end # Can be created from strings

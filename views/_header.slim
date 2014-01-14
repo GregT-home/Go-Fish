@@ -1,5 +1,8 @@
 header
   h1 Go Fish:
-  p 
-    / this is a slim comment: it will not be displayed in the final render
-    |Playing: B-Obama, G-Bush, Greg-T, B-Clinton
+  p
+  = @game.hands[0]
+  p
+  = @game.hands[1]
+
+   
