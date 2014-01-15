@@ -3,19 +3,24 @@ require_relative "../deck.rb"
 require_relative "../hand.rb"
 require_relative "../game.rb"
 require_relative "../result"
+require_relative "../Player.rb"
+#require_relative "../fishserver.rb"
 require_relative "./testhelp"
+require "pry"
 
 describe Game, "Initial game setup." do
-  context ".new for initial game setup: Create 6 random hands." do
+  context ".new, add_hand & start_game can set up hands." do
     before (:each) do
       @number_of_test_hands = 6
       @hand_count = (@number_of_test_hands > 4) ? 5 : 7
       @game = Game.new()
+
       @number_of_test_hands.downto(1) { @game.add_hand() }
       @game.start_game()
+
     end # before (:each)
     
-    it ".new sets up properly" do
+    it "Hands are set up properly" do
       @game.hands.count.should be @number_of_test_hands
       @game.hands.each { |hand| hand.count.should be @hand_count }
     end
@@ -207,3 +212,249 @@ describe Game, "test typical round outcomes." do
 
   end # context
 end # Game tests
+
+describe Game, ".end_game" do
+
+  Hand_str_regexp = Regexp.new("\[|10|[2-9]|[JQKA]|-[CDHS]]", true)
+
+  context "Create a basic game game." do
+    before (:each) do
+      names = %w(One)
+      @game = Game.new()
+      names.length.downto(1) { @game.add_hand() }
+      @game.hands.each_with_index do |hand, i|
+        @game.add_player(Player.new(i+500, names[i])) 
+      end
+      
+      @game.start_game()
+
+      @current_player = @game.players[@game.current_hand]
+    end
+    
+    it "#new: creates the game" do
+      @game.is_a?(Game).should eq true
+    end
+
+    it "#add_hand: adds a new hand" do
+      @game.hands[0].is_a?(Hand).should eq true
+      @game.number_of_hands.should eql 1
+    end
+    
+    it "#add_player: adds a new player and associates it with a hand" do
+      @game.players[@game.hands[0]].is_a?(Player).should eq true
+      @game.owner(@game.hands[0]).is_a?(Player).should eq true
+    end
+  end
+
+  context ".endgame" do
+    before (:each) do
+      names = %w(One Two Three)
+      @game = Game.new()
+      names.length.downto(1) { @game.add_hand() }
+      @game.hands.each_with_index do |hand, i|
+        @game.add_player(Player.new(i+500, names[i])) 
+      end
+      
+      @game.start_game()
+
+      @current_player = @game.players[@game.current_hand]
+    end
+
+    it ".endgame: can handle a single winner" do
+      # Player 0 gets 1 x book, Player 1 gets 3, Player 2 gets 2
+      hands = @game.hands
+      @game.books_list[hands[0]] << "2"
+      @game.books_list[hands[1]] << "4" << "5" << "A"
+      @game.books_list[hands[2]] << "8" << "9"
+
+      @game.endgame
+
+      messages = @game.owner(hands[0]).messages(true)
+#      msg.should =~ Hand_str_regexp
+
+      target_msg =<<-EOF
+=========================
+There are no more fish in the pond.  Game play is over.
+Here is the final outcome:
+EOF
+      messages[0].should =~ Regexp.new(target_msg.strip)
+      messages[1].should =~ Regexp.new(".*Player \\d+, One, made 1 books \\(2s\\)")
+      messages[2].should =~ Regexp.new("Player \\d+, Two, made 3 books \\(4s, 5s, As\\) and is the winner\\!")
+      messages[3].should =~ Regexp.new(".*Player \\d+, Three, made 2 books \\(8s, 9s\\)")
+    end
+    
+  it ".endgame: can handle a tie" do
+      # Player 0 gets 1 x book, Player 1 gets 3, Player 2 gets 2
+      hands = @game.hands
+      @game.books_list[hands[0]] << "2"
+      @game.books_list[hands[1]] << "4" << "5" << "A"
+      @game.books_list[hands[2]] << "8" << "9" << "K"
+
+      @game.endgame
+
+      messages = @game.owner(hands[0]).messages(true)
+
+#      msg.should =~ Hand_str_regexp
+
+      target_msg =<<-EOF
+=========================
+There are no more fish in the pond.  Game play is over.
+Here is the final outcome:
+EOF
+      messages[0].should =~ Regexp.new(target_msg.strip)
+      messages[1].should =~ Regexp.new(".*Player \\d+, One, made 1 books \\(2s\\)")
+      messages[2].should =~ Regexp.new("Player \\d+, Two, made 3 books \\(4s, 5s, As\\) and ties for the win\\!")
+      messages[3].should =~ Regexp.new(".*Player \\d+, Three, made 3 books \\(8s, 9s, Ks\\) and ties for the win\\!")
+    end
+   end # context
+end # .end_game
+
+describe Game, "." do
+  context "(null) Create test hands + players." do
+    before (:each) do
+      names = %w(One Two Three)
+      @game = Game.new()
+      names.length.downto(1) { @game.add_hand() }
+      @game.hands.each_with_index do |hand, i|
+        @game.add_player(Player.new(i+100, names[i])) 
+      end
+      
+      @game.start_game()
+
+      @current_player = @game.players[@game.current_hand]
+    end # before each
+
+    it ".give_player_status: can display multiple player status" do
+      hands = @game.hands
+      @game.books_list[hands[1]] = ["2", "7", "Q"]
+      @game.books_list[hands[2]] = ["A"]
+
+      @game.give_player_status(@game.players[hands[0]])
+      messages = @game.owner(hands[0]).messages(true)
+      messages[0].should =~ Regexp.new("One \\(#\\d+\\) has 7 cards and has made 0 books \(\)")
+      messages[1].should =~ Regexp.new("Two \\(#\\d+\\) has 7 cards and has made 3 books \\(2s, 7s, Qs\\)")
+      messages[2].should =~ Regexp.new("Three \\(#\\d+\\) has 7 cards and has made 1 books \\(As\\)")
+    end
+
+    it ".calculate_rankings: it determines player ranking" do
+      # Player 1 wins, Player 2 comes second, 0 is third
+      hands = @game.hands
+      @game.books_list[hands[1]] = ["Q", "2", "7"]
+      @game.books_list[hands[2]] = ["A"]
+
+      rank_list = @game.calculate_rankings
+      rank_list.should eq [2, 0, 1]
+    end
+
+    it ".calculate_rankings: it shows ties" do
+
+      # Players 1 & 2 both have 2
+      hands = @game.hands
+      @game.books_list[hands[1]] = ["Q", "2"]
+      @game.books_list[hands[2]] = ["7", "A"]
+
+      rank_list = @game.calculate_rankings
+      rank_list.should eq [1, 0, 0]
+    end
+
+    it ".parse_ask can split raw input into player and rank" do
+      player_num, rank = @game.parse_ask("ask 1 for 3s")
+      player_num.should eq 1
+      rank.should eq "3"
+
+      player_num, rank = @game.parse_ask("ask 1 3")
+      player_num.should eq 1
+      rank.should eq "3"
+
+      player_num, rank = @game.parse_ask("ask Player 1, have any 3s?")
+      player_num.should eq 1
+      rank.should eq "3"
+    end
+
+    it ".process_commands: prints help when it does not understand" do
+      type = @game.process_commands(@current_player, "hello")
+      
+      type.should eq :private
+
+      message = @current_player.messages[0].strip
+      message.should =~ Regexp.new("Not understood.*")
+
+     end
+ 
+   it ".process_commands: understands deck size and shows it" do
+      type = @game.process_commands(@current_player, "deck size")
+      
+      type.should eq :private
+      message = @current_player.messages[0].strip
+      message.should =~ Regexp.new("\\d+ card.* are left in the pond")
+     end
+
+   it ".process_commands: understands hand and prints cards" do
+      type = @game.process_commands(@current_player, "hand")
+      
+      type.should eq :private
+
+      test_regexp = Hand_str_regexp
+
+      message = @current_player.messages[0].strip
+      message.should =~ test_regexp
+     end
+
+   it ".process_commands: understands status and shows it" do
+      type = @game.process_commands(@current_player, "status")
+      
+      type.should eq :private
+
+      message = @current_player.messages[0].strip
+      message.should =~ Regexp.new(".*has \\d+ cards and has made \\d+ book.*")
+     end
+
+   it ".process_commands: understands well-formed ask and processes it" do
+      type = @game.process_commands(@current_player,
+                                    "ask #{@game.players[@game.hands[2]].number} for 3s")
+      
+      type.should eq :public
+
+      message = @current_player.messages[0].strip
+      message.should =~ Regexp.new(".*(player .*)asked for .* from player #.*")
+     end
+
+   it ".process_commands: understands well-formed ask with invalid player and processes it" do
+      type = @game.process_commands(@current_player, "ask 4 for 3s")
+      
+      message = @current_player.messages[0].strip
+      message.should =~ Regexp.new("That player does not exist.")
+
+      type.should eq :private
+
+      type = @game.process_commands(@current_player, "ask 10 for 3s")
+      
+      message = @current_player.messages[0].strip
+      message.should =~ Regexp.new("That player does not exist.")
+
+      type.should eq :private
+
+     end
+
+   it ".process_commands: handles badly-formed ask properly" do
+      type = @game.process_commands(@current_player, "ask feep for 3s")
+      
+      type.should eq :private
+
+      test_msg = "Victim and/or rank not recognized."
+      message = @current_player.messages[0].strip
+      message.should eq test_msg
+     end
+
+   it ".process_commands: does not allow non-existent players to be asked" do
+      type = @game.process_commands(@current_player, "ask 5 for 3s")
+      
+      type.should eq :private
+
+      test_msg = "That player does not exist."
+      message = @current_player.messages[0].strip
+      message.should eq test_msg
+     end
+  end
+end
+

@@ -38,7 +38,7 @@ class FishClient
         break
       end
     end while true
-    eog = Regexp.new(FishServer::GAME_OVER_TOKEN)
+    eog = Regexp.new(Game::GAME_OVER_TOKEN)
     exit if eog.match(message)
     message
   end
