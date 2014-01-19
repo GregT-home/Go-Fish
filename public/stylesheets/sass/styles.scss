@@ -9,16 +9,16 @@ $gameboard-color2: #003D00;
 // Text colors
 $heading-color: MediumBlue;
 
-// hand/book scaling parameters
-$hand-card-width: 96px;
-$book-card-width: $hand-card-width * .50;
-
 //media-oriented parameters
 $base-font-size: 16px;
 $tablet_size: 800px;
 $phone_size: 450px;
 $compression-ratio: .85;
 $card-shrink-ratio: .75;
+
+// hand/book scaling parameters
+$hand-card-width: 6em;
+$book-card-width: $hand-card-width * .50;
 
 @mixin clearfix() {
     &:before, &:after {

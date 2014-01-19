@@ -4,56 +4,7 @@ section.game-area
       h2 Last Round
       p B-Obama asked for Qs from Greg-T and did not get one.  He was told to 'Go Fish' and he did not get what he asked for from the pond. He was surprised to make a book of 3s.
 
-    section.action-area
-      h2 Actions you can take
-      form action="process_action.php" method="post"
-        ul.action
-          li
-            | Hey
-            select name="players"
-              option B-Obama
-              option G-Bush
-              option B-Clinton
-            |: Got any
-            select name="ranks"
-              option 2
-              option 3
-              option 4
-              option 5
-              option 6
-              option 7
-              option 8
-              option 9
-              option 10
-              option J
-              option Q
-              option K
-              option A
-            button type="submit" ask
-
-  section class="cards-area"
-    section class="hand-area"
-      h2 Your Cards:
-      ul.hand
-       - if @cards.any?
-         - @cards.each do |rs|
-           li
-             img alt="#{rs[0]}-of-#{rs[1]}-pic" src="images/cards/#{rs[1]}#{rs[0]}.png"
-
-    section class="books-area"
-      h3 Your Books
-      - if @books.any?
-        - @books.each do |r|
-          ul.books
-            - %w{h s c d}.each do |s|
-              li
-                img alt="#{r}-of-#{s}-pic" src="images/cards/#{s}#{r}.png"
-
-  section class="status-area"
-    h2 Game Status
-    ul.status
-      li Deck has 17 cards.
-      li It is B-Obama's turn.
-      li B-Obama has 8 cards and has made 0 books.
-      li G-Bush has 5 cards and has made 1 book.
-      li B-Clinton has 7 cards and has made 0 books.
+    = _action_area.slim
+    = _cards_area.slim
+    = _books_area.slim
+    = _status_area.slim

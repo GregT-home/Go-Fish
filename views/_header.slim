@@ -1,6 +1,9 @@
 header
   h1 Go Fish:
-  - unless @game.nil?
-    - @game.hands.each do |h|
-      p #{h.to_s}
+  - if @game &&  @game.number_of_players > 0
+    - @game.players_by_hand.each do |hand, player|
+      p #{player.name}
+    = '(you are ' + session['user_name'] +')'
+  - else
+    p No Players playing yet
  

@@ -1,5 +1,5 @@
-require "./game.rb"
-require "./player.rb"
+require_relative "./game.rb"
+require_relative "./player.rb"
 require 'socket'
 
 class FishServer
@@ -21,7 +21,7 @@ EOF
     @players = []
     @number_of_players = number
     @game = nil
-@debug=true
+    @debug=false
 
     log "Creating a game"
     @game = Game.new()
@@ -37,7 +37,7 @@ EOF
 
   def accept_client
     @client << @server.accept 
-    log "accept_clients: accepting a new client"
+    log "accept_clients: accepting a new client, now have #{@client.count}"
     #consume the "new player" response and let the client know
     client.last.puts get_line(client.last)
   end

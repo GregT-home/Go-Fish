@@ -21,7 +21,7 @@ describe Game, "Initial game setup." do
     end # before (:each)
     
     it "Hands are set up properly" do
-      @game.hands.count.should be @number_of_test_hands
+      @game.number_of_hands.should be @number_of_test_hands
       @game.hands.each { |hand| hand.count.should be @hand_count }
     end
 
@@ -64,7 +64,7 @@ describe Game, "test typical round outcomes." do
     end # before (:each)
 
     it "Test Deck results in expected hands." do
-      @game.hands.count.should be @number_of_test_hands
+      @game.number_of_hands.should be @number_of_test_hands
       @game.hands.each { |hand| hand.count.should be @test_hand_size }
 
       # test a few samples for validity
@@ -228,7 +228,7 @@ describe Game, ".end_game" do
       
       @game.start_game()
 
-      @current_player = @game.players[@game.current_hand]
+      @current_player = @game.players_by_hand[@game.current_hand]
     end
     
     it "#new: creates the game" do
@@ -241,8 +241,27 @@ describe Game, ".end_game" do
     end
     
     it "#add_player: adds a new player and associates it with a hand" do
-      @game.players[@game.hands[0]].is_a?(Player).should eq true
+      @game.players_by_hand[@game.hands[0]].is_a?(Player).should eq true
       @game.owner(@game.hands[0]).is_a?(Player).should eq true
+    end
+
+    it ".started is true if the game is started" do
+      expect(@game.started).to eq true
+    end
+
+    it ".start_game returns nil if game is already started" do
+      result = @game.start_game
+      expect(result).to eq nil
+    end
+
+    it ".add_hand returns nil if game is started" do
+      result = @game.add_hand
+      expect(result).to eq nil
+    end
+
+    it ".add_player returns nil if game is started" do
+      result = @game.add_player(Player.new(1, "A Player"))
+      expect(result).to eq nil
     end
   end
 
@@ -257,7 +276,7 @@ describe Game, ".end_game" do
       
       @game.start_game()
 
-      @current_player = @game.players[@game.current_hand]
+      @current_player = @game.players_by_hand[@game.current_hand]
     end
 
     it ".endgame: can handle a single winner" do
@@ -321,7 +340,7 @@ describe Game, "." do
       
       @game.start_game()
 
-      @current_player = @game.players[@game.current_hand]
+      @current_player = @game.players_by_hand[@game.current_hand]
     end # before each
 
     it ".give_player_status: can display multiple player status" do
@@ -329,7 +348,7 @@ describe Game, "." do
       @game.books_list[hands[1]] = ["2", "7", "Q"]
       @game.books_list[hands[2]] = ["A"]
 
-      @game.give_player_status(@game.players[hands[0]])
+      @game.give_player_status(@game.players_by_hand[hands[0]])
       messages = @game.owner(hands[0]).messages(true)
       messages[0].should =~ Regexp.new("One \\(#\\d+\\) has 7 cards and has made 0 books \(\)")
       messages[1].should =~ Regexp.new("Two \\(#\\d+\\) has 7 cards and has made 3 books \\(2s, 7s, Qs\\)")
@@ -411,12 +430,11 @@ describe Game, "." do
 
    it ".process_commands: understands well-formed ask and processes it" do
       type = @game.process_commands(@current_player,
-                                    "ask #{@game.players[@game.hands[2]].number} for 3s")
+                                    "ask #{@game.players_by_hand[@game.hands[2]].number} for 3s")
       
-      type.should eq :public
-
       message = @current_player.messages[0].strip
       message.should =~ Regexp.new(".*(player .*)asked for .* from player #.*")
+      type.should eq :public
      end
 
    it ".process_commands: understands well-formed ask with invalid player and processes it" do

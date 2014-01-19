@@ -1,3 +1,4 @@
+@play
 Feature: Game Play
 As a player in the game whose turn it is
 

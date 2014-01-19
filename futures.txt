@@ -2,7 +2,7 @@ Future features possibilities:
 
 0) Move deck shuffling class into a test_??? class and take it out of
    Card. Re-factor code so that start_server and tests use the same
-   deck stacking code.
+   deck stacking code. [DONE]
 
 1) Currently, the game allows the player to lie about what is in his
    hand.  It might be an interesting feature to allow this, but allow
@@ -15,6 +15,14 @@ Future features possibilities:
 
 3) Save a list of all moves made; potentially deck & game status as
    well (for roll-back or re-play)
+
+4) If the deck is shuffled, it does not formally have to be dealt.
+   The program can just take the first 'N' cards.  Then stacking the
+   deck would be straightforward: feed the cards in groups of
+   <hand-size>.  Re-factoring to do this would eliminate
+   testhelpers.rb and make it easier to spin stacked-deck scenarios
+   for testing.
+
 
 -Greg Jan 2014
 

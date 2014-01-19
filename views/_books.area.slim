@@ -1,0 +1,8 @@
+section class="books-area"
+  h3 Your Books
+  - if @books.any?
+    - @books.each do |r|
+      ul.books
+        - %w{h s c d}.each do |s|
+          li
+            img alt="#{r}-of-#{s}-pic" src="images/cards/#{s}#{r}.png"

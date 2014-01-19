@@ -1,6 +1,6 @@
-class Spinach::Features::GameStatus < Spinach::FeatureSteps
+class Spinach::Features::Status < Spinach::FeatureSteps
   step 'I am a registered user' do
-    include CommonSteps::Register
+    pending 'step not implemented'
   end
 
   step 'the game begins' do

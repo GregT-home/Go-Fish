@@ -5,7 +5,6 @@ require "./result.rb"
 require "./player.rb"
 require "pry"
 
-
 class Game
   GAME_OVER_TOKEN = "::GAME_OVER::" unless const_defined?(:GAME_OVER_TOKEN)
 
@@ -13,18 +12,18 @@ class Game
   attr_reader :current_hand_index
 
   public
-  attr_reader :hands, :books_list, :deck, :current_hand, :players
+  attr_reader :hands, :books_list, :deck, :players_by_hand
 
   def initialize()
     @hands = []
-    @players = {}
-    @books_list = {}
-    @ready_to_start = false
-    @game_over = false
+    @players_by_hand, @books_list = {}, {}
+    @game_over = false, false
     @current_hand_index = 0
+    @game_is_started = false
   end
 
   def start_game(cards = nil)
+    return nil if @game_is_started 
     if cards.nil?
       @deck = Deck.new()
     else
@@ -32,44 +31,59 @@ class Game
     end
 
     @hands.each {  |hand| @books_list[hand] = [] }
-    @current_hand = @hands.first
+    @current_hand_index = 0
     deal(@hands.count > 4 ? 5: 7)
+    @game_is_started = true
+  end
+
+  def started
+    @game_is_started
   end
 
   def add_hand
+    unless @game_is_started
       @hands << Hand.new()
+    else
+      nil
+    end
   end
 
   def add_player(player)
-    if @ready_to_play
-      return nil
+    unless @game_is_started
+      advance_to_next_hand unless @players_by_hand.empty?
+      @players_by_hand[@hands[@current_hand_index]] = player
     else
-      @players[@hands[@current_hand_index]] = player
-      advance_to_next_hand
-      @ready_to_play = true if current_hand_index == 0
-      player
-    end    
+      nil
+    end
   end
 
   def owner(hand)
-    @players[hand]
+    @players_by_hand[hand]
   end
 
-  def hand_from_player_number(number)
-    players.select { |hand, player| player.number == number}.keys[0]
+  def player_number_to_hand(number)
+    hand = players_by_hand.detect() { |hand, player| player.number == number}
+    return hand.nil? ? nil : hand.first
   end
 
   def number_of_hands
     @hands.count
   end
 
+  def number_of_players
+    @players_by_hand.count
+  end
+
   def books(hand)
     books_list[hand]
   end
 
+  def current_hand
+    @hands[@current_hand_index]
+  end
+
   def advance_to_next_hand
     @current_hand_index = (current_hand_index + 1) % @hands.count
-    @current_hand = @hands[@current_hand_index]
   end
 
   def deal(number)
@@ -154,12 +168,10 @@ class Game
 
   def game_play
     until @game.over? do
-#      player = players.select { |player| player.hand == @game.current_hand }[0]
       player = @game.owner(@game.current_hand)
       broadcast("-------------------\n" +
                 "It is Player #{player.number}, #{player.name}'s turn.\n")
       player.tell("Your cards: #{player.hand.to_s}\n")
-#      log "Deck has #{@game.deck.count} cards in it"
 
       loop do
         player.tell("What action do you want to take? ")
@@ -252,13 +264,14 @@ class Game
       return false
     end
 
-    victim_hand = hand_from_player_number(victim_number)
-    victim = owner(victim_hand)
+    victim_hand = player_number_to_hand(victim_number)
 
-    if victim.nil?
+    if victim_hand.nil?
       player.tell("That player does not exist.\n")
       return false
     end
+
+    victim = owner(victim_hand)
 
     if victim == player
       player.tell("?? You cannot request cards from yourself.\n")
@@ -291,7 +304,7 @@ class Game
   def calculate_rankings
     # 1. make an array of the number of books each player made
     player_books = []
-#    players.each { |player| player_books << @game.books(player.hand).count }
+#    players_by_hand.each { |player| player_books << @game.books(player.hand).count }
     hands.each { |hand| player_books << books_list[hand].count }
 
     # 2: make a list of the rankings we have

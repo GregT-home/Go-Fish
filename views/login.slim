@@ -1,8 +1,15 @@
 section
   h1 Login
 section.Content
-  section.About
+  section.Registration
     form action="/login" method="post"
-      p Please enter your Player Name:
+      | Please enter your Player Name:
       input type="text" name="user_name" required=true
-      input type="submit" value="Submit"
+      br
+      - if number_of_players == 0
+        | How many players will be playing (1-8):
+        input type="number" name="number_of_players" min="1" max="8" required=true
+      - else
+        p You will be joining an existing game
+      br
+      input type="submit" value="Start"

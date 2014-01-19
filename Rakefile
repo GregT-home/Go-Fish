@@ -24,3 +24,11 @@ end
 task :this_pretty, [:target] do | task, args|
   sh "rspec --format documentation specs/#{args[:target]}.spec"
 end
+
+task :spinach do
+  sh "spinach"
+end
+
+task :spin, [:target] do | task, args |
+  sh "spinach -t #{args[:target]}"
+end

@@ -1,0 +1,9 @@
+section class="cards-area"
+  section class="hand-area"
+    h2 Your Cards:
+    ul.hand
+     - if @cards.any?
+       - @cards.each do |rs|
+         li
+           img alt="#{rs[0]}-of-#{rs[1]}-pic" src="images/cards/#{rs[1]}#{rs[0]}.png"
+

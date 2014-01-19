@@ -1,6 +1,7 @@
 class Spinach::Features::GamePlay < Spinach::FeatureSteps
   step 'I am a registered user' do
     include CommonSteps::Register
+    expect(page).to have_content('enter your Player Name:')
   end
 
   step 'it is my turn' do
