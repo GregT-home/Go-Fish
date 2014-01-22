@@ -44,7 +44,8 @@ class LoginScreen < Sinatra::Base
 
     session['game_id'] = game.object_id
     game.add_player(player_number, params[:user_name])
-    @@usernames[player] = params[:user_name]
+
+    @@usernames[player_number] = params[:user_name]
     redirect '/'
   end
 end # LoginScreen

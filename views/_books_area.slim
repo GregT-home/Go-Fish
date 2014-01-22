@@ -1,10 +1,8 @@
 section class="books-area"
   h3 Your Books
-  - unless @game.books(@my_hand).nil?
-    - @game.books(@my_hand).each do |rank|
+  - unless @game.books(@my).nil?
+    - @game.books(@my).each do |rank|
       ul.books
         - %w(c d s h).each do |suit|
           li
             img alt="#{rank}-of-#{suit}-pic" src="images/cards/#{suit}#{rank}.png"
-
-

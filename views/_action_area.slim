@@ -3,13 +3,13 @@ section.action-area
   form action="process_action.php" method="post"
     ul.action
       - if @game.started
+        -binding.pry
         li
-          -binding.pry
           | Hey
           select id="opponent" name="opponent"
-            - @game.hands.each_with_index do |hand, i|
+            - @game.players.each_with_index do |player, i|
               - next if i + 1 == @my.number
-              option value="#{i + 1}" = @game.players[hand].name
+              option value="#{i + 1}" = player.name
           |: Got any
             select id="card" name="card"
                       - @my.hand.cards.uniq { |card| card.rank }.each do |card|
