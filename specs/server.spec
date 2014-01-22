@@ -68,21 +68,8 @@ private
 
 end # MockClient
 
-describe FishServer, "#new: can create a server" do
-  it "#new: for one clients" do
-    server = FishServer.new(1)
-    server.number_of_players.should eq 1
-    server.close
-  end 
 
-  it "#new: for two clients" do
-    server = FishServer.new(2)
-    server.number_of_players.should eq 2
-    server.close
-  end 
-end # end .new
-
-def accept_clients(server, number)
+def helper_accept_clients(server, number)
   thread_id = Thread.new do
     while server.client.count < number do
       server.accept_client
@@ -90,12 +77,25 @@ def accept_clients(server, number)
   end
 end
 
+describe FishServer, "Initialization" do
+  it "#new: can create a server" do
+    server = FishServer.new
+
+    server.is_a?(FishServer).should be true
+    server.game.is_a?(Game).should be true
+    server.close
+  end 
+end # end .new
+
+
 describe FishServer, "#get_clients." do
   it "accepts multiple clients" do
-    server = FishServer.new(2)
+    server = FishServer.new
+    server.game.add_player(1, "Test Player 1")
+    server.game.add_player(2, "Test Player 2")
 
     # kick-off a non-blocking server thread
-    accept_clients(server, 2)
+    helper_accept_clients(server, 2)
 
     client1=MockClient.new
     client2=MockClient.new
@@ -110,10 +110,11 @@ end # .get_clients
 
 describe FishServer, "#put_message" do
   it "can send a message to a specific client" do
-    server = FishServer.new(1)
+    server = FishServer.new
+    server.game.add_player(1, "Test Player 1")
 
     # kick-off a non-blocking server thread
-    accept_clients(server, 1)
+    helper_accept_clients(server, 1)
 
     name = "Player One's Name"
     mclient = MockClient.new
@@ -137,10 +138,11 @@ end # .put_message
 
 describe FishServer, "#broadcast." do
   it "can send a message to all clients" do
-    server = FishServer.new(1)
+    server = FishServer.new
+    server.game.add_player(1, "Test Player 1")
 
     # kick-off a non-blocking server thread
-    accept_clients(server, 2)
+    helper_accept_clients(server, 2)
 
     name1 = "Player One's Name"
     name2 = "Player Two's Name"

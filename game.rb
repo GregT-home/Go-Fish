@@ -1,3 +1,7 @@
+# To do:
+# merge concept of hands and players.  A player should have a hand,
+# the game should run from players.
+
 require "./card.rb"
 require "./deck.rb"
 require "./hand.rb"
@@ -9,16 +13,16 @@ class Game
   GAME_OVER_TOKEN = "::GAME_OVER::" unless const_defined?(:GAME_OVER_TOKEN)
 
   private
-  attr_reader :current_hand_index
+  attr_reader :current_player_index
 
   public
-  attr_reader :hands, :books_list, :deck, :players_by_hand
+  attr_reader :books_list, :deck, :players
 
   def initialize()
-    @hands = []
-    @players_by_hand, @books_list = {}, {}
-    @game_over = false, false
-    @current_hand_index = 0
+    @players = []
+    @books_list = {}
+    @game_over = false
+    @current_player_index = 0
     @game_is_started = false
   end
 
@@ -30,9 +34,9 @@ class Game
       @deck = Deck.new(cards)
     end
 
-    @hands.each {  |hand| @books_list[hand] = [] }
-    @current_hand_index = 0
-    deal(@hands.count > 4 ? 5: 7)
+    @players.each {  |player| @books_list[player] = [] }
+    @current_player_index = 0
+    deal(@players.count > 4 ? 5: 7)
     @game_is_started = true
   end
 
@@ -40,104 +44,90 @@ class Game
     @game_is_started
   end
 
-  def add_hand
-    unless @game_is_started
-      @hands << Hand.new()
-    else
-      nil
+  def deal(number)
+    number.times do
+      @players.each { |player| player.hand.receive_cards(@deck.give_card) }
     end
-  end
-
-  def add_player(player)
-    unless @game_is_started
-      advance_to_next_hand unless @players_by_hand.empty?
-      @players_by_hand[@hands[@current_hand_index]] = player
-      owner(current_hand).tell("Waiting for the rest of the players.")
-    else
-      nil
-    end
-  end
-
-  def owner(hand)
-    @players_by_hand[hand]
-  end
-
-  def player_number_to_hand(number)
-    hand = players_by_hand.detect() { |hand, player| player.number == number}
-    return hand.nil? ? nil : hand.first
-  end
-
-  def number_of_hands
-    @hands.count
-  end
-
-  def number_of_players
-    @players_by_hand.count
-  end
-
-  def books(hand)
-    books_list[hand]
-  end
-
-  def current_hand
-    @hands[@current_hand_index]
-  end
-
-  def current_player
-    owner(current_hand)
   end
 
   def pond_size
       @deck.count
   end
 
-  def number_of_books(hand)
-    if books_list[hand].nil? || books_list[hand].empty?
+  def add_player(number, name)
+    unless @game_is_started
+      hand = Hand.new()
+      player = Player.new(number, name, hand)
+      players << player
+      player.tell("Waiting for the rest of the players.")
+      advance_to_next_player unless @players.empty?
+    end
+  end
+
+  def current_player
+    @players[@current_player_index]
+  end
+
+  def player_from_number(number)
+    hit = players.detect() { |player| player.number == number}
+    return hit.nil? ? nil : hit
+  end    
+
+  def number_of_players
+    @players.count
+  end
+
+  def advance_to_next_player
+    @current_player_index = (current_player_index + 1) % @players.count
+  end
+
+  def books(player)
+    books_list[player]
+  end
+
+  def books_to_s(player)
+    if books(player).nil? || books(player).empty?
+      ""
+    else
+      books(player).map { |rank| rank + "s"}.sort.join(", ")
+    end
+  end
+
+  def number_of_books(player)
+    if books(player).nil? || books(player).empty?
       0
       else
-      books_list[hand].count
+      books(player).count
     end    
-  end
-
-  def advance_to_next_hand
-    @current_hand_index = (current_hand_index + 1) % @hands.count
-  end
-
-  def deal(number)
-    number.times do
-      @hands.each { |hand| hand.receive_cards(@deck.give_card) }
-    end
   end
 
   # check for book, if found then remove and return 1, else 0.
   def process_books(target_rank)
-    cards = current_hand.give_matching_cards(target_rank)
+    cards = current_player.hand.give_matching_cards(target_rank)
     if cards.count == 4
-      books_list[current_hand] << target_rank
+      books_list[current_player] << target_rank
       return 1
     else
-      current_hand.receive_cards(cards)
+      current_player.hand.receive_cards(cards)
       return 0
     end
   end
 
-  def play_round(target_hand, target_rank)
-    victim_matches = target_hand.rank_count(target_rank)
+  def play_round(target_player, target_rank)
+    result = Result.new(current_player, target_player, target_rank)
 
-    result = Result.new(current_hand, target_hand, target_rank)
-
-    if victim_matches > 0  # intended match
-      match_cards = target_hand.give_matching_cards(target_rank)
-      current_hand.receive_cards(match_cards)
+    if target_player.hand.rank_count(target_rank) > 0  # has the rank
+      match_cards = target_player.hand.give_matching_cards(target_rank)
+      current_player.hand.receive_cards(match_cards)
 
       result.matches += match_cards.count
-      result.received_from = target_hand
+      result.received_from = target_player
     else 
       card = deck.give_card
       if card.nil?     # no cards, game is over
         @game_over = result.game_over = true
       else
-        current_hand.receive_cards(card)
+        current_player.hand.receive_cards(card)
         result.received_from = :pond
         if card.rank == target_rank  # intended match
           result.matches = 1
@@ -146,7 +136,7 @@ class Game
             result.books_made += 1
             result.surprise_rank = card.rank
           end
-          advance_to_next_hand  # no intended match anywhere: turn over
+          advance_to_next_player  # no intended match anywhere: turn over
         end
       end
     end
@@ -155,22 +145,6 @@ class Game
   end
   def debug
     @debug = !@debug
-  end
-
-  def books_to_s(hand)
-    if books_list[hand].nil? || books_list[hand].empty?
-      ""
-    else
-      books_list[hand].map { |rank| rank + "s"}.sort.join(", ")
-    end
-  end
-
-  def books_to_slim(hand)
-    if books_list[hand].nil? || books_list[hand].empty?
-      ""
-    else
-      books_list[hand].map { |rank| rank }.sort.join(" ")
-    end
   end
 
   def over?
@@ -223,9 +197,9 @@ class Game
     rank_list = calculate_rankings
     winners = 0
     rank_list.each { |rank| winners += 1 if rank == 0 }
-    @hands.each_with_index do |hand, i|
-      part1 = "Player #{owner(hand).number}, #{owner(hand).name}, made " +
-        "#{books_list[hand].count} books (#{books_to_s(hand)})"
+    @players.each_with_index do |player, i|
+      part1 = "Player #{player.number}, #{player.name}, made " +
+        "#{books(player).count} books (#{books_to_s(player)})"
 
       # rank_list is one-off from hand numbers
       if rank_list[i] == 0
@@ -244,7 +218,7 @@ class Game
     args = raw_input.split
 
     if args[0] == "deck" && args[1] == "size"
-      player.tell( "#{deck.count} cards are left in the pond\n")
+      player.tell( "#{pond_size} cards are left in the pond\n")
       return :private # utility command
     end
 
@@ -274,14 +248,14 @@ class Game
     return :private
   end
 
-  def give_player_status(player)
-    hands.each do |hand|
-      player.tell ("  #{owner(hand).name} (##{owner(hand).number})"+
-                   " has #{hand.count}" +
-                   " cards and has made #{number_of_books(hand)} books" +
-                   " (#{books_to_s(hand)})\n")
+  def give_player_status(to_player)
+    players.each do |player|
+      to_player.tell ("  #{player.name} (##{player.number})"+
+                   " has #{player.hand.count}" +
+                   " cards and has made #{number_of_books(player)} books" +
+                   " (#{books_to_s(player)})\n")
     end
-    player.tell("  Deck has #{deck.count} cards remaining.\n")
+    to_player.tell("  Deck has #{pond_size} cards remaining.\n")
   end
 
 
@@ -293,21 +267,19 @@ class Game
       return false
     end
 
-    victim_hand = player_number_to_hand(victim_number)
+    victim = player_from_number(victim_number)
 
-    if victim_hand.nil?
+    if victim.nil?
       player.tell("That player does not exist.\n")
       return false
     end
-
-    victim = owner(victim_hand)
 
     if victim == player
       player.tell("?? You cannot request cards from yourself.\n")
       return false
     end
 
-    result = play_round(victim_hand, rank)
+    result = play_round(victim, rank)
     tell_all("#{player.name} (player ##{player.number})," +
               " asked for #{rank}s from player" +
               " ##{victim.number}, #{victim.name}.\n" +
@@ -333,8 +305,7 @@ class Game
   def calculate_rankings
     # 1. make an array of the number of books each player made
     player_books = []
-#    players_by_hand.each { |player| player_books << @game.books(player.hand).count }
-    hands.each { |hand| player_books << books_list[hand].count }
+    players.each { |player| player_books << books(player).count }
 
     # 2: make a list of the rankings we have
     # 3: review the player_books list to see who has what ranking
@@ -343,25 +314,14 @@ class Game
     player_books.map { |player| bucket_list.index(player) }
   end
 
-  def tell_owner(hand, message)
-    owner(hand).tell(message)
-  end
-
   def tell_all(message)
-    hands.each { |hand| tell_owner(hand, message) }
+    players.each { |player| player.tell(message) }
   end
 
-  def tell_all_but_this_owner(hands, omit_hand, message)
-    hands.each do |hand|
-      tell_owner(hand, message) unless hand == omit_hand
-    end
-  end
-
-
-  # def run()
-  #   setup
-  #   game_play
-  #   endgame
+  # def tell_all_but_this_owner(players, omit_player, message)
+  #   players.each do |player|
+  #     player.tell(message) unless player == omit_player
+  #   end
   # end
 
 end # Game

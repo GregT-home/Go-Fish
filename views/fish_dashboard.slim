@@ -2,9 +2,12 @@ section.game-area
   section.play-area
     section.history-area
       h2 Last Round
-      p B-Obama asked for Qs from Greg-T and did not get one.  He was told to 'Go Fish' and he did not get what he asked for from the pond. He was surprised to make a book of 3s.
+      p
+        = @my.messages
 
-    == slim :_action_area
-    == slim :_cards_area
-    == slim :_books_area
-    == slim :_status_area
+    - binding.pry
+    - if @game.started
+      == slim :_action_area
+      == slim :_cards_area
+      == slim :_books_area
+      == slim :_status_area

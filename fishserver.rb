@@ -14,21 +14,16 @@ class FishServer
     status
 EOF
 
-  attr_reader :client, :names, :players, :number_of_players, :game
+  attr_reader :client, :names, :players, :game
 
-  def initialize(number, test_deck = nil)
+  def initialize
     @client = []
     @players = []
-    @number_of_players = number
     @game = nil
     @debug=false
 
     log "Creating a game"
     @game = Game.new()
-    log "Adding #{number_of_players} hands"
-    number_of_players.downto(1) { @game.add_hand() }
-    log "starting the game (test_deck = #{test_deck})"
-    @game.start_game(test_deck)
 
     @server = TCPServer.open(PORT)	# listen on our port
     log "Listening for connections on #{PORT}"
@@ -43,22 +38,23 @@ EOF
   end
 
   # get name, associate
-  def create_players
-    0.upto(number_of_players - 1) do |i|
-      begin
-        put_message(client[i], "What is your name? ")
-        name = get_line(client[i]).strip
-      end while name.empty?
+  # def create_players
+  #   0.upto(number_of_players - 1) do |i|
+  #     begin
+  #       put_message(client[i], "What is your name? ")
+  #       name = get_line(client[i]).strip
+  #     end while name.empty?
 
-      player = Player.new(i+1, name, @game.current_hand, client[i])
-      players << player
-      put_message(player.socket,
-                  "Your cards: #{player.hand.to_s}\n")
-      @game.advance_to_next_hand
-    end
-  end
+  #     player = Player.new(i+1, name, @game.current_hand, client[i])
+  #     players << player
+  #     put_message(player.socket,
+  #                 "Your cards: #{player.hand.to_s}\n")
+  #     @game.advance_to_next_hand
+  #   end
+  # end
 
-  def put_message(socket, msg)
+  def
+    put_message(socket, msg)
     socket.puts "  "+ msg + EOM_TOKEN
     log "(to #{socket.inspect})" + msg
   end

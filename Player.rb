@@ -1,10 +1,10 @@
 class Player
-  attr_reader :number, :name, :hand, :socket
+  attr_reader :number, :name, :hand
 
-  def initialize(number = nil, name = nil, socket = nil)
+  def initialize(number = nil, name = nil, hand = nil)
     @number = number
     @name = name
-    @socket = socket
+    @hand = hand
     @messages = []
   end
 

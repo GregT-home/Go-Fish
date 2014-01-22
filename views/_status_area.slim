@@ -4,10 +4,11 @@ section class="status-area"
     li 
       = "It is " + @game.current_player.name 
       | 's turn.
+  - binding.pry
   ul.pond
     li
       | Pond has 
-      = "#{@info['pond_size']} cards."
+      = "#{@game.pond_size} cards."
   ul.status
-    - @players.each do |player_number,  player|
-      li #{player[:name]} has #{player[:number_of_cards]} cards and has made #{player[:books_count]} books (#{player[:books_string]}) #{(player[:name] == @info['current_player_name']) ? '[You]' : ''}.
+    - @game.players_by_hand.each do |hand, player|
+      li #{player.name} has #{player.hand.count} cards and has made #{@game.books(hand).count} books (#{@game.books_to_s(hand)}) #{(player.name == @my.name) ? '[You]' : ''}.

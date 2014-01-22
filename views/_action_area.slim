@@ -2,25 +2,16 @@ section.action-area
   h2 Actions you can take
   form action="process_action.php" method="post"
     ul.action
-      li
-        | Hey
-        select name="players"
-          option B-Obama
-          option G-Bush
-          option B-Clinton
-        |: Got any
-        select name="ranks"
-          option 2
-          option 3
-          option 4
-          option 5
-          option 6
-          option 7
-          option 8
-          option 9
-          option 10
-          option J
-          option Q
-          option K
-          option A
-        button type="submit" ask
+      - if @game.started
+        li
+          -binding.pry
+          | Hey
+          select id="opponent" name="opponent"
+            - @game.hands.each_with_index do |hand, i|
+              - next if i + 1 == @my.number
+              option value="#{i + 1}" = @game.players[hand].name
+          |: Got any
+            select id="card" name="card"
+                      - @my.hand.cards.uniq { |card| card.rank }.each do |card|
+                option value="#{card.rank}" = card.to_s.split.first
+          button type="submit" ask

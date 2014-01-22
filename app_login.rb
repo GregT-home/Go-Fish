@@ -22,7 +22,6 @@ class LoginScreen < Sinatra::Base
     if params[:user_name].strip.empty?
       redirect '/login'    # no user_name? Push them back to the login page.
     else
-      # we have a new player
       player_number = @@usernames.count + 1
       session['user_name'] = params[:user_name]
       session['player_number'] = player_number
@@ -44,9 +43,7 @@ class LoginScreen < Sinatra::Base
     end
 
     session['game_id'] = game.object_id
-    game.add_hand()
-    player = Player.new(player_number, params[:user_name])
-    game.add_player(player)
+    game.add_player(player_number, params[:user_name])
     @@usernames[player] = params[:user_name]
     redirect '/'
   end

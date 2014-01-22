@@ -50,7 +50,14 @@ if use_stacked_deck
 end
 
 puts "Creating a Fish Server for #{num} players..."
-server = FishServer.new(num, test_deck)
+server = FishServer.new
+
+<><>
+
+# This code musst be re-worked to work with new game paradigm shift
+# from hands to players
+
+(num, test_deck)
 server.debug
 
 server.run

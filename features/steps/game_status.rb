@@ -98,7 +98,7 @@ class Spinach::Features::GameStatus < Spinach::FeatureSteps
   end
 
   step 'he can see how many books each of his opponents has' do
-    save_and_open_page("tmp-pagedump.html")
+# save_and_open_page("tmp-pagedump.html")
     within(".status-area") do
       game = helper_get_game(current_scope)
       game.players_by_hand.each do |hand, player|
@@ -123,7 +123,7 @@ class Spinach::Features::GameStatus < Spinach::FeatureSteps
   end
 
   step 'he can see his own hand' do
-    within(".status-area") do
+    within(".hand-area") do
       game = helper_get_game(current_scope)
       game.players_by_hand.each do |hand, player|
         puts "player number/name: #{player.number}/#{player.name}"
@@ -133,7 +133,13 @@ class Spinach::Features::GameStatus < Spinach::FeatureSteps
   end
 
   step 'he can see his own books' do
-    pending 'step not implemented'
+    within(".books-area") do
+      game = helper_get_game(current_scope)
+      game.players_by_hand.each do |hand, player|
+        puts "player number/name: #{player.number}/#{player.name}"
+        expect(page.text).to match(/#{player.name} has #{hand.count} cards/)
+      end
+    end
   end
 
   def log(message)

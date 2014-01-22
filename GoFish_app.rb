@@ -45,64 +45,18 @@ class GoFishApp < Sinatra::Base
       @number_of_players = session['number_of_players']
     end
 
-    if @game.number_of_hands == @number_of_players
-      puts "--","Game is starting with #{@game.number_of_hands} hands."
+    if @game.number_of_players == @number_of_players
+      puts "--","Game is starting with #{@game.number_of_players} players."
       @game.start_game
+    else
+      puts "--","Game now has #{@game.number_of_players} players."
     end
 
     player_number = session['player_number']
-    hand = @game.player_number_to_hand(player_number)
 
-    if false
-      puts "**** List of hands:"
-      @game.hands.each do |hand|
-        player=@game.owner(hand)
-        puts "**** cards: #{player.number}) #{player.name}: #{hand.to_slim}"
-      end
-      puts "**** game's current hand: #{@cards}"
-      puts "**** current hand: #{@cards}"
+    @my = @game.player_from_number(player_number)
+    @current_player = @game.current_player
 
-      player_number = session['player_number']
-      hand = @game.player_number_to_hand(player_number)
-      @cards = hand.to_slim
-      puts "==== your hand: #{@cards}"
-    end
-
-    def bundle_players(game)
-      players = {}
-      game.hands.each do |hand|
-        owner = game.owner(hand)
-        players[owner.number] = {
-          name: owner.name,
-          hand: hand,
-          books: game.books_to_slim(hand),
-          books_count: game.number_of_books(hand),
-          books_string: game.books_to_s(hand),
-          number_of_cards: hand.count
-        }
-      end
-      players
-    end
-    def bundle_info(game)
-      info={}
-      info['current_player_number'] = game.current_player.number
-      info['current_player_name'] = game.current_player.name
-      info['number_of_players'] = game.number_of_players
-      info['current_hand'] = @game.current_hand.to_slim.split
-      if game.started
-        info['pond_size'] = game.pond_size
-      else
-        info['pond_size'] = 0
-      end
-      info
-    end
-
-    @info = bundle_info(@game)
-    @players = bundle_players(@game)
-    @messages = @game.owner(@game.current_hand).messages(true)
-
-
-#    slim :fish_dashboard, locals:{ info: info, players: players, messages: messages }
     slim :fish_dashboard
   end
 
