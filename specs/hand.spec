@@ -111,6 +111,15 @@ describe Hand, "Hand Creation and management object." do
     end
   end
 
+  describe Hand, ".to_slim:" do
+    it "can display a hand as a string suitable for html display" do
+      # reversing so hands will be in "human-expected" order
+      hand = Hand.new(TestHelp.cards_from_hand_s("AC 3C 4C 2H"))
+
+      hand.to_slim.should eq "ac 3c 4c 2h"
+    end
+  end
+
   describe Hand, ".sort!:" do
     it "can sort a hand" do
       # reversing so hands will be in "human-expected" order

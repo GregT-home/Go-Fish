@@ -22,12 +22,16 @@ end
     "#{@rank}-#{@suit}"
   end
 
+  def to_slim
+    "#{@rank}#{@suit}".downcase
+  end
+
   # test this exhaustively
   # as_1 = Card("A", "S"); as_2 = Card("A", "S")
   # hash { as_1 => 'Wild')
-  # assert(as1 == as2)
-  # assert(as1 equal as2)
-  # assert (as1 eql? as2)
+  # expect(as1).to eql(as2)
+  # expect(as1).to equal (as2)
+  # expect(as1).to eql? (as2)
   # check Ken's slides for actual test set
   def == card
     rank == card.rank && suit == card.suit

@@ -3,4 +3,11 @@ head
   meta name="viewport" content="initial-scale=1.0"
   meta content="text/html;" http-equiv="Content-Type"
   link href="stylesheets/styles.css" rel="stylesheet"
-
+  - if session['game_id']
+    script src="http://js.pusher.com/2.1/pusher.min.js" type="text/javascript"
+    javascript:
+      var pusher = new Pusher('7e6cd02d8eb61aab0534');
+      var channel = pusher.subscribe('#{session['game_id']}');
+      channel.bind('refresh', function(data) {
+        location.reload(false)
+      });

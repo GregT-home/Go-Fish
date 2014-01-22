@@ -10,7 +10,6 @@ rdoc
 spec/reports
 test/tmp
 test/version_tmp
-tmp
 
 .sass-cache
 public/stylesheets/sass/*.css
@@ -29,4 +28,4 @@ doc/
 bogus*
 *.out
 [Mm]akefile*
-tmp_*
+tmp*

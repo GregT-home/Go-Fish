@@ -1,5 +1,5 @@
 @status
-Feature: status
+Feature: Game Status
 As a player in the game
 
   In order to understand what is going on and what strategies I need
@@ -8,13 +8,14 @@ As a player in the game
   most recent turn were.
 
   Scenario: Dashboard information display
-  Given player is registered and in a two person game
+  Given player is registered and starts a two person game
   
-  When two players join the game
-    And player one looks in the status area
+  When the second player joins the game
+  And the game begins
+  And player one looks in the status area
     Then he can see how many cards remain in the pond
     And he can see whose turn it is
-    And he can see each of his oppoonents
+    And he can see each of his opponents
     And he can see how many cards each of his opponents has
     And he can see how many books each of his opponents has
     And he can see the results of the last turn

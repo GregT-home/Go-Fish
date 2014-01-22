@@ -1,0 +1,258 @@
+Tuesday Morning 1/15/14
+
+Game Broker: manage multiple games and put players in the desired ones
+
+start a new game by choice
+
+    Scenario: player starts a new game on login
+	Given a player logs in
+	a player selects new game and enters number of players
+	the players is in a new game
+
+
+    Scenario: Creating a game in game manager
+	      Given game manager
+		    @game_id = GameManger.create("Braxton", 1)
+		    @slots = GameManager.queue[@game_id]
+		    @players = GameManager.players[@game_id]
+
+	      When a name an a game limit are given
+		   @id.should be_a_kid_of(Fixnum)
+		   @slots.should eq(0)
+		   @players.should eq(["Braxton"])
+	      then stores game and players and returns id
+	       
+
+    Scenario: Player joins a game
+	      Given game is already created
+		    @op_id = GMgr.create("Braxton", 2)
+
+	      When there are open spaces in the game
+		   @join_result = GMgr.join("Phil")
+
+	      Then the player joins the game
+		   @join_result.should eq (@op_id)
+		   @players = GMgr.playrs[@op_id]
+		   @players.should eql(["Braxton","Phil"])
+
+    Scenario: Player joins and there are no open games
+	      Given all the games are already full
+
+
+------ Tues Afternoon 1/15/14
+
+"data-*" is a CSS attribute where the "*" info is passed
+un-interpreted.  This allows it to be used to create semantically
+tagged HTML that can be processed by slim or whatever after the fact.
+
+in slim:
+   - @game.hand(1).cards.each do |cards|
+     li data-rank="5" data-suit="c" = "{cards.to_s"}"
+
+in CSS:
+section#player_hand ul li {
+    content: url("images/cards" + attr(data-suit) + attr(data-rank) + ".png");
+
+This replaces the short-hand in the HTML with the full-fledge image syntax.
+
+page.should have_content(user_name)
+equal to 
+expect(page).to have_content(user_name)
+
+but the "expect" form is gaining popularity in the field as it simplifies parsing in those applications that need to do that kind of thing.
+
+displayed_cards = page.all('#player_hand img').map {|node| PlayingCard.new(node['data-rank'], node['data-suit'[[}
+expect(displayed_cares).to eq cards
+
+-------- Wed Afternoon 1/16/2014
+
+Check out "current_scope" in Capybara
+also "page"
+
+Ken used the following to figure out where the game_id could be obtained from the ruby program.  Saved having to add hit or miss puts statements in the code:
+    current_scope.session.driver.request.session['game_id']
+
+pry can also be used to test Capybara examples, again to figure out how the various directives work when the "obvious" incantation fails to give expected results.  example:
+    page.within('#player_books') {page.body.include?('d8.png')}
+
+    these may also work:
+    page.should have_content("sample context")
+    page.should have_xpath("/dir/dir/dir/dir/file.ext")
+
+example from class:
+page.within('@player_hand') {puts current_scope.has_xpath?("img[src=\"images/cards/d8.png\"]"}
+
+Kyle tried:
+     page.has_css?('.hand img[alt="2 of Hearts"]')
+     page.has.css?('.hand img[src="images/cards/h2.png"]') # watch spelling of quoted info
+and it seemed to work.
+
+
+
+
+
+Identify Player
+
+As the owner of the game
+
+step "they're successfully associated with a new game and redirected to the game page" do
+    user_name = current_scope.session.driver.request.session["user_name"]
+
+    page.should have_content("Cards")
+
+    game_id = current_scope.session.driver.request.session["game_id"]
+    game = GoFishApp.games[game_id]]
+
+    cards = game.hand(1).cards
+    cards.each do |c|
+	page.should have_content(card.to_s)
+    end	
+
+
+
+
+
+Scenario: Successful player identification
+    Given a first time user
+        vist '/login'
+    When they id themselves by name
+    fill_in 'username', with: => 'Jeremy'
+    within "#new" do
+    	   
+    end	
+    then tyer're successfully redirected
+    the the game page
+
+
+
+
+Game Finder
+     List games that are availble to play
+     (ultimately:  game type may be a differentiator)
+     Allow user to choose from one
+     If it is a "reserved" game, then it would need a password.
+     
+
+Game Broker
+     May be more than one of these (specialization?)
+     
+
+Go to the factory and ask for a single instance.
+
+
+
+-----
+It shows the player's current hand:
+
+game_id = current_scope.session.driver.request.session["game_id"]
+game = GoFishApp.games[game_id]]
+
+cards = game.hand(1).cards
+page.within('#player_hand') do
+    cards.each do |card|
+	page.should have_css("img[src='images/cards/#{card.suit.downcase}#{card.rank}.png")
+    end
+end
+
+--------  Thursday 1/16/2014
+
+Jeremy's code:
+    broker.create_game(
+    add_player
+    setup_game
+
+1/17/2014  ___________________________
+
+locals: only present for the slim file with which they are associated.
+
+Glimpse into the future
+1) 1st 1/2 week: Go Fish model into Objective-C (Game, playing cards, hands, etc.  Not the server)
+
+2) 2nd week: Go Fish standalone in IOS (will require robots)
+   Minimal robot logic: look at first card, ask for it.
+   Next: ask for what he has most of
+   or: pick a random card
+   Best: pay attention to what is played/asked and act accordingly.
+
+3) Build a GoFish client for app (so IOS guy can play web guy)
+
+1/21/2014 ----------------------------
+
+Data Structures: Linked Lists
+
+Implementing a linked list in Ruby
+
+Check out Ruby Benchmark class.
+Benchmark.measure { <code block> }
+
+Example in defining a linked list via TDD.
+
+
+describe LinkedList do
+    before(:each) do
+        @link_list = LinkList.new
+    end
+end
+
+
+def [](index}
+    node = @first
+    index.times { node = node.next }
+    node.value
+end
+
+def push(object)
+    new_node = LinkNode(object)
+    @last_node.next = new_node if @last_name
+    @last_node = new_node
+    @first_node ||= @last_node
+end
+
+it "should execute the block once for each element' do
+    linkedlist = LinkdeList.new
+    linkedlist.push"("one")
+    linkedlist.push"("two")
+    linkedlist.push"("three")
+    elements = []
+    # all values
+    linkedList.each {|value| elements.push(value)} # al
+    OR
+    # only select items starting with 't'
+    elements = linkedlist.select { |value| /t.*/ =~ value }
+    
+        expect(elements).to eq %w(one two three)
+done
+
+
+def each
+    node = @first_node
+    while(node) do	
+	yield(node.value)
+	node - node.next
+    end
+    end
+
+def first
+    @first_node.value
+end
+    
+def last
+    @last_node.value
+end
+    
+def push(object)
+new_node - LNode.new(object)(
+     last_node.next = new_node if last_node
+     @last_node = new_node
+     @first_node || = last_node	 
+    
+end
+
+--- OR -----
+
+include Enumerable  # traversal and searching methods
+
+# Keep each
+# Keep push
+# Keep []
+

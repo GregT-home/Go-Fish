@@ -1,5 +1,5 @@
-@id-player
-Feature: Identify Player
+@start-2
+Feature: Start a Two-Player Game
 As a prospective player
 
   In order to provide a pleasant user experience I want to allow the
@@ -10,14 +10,13 @@ As a prospective player
  	Given a potential player
 	And he is the first player to the game
 	When he identifies himself by name to the server
-	Then he must choose how many players will play the new game
+	Then he chooses to create a game for two players
 	And he clicks on the 'start' button
-	Then he is associated with the current game and is redirected to the game page.
-
-  Scenario: Subsequent players register for games
- 	Given a potential player
-	And he is the second player to the game
+	Then he is registered for the game and goes to the game page
+	And the game is not started
+	And a second player comes to the game
+	And he joins an existing game
 	When he identifies himself by name to the server
 	And he clicks on the 'start' button
-	Then he is associated with the current game and is redirected to the game page.
-  
+	Then he is registered for the game and goes to the game page
+	And the game begins

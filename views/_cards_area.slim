@@ -2,8 +2,7 @@ section class="cards-area"
   section class="hand-area"
     h2 Your Cards:
     ul.hand
-     - if @cards.any?
-       - @cards.each do |rs|
-         li
-           img alt="#{rs[0]}-of-#{rs[1]}-pic" src="images/cards/#{rs[1]}#{rs[0]}.png"
+    - @info['current_hand'].each do |card|
+      li
+        img alt="#{card.rank}-of-#{card.suit}-pic" src="images/cards/#{card.rank}#{card.suit}.png"
 

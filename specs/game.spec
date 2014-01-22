@@ -46,6 +46,22 @@ describe Game, "Initial game setup." do
   end # context for random hands
 end # game setup tests
 
+describe Game, ".books_to_s when books_list not initialized" do
+  it ".books_to_s returns null string when no books" do
+    @game = Game.new()
+    @game.add_hand
+    @game.books_to_s(@game.current_hand).should eq ""
+  end
+end
+
+describe Game, ".to_slim when books_list not initialized" do
+  it ".books_to_slim returns null string when no books" do
+    @game = Game.new()
+    @game.add_hand
+    @game.books_to_slim(@game.current_hand).should eq ""
+  end
+end
+
 describe Game, "test typical round outcomes." do
   context "Create a game with a stacked of known hands." do
     before (:each) do
@@ -174,6 +190,10 @@ describe Game, "test typical round outcomes." do
       }
     end
 
+    it ".books_to_s returns null string when no books" do
+      @game.books_to_s(@game.current_hand).should eq  ""
+    end
+
     it ".books_to_s can display a list of books" do
       # Remove any matching cards from the current hand
       @game.current_hand.give_matching_cards("2")
@@ -191,6 +211,29 @@ describe Game, "test typical round outcomes." do
 
       book_list = "2s, As, Ks"
       @game.books_to_s(@game.current_hand).should eq book_list
+    end
+
+    it ".books_to_slim returns null string when no books" do
+      @game.books_to_slim(@game.current_hand).should eq ""
+    end
+
+    it ".books_to_slim can display a list of books in slim format" do
+      # Remove any matching cards from the current hand
+      @game.current_hand.give_matching_cards("2")
+      @game.current_hand.give_matching_cards("K")
+      @game.current_hand.give_matching_cards("A")
+
+      # Stack the hand with three books
+      cards = TestHelp.cards_from_hand_s("2C 2S 2D 2H KC KS KD KH AC AS AD AH")
+      @game.current_hand.receive_cards(cards)
+
+      # check the hand for each kind of book
+      @game.process_books("2").should eql 1
+      @game.process_books("K").should eql 1
+      @game.process_books("A").should eql 1
+
+      book_list = "2 A K"
+      @game.books_to_slim(@game.current_hand).should eq book_list
     end
 
     it ".play_round: checks for end of game" do
@@ -272,6 +315,7 @@ describe Game, ".end_game" do
       names.length.downto(1) { @game.add_hand() }
       @game.hands.each_with_index do |hand, i|
         @game.add_player(Player.new(i+500, names[i])) 
+        @game.current_player.messages(true) #consume "Waiting for.." message
       end
       
       @game.start_game()
@@ -336,6 +380,7 @@ describe Game, "." do
       names.length.downto(1) { @game.add_hand() }
       @game.hands.each_with_index do |hand, i|
         @game.add_player(Player.new(i+100, names[i])) 
+        @game.current_player.messages(true)  # consume "Waiting..." msg
       end
       
       @game.start_game()

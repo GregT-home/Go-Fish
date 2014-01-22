@@ -16,6 +16,7 @@ task :clean do
 #  files = Dir["*~", "*/*~", "*/*/*~"].join(" ")
 #  sh "rm #{files}"
   sh 'find . -name "*~" -exec rm -v {} \;'
+  rm tmp-pagedump.html 
 end
 
 task :this, [:target] do | task, args|
@@ -27,6 +28,10 @@ end
 
 task :spinach do
   sh "spinach"
+end
+
+task :spinach_gen do
+  sh "spinach --generate"
 end
 
 task :spin, [:target] do | task, args |

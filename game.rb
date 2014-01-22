@@ -52,6 +52,7 @@ class Game
     unless @game_is_started
       advance_to_next_hand unless @players_by_hand.empty?
       @players_by_hand[@hands[@current_hand_index]] = player
+      owner(current_hand).tell("Waiting for the rest of the players.")
     else
       nil
     end
@@ -80,6 +81,22 @@ class Game
 
   def current_hand
     @hands[@current_hand_index]
+  end
+
+  def current_player
+    owner(current_hand)
+  end
+
+  def pond_size
+      @deck.count
+  end
+
+  def number_of_books(hand)
+    if books_list[hand].nil? || books_list[hand].empty?
+      0
+      else
+      books_list[hand].count
+    end    
   end
 
   def advance_to_next_hand
@@ -141,7 +158,19 @@ class Game
   end
 
   def books_to_s(hand)
-    books_list[hand].map { |i| i + "s"}.sort.join(", ")
+    if books_list[hand].nil? || books_list[hand].empty?
+      ""
+    else
+      books_list[hand].map { |rank| rank + "s"}.sort.join(", ")
+    end
+  end
+
+  def books_to_slim(hand)
+    if books_list[hand].nil? || books_list[hand].empty?
+      ""
+    else
+      books_list[hand].map { |rank| rank }.sort.join(" ")
+    end
   end
 
   def over?
@@ -168,7 +197,7 @@ class Game
 
   def game_play
     until @game.over? do
-      player = @game.owner(@game.current_hand)
+      player = @game.current_player
       broadcast("-------------------\n" +
                 "It is Player #{player.number}, #{player.name}'s turn.\n")
       player.tell("Your cards: #{player.hand.to_s}\n")
@@ -249,7 +278,7 @@ class Game
     hands.each do |hand|
       player.tell ("  #{owner(hand).name} (##{owner(hand).number})"+
                    " has #{hand.count}" +
-                   " cards and has made #{books_list[hand].count} books" +
+                   " cards and has made #{number_of_books(hand)} books" +
                    " (#{books_to_s(hand)})\n")
     end
     player.tell("  Deck has #{deck.count} cards remaining.\n")
