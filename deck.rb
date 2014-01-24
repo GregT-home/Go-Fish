@@ -4,7 +4,6 @@ class Deck
 
   def initialize(test_deck = nil)
     @cards = []
-    @books = []
 
     if test_deck
       @cards = test_deck

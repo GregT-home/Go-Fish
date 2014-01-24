@@ -14,23 +14,24 @@ describe Card, ".new: cards can be created." do
   end
 end # cards can be created
 
-describe Card, ".new cards have a value as well as a rank and suit.." do
-  it "holds a card rank and suit, can be compared exactly, and can compare value" do
-    card1 = Card.new('10','C')
-    card1same = Card.new('10','C')
-    card2eq_rank = Card.new('10','H')
-    card3higher = Card.new('A','S')
-    card4lower = Card.new('2','D')
-    
-    card1.should eq card1same
-    card1.should_not eq card2eq_rank
-    card1.value.should eq card2eq_rank.value
+describe Card, ".new cards have a value as well as a rank and suit." do
+  it "equal, but different, cards should be equal" do
+    ten_clubs = Card.new('10','C')
+    ten_clubs2 = Card.new('10','C')
+    ten_clubs.should eq ten_clubs2
+end
 
-    card1.value.should eql card2eq_rank.value
+  it "higher rank should be greater than lower" do
+    card = Card.new('10','H')
+    card_higher = Card.new('A','S')
+    card_higher.value.should be > card.value
+  end
+
+  it "lower rank should be less than higher" do
+    card = Card.new('10','C')
+    card_lower = Card.new('2','D')
     
-    card1.suit.should_not eql card2eq_rank.suit
-    card3higher.value.should be > card1.value
-    card4lower.value.should  be < card1.value
+    card_lower.value.should be < card.value
   end
 end # Pcard can be compared
 

@@ -16,7 +16,7 @@ task :clean do
 #  files = Dir["*~", "*/*~", "*/*/*~"].join(" ")
 #  sh "rm #{files}"
   sh 'find . -name "*~" -exec rm -v {} \;'
-  rm tmp-pagedump.html 
+  sh 'rm -f tmp-pagedump.html'
 end
 
 task :this, [:target] do | task, args|
