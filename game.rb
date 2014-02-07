@@ -16,7 +16,7 @@ class Game
   attr_reader :current_player_index
 
   public
-  attr_reader :books_list, :deck, :players
+  attr_reader :books_list, :pond, :players
 
   def initialize()
     @players = []
@@ -29,9 +29,9 @@ class Game
   def start_game(cards = nil)
     return nil if @game_is_started 
     if cards.nil?
-      @deck = Deck.new()
+      @pond = Deck.new()
     else
-      @deck = Deck.new(cards)
+      @pond = Deck.new(cards)
     end
 
     @players.each {  |player| @books_list[player] = [] }
@@ -46,12 +46,12 @@ class Game
 
   def deal(number)
     number.times do
-      @players.each { |player| player.hand.receive_cards(@deck.give_card) }
+      @players.each { |player| player.hand.receive_cards(@pond.give_card) }
     end
   end
 
   def pond_size
-      @deck.count
+      @pond.count
   end
 
   def add_player(number, name)
@@ -101,48 +101,59 @@ class Game
     end    
   end
 
-  # check for book, if found then remove and return 1, else 0.
+  # check for book, if found then remove and return true, else false.
   def process_books(target_rank)
     cards = current_player.hand.give_matching_cards(target_rank)
     if cards.count == 4
       books_list[current_player] << target_rank
-      return 1
+      return true
     else
       current_player.hand.receive_cards(cards)
-      return 0
+      return false
     end
   end
 
   def play_round(target_player, target_rank)
+#    puts "-", "play_round: #{current_player.name} asking #{target_player.name} for #{target_rank}"
+#    puts "current hand: #{current_player.hand}"
+#    puts "target hand: #{target_player.hand}"
     result = Result.new(current_player, target_player, target_rank)
 
     if target_player.hand.rank_count(target_rank) > 0  # has the rank
+#puts "-", "target player has the rank"
       match_cards = target_player.hand.give_matching_cards(target_rank)
       current_player.hand.receive_cards(match_cards)
 
       result.matches += match_cards.count
-      result.received_from = target_player
+      result.received_from_player = true
+#puts "-", result
     else 
-      card = deck.give_card
+      card = pond.give_card
       if card.nil?     # no cards, game is over
         @game_over = result.game_over = true
       else
+#        puts "-", "got a card from the pond"
         current_player.hand.receive_cards(card)
-        result.received_from = :pond
+        result.received_from_pond = true
         if card.rank == target_rank  # intended match
+#          puts "-", "it is what player asked for"
           result.matches = 1
         else # possible surprise match
-          if process_books(card.rank) == 1
-            result.books_made += 1
+#          puts "-", "it is NOT what player asked for"
+          if process_books(card.rank)
+#          puts "-", "BUT, he made a surprise book of #{card.rank}"
+            result.book_made = true
             result.surprise_rank = card.rank
           end
+#          puts "-", result
           advance_to_next_player  # no intended match anywhere: turn over
         end
       end
     end
-    result.books_made += process_books(target_rank)
+    result.book_made = process_books(target_rank) if result.book_made == nil;
     result
   end
+
   def debug
     @debug = !@debug
   end
@@ -150,6 +161,12 @@ class Game
   def over?
     @game_over
   end
+
+#
+# methods below this point really belong to the controller and not the
+# game.  Not sure what the object should be.
+#
+
 
   def setup()
     get_clients
@@ -217,7 +234,8 @@ class Game
   def process_commands(player, raw_input)
     args = raw_input.split
 
-    if args[0] == "deck" && args[1] == "size"
+    if (args[0] == "deck" && args[1] == "size") ||
+       (args[0] == "pond" && args[1] == "size")
       player.tell( "#{pond_size} cards are left in the pond\n")
       return :private # utility command
     end
@@ -243,6 +261,7 @@ class Game
                 "  Choices are:\n" +
                 "    ask <player #> for <rank>\n" +
                 "    deck size\n" +
+                "    pond size\n" +
                 "    hand\n" + 
                 "    status\n")
     return :private
@@ -255,7 +274,7 @@ class Game
                    " cards and has made #{number_of_books(player)} books" +
                    " (#{books_to_s(player)})\n")
     end
-    to_player.tell("  Deck has #{pond_size} cards remaining.\n")
+    to_player.tell("  Pond has #{pond_size} cards remaining.\n")
   end
 
 

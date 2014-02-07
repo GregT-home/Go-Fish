@@ -78,7 +78,7 @@ describe Game, "test typical round outcomes." do
       # test a few samples for validity
       @game.players[0].hand.cards[0].should eq Card.new("Q", "H")
       @game.players[2].hand.cards[3].should eq Card.new("10", "C")
-      @game.deck.cards[0].should eq Card.new("3", "H")
+      @game.pond.cards[0].should eq Card.new("3", "H")
     end
 
     it ".play_round, case 1: ask Victim: none; Pond: No; Book: N/A; next player." do
@@ -91,8 +91,10 @@ describe Game, "test typical round outcomes." do
       result.victim.should eq @game.players[2]
       result.rank.should eq "4"
       result.matches.should eq 0
-      result.received_from.should eq :pond
-      result.books_made.should eq 0
+      result.received_from_pond.should be_true
+      result.book_made.should be_false
+
+      started_with.should eq start_player.hand.rank_count("4");
 
       @game.current_player.should_not eql start_player
     end
@@ -103,8 +105,8 @@ describe Game, "test typical round outcomes." do
 
       result = @game.play_round(@game.players[1], "3")  # hand 1 has 2 x 3s
       result.matches.should eq 2
-      result.received_from.should eq @game.players[1]
-      result.books_made.should eq 0
+      result.received_from_player.should be_true
+      result.book_made.should be_false
 
       @game.current_player.hand.rank_count("3").should eq started_with + 2
       @game.current_player.should eql start_player
@@ -112,12 +114,11 @@ describe Game, "test typical round outcomes." do
 
     it ".play_round, case 3: ask Victim: gets; Pond: N/A; Book: Yes; plays again." do
       starting_player = @game.current_player
-      started_with = starting_player.hand.rank_count("2")
 
       result = @game.play_round(@game.players[1], "2")  # hand 1 has 2 x 2s
       result.matches.should eq 2
-      result.received_from.should eq @game.players[1]
-      result.books_made.should eq 1
+      result.received_from_player.should be_true
+      result.book_made.should be_true
 
       @game.current_player.hand.rank_count("2").should eq 0 # book removed from hand
       @game.current_player.should eq starting_player
@@ -130,8 +131,9 @@ describe Game, "test typical round outcomes." do
 
       result = @game.play_round(@game.players[2], "3")  # hand 2 has no 3s, pond does
       result.matches.should eq 1
-      result.received_from.should eq :pond
-      result.books_made.should eq 0
+      result.received_from_pond.should be_true
+      result.book_made.should be_false
+
 
       @game.current_player.hand.rank_count("3").should eq started_with + 1
       @game.current_player.should eq starting_player
@@ -140,13 +142,12 @@ describe Game, "test typical round outcomes." do
     it ".play_round, case 5: ask Victim: no get; Pond: get; Book: yes; plays again." do
       # we play 2 hands to get to do this
       starting_player = @game.current_player
-      started_with = starting_player.hand.rank_count("3")
       @game.play_round(@game.players[1], "3") #hand 1 has 2 x 3s (test case 2)
 
       result = @game.play_round(@game.players[2], "3")  # hand 2 has no 3s, but pond does
       result.matches.should eq 1
-      result.received_from.should eq :pond
-      result.books_made.should eq 1
+      result.received_from_pond.should be_true
+      result.book_made.should be_true
 
       @game.current_player.hand.rank_count("3").should eq 0
       @game.current_player.should eq starting_player
@@ -156,13 +157,14 @@ describe Game, "test typical round outcomes." do
     it ".play_round, case 6: ask Victim: no get; Pond: get; Book: yes-surprise; next player." do
       # we play 2 hands to get to do this
       starting_player = @game.current_player
-      started_with = starting_player.hand.rank_count("3")
       @game.play_round(@game.players[1], "3") #hand 1 has 2 x 3s (test case 2)
 
       result = @game.play_round(@game.players[2], "Q")  # hand 2 has no Qs, pond has a 3 for book
+puts "-", result
       result.matches.should eq 0
-      result.received_from.should eq :pond
-      result.books_made.should eq 1
+      result.received_from_pond.should be_true
+      result.surprise_rank.should eq "3"
+      result.book_made.should be_true
       @game.current_player.hand.rank_count("3").should eq 0
       @game.current_player.should_not eql starting_player
       @game.books(starting_player).should include("3")
@@ -172,9 +174,11 @@ describe Game, "test typical round outcomes." do
       expected_result = [0, 0, 1] # 1st two players have none, third has 1
 
       @game.players.each_with_index do |player, i|
-        player.hand.cards.each_with_index do |card, i|
-          if @game.process_books(card.rank) != 0
-            result.books_made.should eq expected_result[i]
+        player.hand.cards.each do |card|
+          book_found = @game.process_books(card.rank)
+
+          if book_found
+            book_found.should eq expected_result[i]
             break
           end
         end
@@ -196,9 +200,9 @@ describe Game, "test typical round outcomes." do
       @game.current_player.hand.receive_cards(cards)
 
       # check the hand for each kind of book
-      @game.process_books("2").should eql 1
-      @game.process_books("K").should eql 1
-      @game.process_books("A").should eql 1
+      @game.process_books("2").should eql true
+      @game.process_books("K").should eql true
+      @game.process_books("A").should eql true
 
       book_list = "2s, As, Ks"
       @game.books_to_s(@game.current_player).should eq book_list
@@ -206,19 +210,20 @@ describe Game, "test typical round outcomes." do
 
     it ".play_round: checks for end of game" do
       #take last card from deck
-      card = @game.deck.give_card
-      @game.deck.count.should eq 0
+      card = @game.pond.give_card
+      @game.pond.count.should eq 0
 
-      next_card = @game.deck.give_card
+      next_card = @game.pond.give_card
       next_card.should be_nil
 
       # Play a round: ask for 3 from hand 2, don't get one, don't get from pond
       result = @game.play_round(@game.players[2], "3")
-      result.received_from.should be_nil
+      result.received_from_player.should be_nil
+      result.received_from_pond.should be_nil
       result.matches.should eq 0
       
-      result.game_over.should eq true
-      @game.over?.should eq true
+      result.game_over.should be_true
+      @game.over?.should be_true
     end
 
   end # context
@@ -246,7 +251,7 @@ describe Game, ".end_game" do
     end
 
     it ".started is true if the game is started" do
-      expect(@game.started).to eq true
+      expect(@game.started).to be_true
     end
 
     it ".start_game returns nil if game is already started" do

@@ -19,8 +19,9 @@ describe Result, "Round Result creation and manipulation." do
       result.victim.should == 1
       result.rank.should == "3"
       result.matches.should == 0
-      result.received_from.should == nil
-      result.books_made.should == 0
+      result.received_from_player.should == nil
+      result.received_from_pond.should == nil
+      result.book_made.should == nil
       result.game_over.should == false
 
       expect {result.requester = 1}.to raise_error
@@ -35,16 +36,16 @@ describe Result, "Round Result creation and manipulation." do
       expect {result.victim = 2}.to raise_error
       expect {result.rank = 3}.to raise_error
       result.matches                 = 4
-      result.received_from           = :some_one
-      result.books_made              = 5
+      result.received_from_player    = true
+      result.book_made               = false
       result.game_over               = 6
 
       result.requester.should       == @game.current_player
       result.victim.should          == 1
       result.rank.should            == "3"
       result.matches.should         == 4
-      result.received_from.should   == :some_one
-      result.books_made.should      == 5
+      result.received_from_player.should   == true
+      result.book_made.should       == false
       result.game_over.should       == 6
     end
   end #context
@@ -59,8 +60,8 @@ EOF
 
       result = Result.new(0,2,"3")
       result.matches = 1
-      result.received_from = :pond
-      result.books_made = 0
+      result.received_from_pond = true
+      result.book_made = false
       result.game_over = false
 
       result.to_s.should eq test_string
@@ -75,8 +76,8 @@ EOF
 
       result = Result.new(0,1,"3")
       result.matches = 2
-      result.received_from = 1
-      result.books_made = 0
+      result.received_from_player = true
+      result.book_made = false
       result.game_over = false
 
       result.to_s.should eq test_string
@@ -91,8 +92,8 @@ EOF
 
       result = Result.new(0,1,"2")
       result.matches = 2
-      result.received_from = 1
-      result.books_made = 1
+      result.received_from_player = true
+      result.book_made = true
       result.game_over = false
 
       result.to_s.should eq test_string
@@ -107,8 +108,8 @@ EOF
 
       result = Result.new(0,2,"3")
       result.matches = 1
-      result.received_from = :pond
-      result.books_made = 0
+      result.received_from_pond = true
+      result.book_made = false
       result.game_over = false
 
       result.to_s.should eq test_string
@@ -123,8 +124,8 @@ EOF
 
       result = Result.new(0,2,"3")
       result.matches = 1
-      result.received_from = :pond
-      result.books_made = 1
+      result.received_from_pond = true
+      result.book_made = true
       result.game_over = false
 
       result.to_s.should eq test_string
@@ -139,8 +140,8 @@ EOF
 
       result = Result.new(0,2,"Q")
       result.matches = 1
-      result.received_from = :pond
-      result.books_made = 1
+      result.received_from_pond = true
+      result.book_made = true
       result.surprise_rank = "3"
       result.game_over = false
 
@@ -157,8 +158,10 @@ EOF
 
       result = Result.new(0,2,"3")
       result.matches = 0
-      result.received_from = nil
-      result.books_made = 0
+      result.received_from_player = nil
+      result.received_from_pond = nil
+      result.book_made = false
+
       result.game_over = true
 
       result.to_s.should eq test_string
