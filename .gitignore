@@ -16,6 +16,9 @@ public/stylesheets/sass/*.css
 public/stylesheets/*.css
 specs/f.rb
 
+
+.DS_Store
+
 # YARD artifacts
 .yardoc
 _yardoc
