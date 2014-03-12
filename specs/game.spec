@@ -160,7 +160,6 @@ describe Game, "test typical round outcomes." do
       @game.play_round(@game.players[1], "3") #hand 1 has 2 x 3s (test case 2)
 
       result = @game.play_round(@game.players[2], "Q")  # hand 2 has no Qs, pond has a 3 for book
-puts "-", result
       result.matches.should eq 0
       result.received_from_pond.should be_true
       result.surprise_rank.should eq "3"
