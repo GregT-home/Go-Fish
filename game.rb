@@ -46,7 +46,7 @@ class Game
 
   def deal(number)
     number.times do
-      @players.each { |player| player.hand.receive_cards(@pond.give_card) }
+      @players.each { |player| player.hand.receive_cards([@pond.give_card]) }
     end
   end
 
@@ -56,8 +56,7 @@ class Game
 
   def add_player(number, name)
     unless @game_is_started
-      hand = Hand.new()
-      player = Player.new(number, name, hand)
+      player = Player.new(number, name, Hand.new())
       players << player
       player.tell("Waiting for the rest of the players.")
       advance_to_next_player unless @players.empty?
@@ -114,38 +113,28 @@ class Game
   end
 
   def play_round(target_player, target_rank)
-#    puts "-", "play_round: #{current_player.name} asking #{target_player.name} for #{target_rank}"
-#    puts "current hand: #{current_player.hand}"
-#    puts "target hand: #{target_player.hand}"
     result = Result.new(current_player, target_player, target_rank)
 
     if target_player.hand.rank_count(target_rank) > 0  # has the rank
-#puts "-", "target player has the rank"
       match_cards = target_player.hand.give_matching_cards(target_rank)
       current_player.hand.receive_cards(match_cards)
 
       result.matches += match_cards.count
       result.received_from_player = true
-#puts "-", result
     else 
       card = pond.give_card
       if card.nil?     # no cards, game is over
         @game_over = result.game_over = true
       else
-#        puts "-", "got a card from the pond"
         current_player.hand.receive_cards(card)
         result.received_from_pond = true
         if card.rank == target_rank  # intended match
-#          puts "-", "it is what player asked for"
           result.matches = 1
         else # possible surprise match
-#          puts "-", "it is NOT what player asked for"
           if process_books(card.rank)
-#          puts "-", "BUT, he made a surprise book of #{card.rank}"
             result.book_made = true
             result.surprise_rank = card.rank
           end
-#          puts "-", result
           advance_to_next_player  # no intended match anywhere: turn over
         end
       end
