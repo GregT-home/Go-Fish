@@ -1,11 +1,13 @@
 source 'https://rubygems.org'
 
 gem 'slim'
-gem 'sinatra', '~> 1.4.4'
-gem 'sass'
+gem 'sinatra', '~> 1.4.8'
+gem 'sassc'
 gem 'rack'
 gem 'rspec'
 gem 'pusher'
+gem 'rake'
+
 
 group :test, :development do
   gem 'pry'
