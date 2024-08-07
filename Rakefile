@@ -16,8 +16,7 @@ end
 
 desc "Delete standard temporary files, Emacs *~ files, in particular"
 task :clean do
-  sh 'find . -name "*~" -exec rm -v {} \;'
-  sh 'rm -f tmp-pagedump.html'
+  sh 'find . \( -name "*~" -or -name "\#*\#" -or -iname "tmp-paged*mp.html" \) -exec rm -vf {} \;'
 end
 
 desc "Run rspec over :target"
