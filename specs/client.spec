@@ -54,7 +54,7 @@ end # MockServer
     before (:each) do
       num_players = 1
       @mock_server = MockServer.new(num_players)
-      @mock_server.number_of_players.should eq num_players
+      expect(@mock_server.number_of_players).to eq num_players
 
       # kick-off a non-blocking server thread
       thread_id = Thread.new { @mock_server.get_clients }
@@ -68,9 +68,8 @@ end # MockServer
     it ".new: can create a socket connection to a running server." do
       client = FishClient.new
 
-      @mock_server.client.count.should == 1
-
-      @mock_server.client[0].is_a?(TCPSocket).should be true
+      expect(@mock_server.client.count).to eql 1
+      expect(@mock_server.client[0].is_a?(TCPSocket)).to be true
     end
 
     it ".send_line: can connect a single client and exchange messages." do
@@ -82,7 +81,7 @@ end # MockServer
 
       cfd = @mock_server.client[0]
       msg = @mock_server.client[0].gets.chomp
-      msg.should eql test_message
+      expect(msg).to eql test_message
     end
 
     it ".get_line: can receive a single-line from the server." do
@@ -93,7 +92,7 @@ end # MockServer
       @mock_server.put_line(@mock_server.client[0], test_line)
       line = client.receive_line
 
-      line.should == test_line
+      expect(line).to eql test_line
     end
 
     it ".get_message: can receive a multi-line message from the server." do
@@ -104,7 +103,7 @@ end # MockServer
       @mock_server.put_message(@mock_server.client[0], mline_test_msg)
       msg = client.receive_message
 
-      msg.should == mline_test_msg
+      expect(msg).to eql mline_test_msg
     end
   end # context
 end # client.spec
