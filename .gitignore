@@ -32,3 +32,5 @@ bogus*
 *.out
 [Mm]akefile*
 tmp*
+# RubyMine stuff
+/.idea
