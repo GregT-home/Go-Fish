@@ -2,8 +2,8 @@ section class="cards-area"
   section class="hand-area"
     h2 Your Cards:
     ul.hand
-    - if @game.started
-      - @my.hand.each do |card|
-        li
-          img alt="#{card.rank}-of-#{card.suit}-pic" src="images/cards/#{card.rank}#{card.suit}.png"
+      - if @game.started
+        - @my.hand.cards.each do |card|
+          li
+            img alt="#{card.rank}-of-#{card.suit}-pic" src="images/cards/#{card.suit.downcase}#{card.rank.downcase}.png"
 

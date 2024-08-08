@@ -3,7 +3,8 @@ section.game-area
     section.history-area
       h2 Last Round
       p
-        = @my.messages
+        - @my.messages.each do |msg|
+          | #{msg}
 
     - if @game.started
       == slim :_action_area

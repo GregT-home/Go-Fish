@@ -14,16 +14,8 @@ end
     RANKS.index(@rank)
   end
 
-  # def suit_value
-  #   SUITS.index(@suit)
-  # end
-
   def to_s
     "#{@rank}-#{@suit}"
-  end
-
-  def to_slim
-    "#{@rank}#{@suit}".downcase
   end
 
   # test this exhaustively

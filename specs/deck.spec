@@ -4,19 +4,19 @@ require_relative "../deck.rb"
 describe Deck, "Creation and basic function" do #Deck can be created, measured, shuffled, and customized." do
   context ".new by default creates a card deck" do
     deck = Deck.new
-    shuffled=Deck.new
+    shuffled = Deck.new
 
     it ".count is 52 cards." do
-      deck.count.should eq 52
+      expect(deck.count).to eq 52
     end
 
     it ".== works to compare decks." do
-      deck.should == shuffled
+      expect(deck).to eq shuffled
     end
 
     it ".shuffle changes the order." do
       shuffled.shuffle
-      deck.should_not == shuffled
+      expect(deck).not_to eq shuffled
     end
   end
 end
@@ -35,41 +35,41 @@ describe Deck, "Cards can be given to, and received by pseudo-players." do
     
 
     it ".give_card can give all 52 cards to one pseudo-player." do
-      @player.count.should eql 0
+      expect(@player.count).to eql 0
     end
 
     it ".give_card works 52 times on a standard deck and returns nil when no cards remain." do
       card = nil
       52.times {
         card = @deck.give_card
-        card.should_not be nil
+        expect(card).not_to be nil
 
         @player.receive_card(card)
       }
-      @player.count.should eql 52
+      expect(@player.count).to eql 52
 
-      @deck.count.should be 0
-      card.should_not be nil
+      expect(@deck.count).to be 0
+      expect(card).not_to be nil
     end
 
-    it ".receive_card should be able to put all cards back into the deck" do
+    it ".receive_card puts all cards back into the deck" do
       card = nil
       52.times {
         card = @player.receive_card(@deck.give_card)
-        card.should_not be nil
+        expect(card).not_to be nil
       }
 
-    @player.count.should eql 52
-    @deck.count.should eql 0
+    expect(@player.count).to eql 52
+    expect(@deck.count).to eql 0
 
     card = nil
     52.times {
         card = @deck.receive_card(@player.give_card)
-        card.should_not be nil
+        expect(card).not_to be nil
       }
 
-    @player.count.should eql 0
-    @deck.count.should eql 52
+    expect(@player.count).to eql 0
+    expect(@deck.count).to eql 52
     end
   end
 end #cards can be dealt to players

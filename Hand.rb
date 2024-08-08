@@ -33,22 +33,16 @@ class Hand
   end
 
   def got_book?(rank)
-    cards = @cards.select { |card| card.rank == rank }
-    cards.count == 4
+#    cards = @cards.select { |card| card.rank == rank }
+#    cards.count == 4
+    rank_count(rank) == 4
   end
 
   def to_s
     cards.map {|card| "[" + card.to_s + "]"}.join(" ")
   end
 
-  def to_slim
-    cards.map {|card| card.to_slim }.join(" ")
-  end
-
   private 
-  def get_cards_of_rank(rank)
-            cards.select { |card| card.rank == rank}
-          end
 
   def remove_cards(these_cards)
     @cards -= these_cards

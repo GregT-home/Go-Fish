@@ -1,13 +1,3 @@
 header
-  h1 Go Fish:
-  - if @game &&  @game.number_of_players > 0
-    - @game.players_by_hand.each do |hand, player|
-      p #{player.name}
-    = '(you are ' + session['user_name'] +')'
-    - if @game.current_hand != @game.player_number_to_hand(session['player_number'])
-      p
-        |
-          [current_hand owner != session owner]
-  - else
-      p No Players playing yet
+  h1 Go Fish
  

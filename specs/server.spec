@@ -81,8 +81,8 @@ describe FishServer, "Initialization" do
   it "#new: can create a server" do
     server = FishServer.new
 
-    server.is_a?(FishServer).should be true
-    server.game.is_a?(Game).should be true
+    expect(server.is_a?(FishServer)).to be true
+    expect(server.game.is_a?(Game)).to be true
     server.close
   end 
 end # end .new
@@ -100,7 +100,7 @@ describe FishServer, "#get_clients." do
     client1=MockClient.new
     client2=MockClient.new
 
-    server.client.count.should eq 2
+    expect(server.client.count).to eq 2
 
     client1.close
     client2.close
@@ -129,7 +129,7 @@ EOM
     server.put_message(server.client[0], welcome_message)
     msg = mclient.receive_message.strip
 
-    msg.should eq welcome_message.strip
+    expect(msg).to eq welcome_message.strip
 
     mclient.close
     server.close
@@ -149,7 +149,7 @@ describe FishServer, "#broadcast." do
     mclient1=MockClient.new
     mclient2=MockClient.new
 
-    server.client.count.should eq 2
+    expect(server.client.count).to eq 2
 
     #sending name first for test purposes (avoids blocking)
     mclient1.send_line(name1)
@@ -162,10 +162,10 @@ EOM
     server.broadcast(welcome_message)
 
     msg = mclient1.receive_message.strip
-    msg.should eq welcome_message.strip
+    expect(msg).to eq welcome_message.strip
 
     msg = mclient2.receive_message.strip
-    msg.should eq welcome_message.strip
+    expect(msg).to eq welcome_message.strip
 
     mclient1.close
     mclient2.close

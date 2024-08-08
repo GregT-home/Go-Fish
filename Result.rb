@@ -1,6 +1,7 @@
 class Result
   attr_reader :requester, :victim, :rank
-  attr_accessor :matches, :received_from, :books_made
+  attr_accessor :matches, :received_from_player, :received_from_pond
+  attr_accessor :book_made
   attr_accessor :surprise_rank, :game_over
 
   def initialize(requester, victim, rank)
@@ -11,7 +12,7 @@ class Result
     @matches = 0
     @received_from = nil
 
-    @books_made = 0
+    @book_made = nil
     @surprise_rank = nil
     @game_over = false
   end
@@ -22,7 +23,7 @@ class Result
   # part 3 : [the game is over] | [""]
   def to_s
     part0 = ""
-    if received_from == victim
+    if received_from_player
       part1 = "Player got #{matches}."
     else
       part1 = "Player was told to 'Go Fish' and "
@@ -33,13 +34,13 @@ class Result
       end
     end
     
-    if books_made == 0
+    if ! book_made
       part2 = "He did not make a book."
     else
-      if surprise_rank
-        part2 = "He was surprised to make a book of #{surprise_rank}s."
-      else
+      if surprise_rank.nil?
         part2 = "He made a book of #{rank}s."
+      else
+        part2 = "He was surprised to make a book of #{surprise_rank}s."
       end
     end
 
